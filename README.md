@@ -13,13 +13,7 @@ Status of the models' types:
 
 ## Activation functions
 As activation functions following functions are used:
-1) Sigmoids
-$$
-\sigma(x) = \fraq{1}{1 + e^{-2}}, \quad \sigma \in <0, 1>
-$$
-2) Tangenth
-$$
-\tanh(x) = \frac{e^{x} - e^{-x}}{e^{x} + e^{-x}}, \quad \sigma \in <-1, 1>
-$$
+1) Sigmoids ![equation](https://latex.codecogs.com/svg.image?%5Csigma(x)=%5Cfrac%7B1%7D%7B1&plus;e%5E%7B-2%7D%7D,%5Cquad%5Csigma%5Cin%3C0,1%3E)
+2) Tangenth ![equation](https://latex.codecogs.com/svg.image?%5Ctanh(x)=%5Cfrac%7Be%5E%7Bx%7D-e%5E%7B-x%7D%7D%7Be%5E%7Bx%7D&plus;e%5E%7B-x%7D%7D,%5Cquad%5Csigma%5Cin%3C-1,1%3E)
 
 Tangenth activation function is prefered due to better range.
