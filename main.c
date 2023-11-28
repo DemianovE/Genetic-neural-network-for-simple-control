@@ -9,7 +9,7 @@ void create_input_pop(struct InputPop *inputPop, int* max, int* min){
   inputPop->cols = 5;
   inputPop->rows = 5;
 
-  inputPop->S    = (int**)malloc(2 * sizeof(int));
+  inputPop->S    = (int**)malloc(2 * sizeof(int*));
   inputPop->S[0] = (int* )malloc(inputPop->cols * sizeof(int));
   inputPop->S[1] = (int* )malloc(inputPop->cols * sizeof(int));
 
@@ -33,7 +33,7 @@ int main(){
   create_structure(inputPop, population);
   free(inputPop);
 
-  freeMyStruct(population);
+  clear_population(population);
   return 0;
 }
 

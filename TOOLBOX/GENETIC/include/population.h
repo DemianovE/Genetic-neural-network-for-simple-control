@@ -21,4 +21,7 @@ typedef struct Pop {
 // function to create population from InputPop structure 
 void create_structure(struct InputPop *input,  struct Pop *pop);
 
+// function to clear population
+void clear_population(struct Pop* population);
+
 #endif

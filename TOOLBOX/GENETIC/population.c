@@ -22,9 +22,17 @@ void alocate_population(struct InputPop* input, struct Pop* population){
   population->S[1] = input->S[1];
 }
 
+void clear_population(struct Pop* population) {
+  if (population) {
+    for (int i = 0; i < population->rows; i++) {
+      free(population->pop[i]);
+    }
+    free(population->pop);
+    free(population);
+  }
+}
 
 void create_structure(struct InputPop *input, struct Pop *population) {
-    int randomInt;
     float newValue;
 
     alocate_population(input, population);
