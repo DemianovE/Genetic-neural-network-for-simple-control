@@ -1,6 +1,6 @@
 #include "TOOLBOX/GENETIC/include/population.h"
-#include "TOOLBOX/GENERAL/include/general.h"
 #include "TOOLBOX/GENERAL/include/sort.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
