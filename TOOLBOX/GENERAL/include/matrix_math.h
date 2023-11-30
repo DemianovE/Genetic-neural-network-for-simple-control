@@ -19,5 +19,11 @@ void matrix_subst(struct Matrix *A, struct Matrix *B, struct Matrix *output);
 // function to pass all values trough function
 void matrix_all_values_formula(struct Matrix *matrix, float (*func_ptr)(float));
 
+// function to create matrix from values of pointer
+void create_matrix_from_pointer(struct Matrix *output, float *input, int *size);
+
+// function to delete matrix
+void matrix_delete(struct Matrix *matrix);
+
 #endif
  

@@ -26,6 +26,20 @@ void create_matrix(struct Matrix *matrix, int *sizes){
     free(sizes);
 }
 
+void create_matrix_from_pointer(struct Matrix *output, float *input, int *size){
+    // sizes are in format [row, col]
+    create_matrix(output, size);
+
+    int global_index = 0;
+    for(int i=0; i<size[0]; i++){
+        for(int y=0; y<size[1]; y++){
+            output->matrix[i][y] = input[global_index];
+            global_index++;
+        }
+    }
+    free(size);
+}
+
 void matrix_multiply(struct Matrix *A, struct Matrix *B, struct Matrix *output){
 
     if(A->sizes[1] != B->sizes[0]){

@@ -1,6 +1,7 @@
 # Compiler and flags
 CC = gcc
 CFLAGS = -g -Wall -I TOOLBOX/GENETIC/include
+LIBS += -lm
 
 # Source files and object files
 MAIN_SRC = ./main.c
@@ -16,7 +17,7 @@ EXECUTABLE = myprogram
 all: $(EXECUTABLE)
 
 $(EXECUTABLE): $(MAIN_OBJ) $(C_FILES:.c=.o)
-	$(CC) $(CFLAGS) -o $@ $^
+	$(CC) $(CFLAGS) -o $@ $^ $(LIBS)
 
 $(MAIN_OBJ): $(MAIN_SRC) $(H_FILES)
 	$(CC) $(CFLAGS) -c -o $@ $<

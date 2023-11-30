@@ -1,10 +1,12 @@
 #ifndef NN_H
 #define NN_H
 
+#include "../../GENERAL/include/matrix_math.h"
+
 // struct used to store and use NN
 typedef struct NN{
-    float ***AW; // all layers vweights connecting them (matrix of matrixes)
-    float ***BW; // all values of biases of each level
+    struct MyStruct **AW; // all layers vweights connecting them (matrix of matrixes)
+    struct MyStruct **BW; // all values of biases of each level
 
     int *neurons_size;  // matrix of number of neurons per layer incl. input and output
     int  layer_number;  // number representing the number of layers incl. input and output

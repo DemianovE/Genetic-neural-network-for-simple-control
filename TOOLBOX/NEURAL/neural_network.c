@@ -1,6 +1,8 @@
 #include  "include/neural_network.h"
 #include "../GENETIC/include/population.h"
 #include "../GENERAL/include/sort.h"
+#include "../GENERAL/include/matrix_math.h"
+
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -12,19 +14,21 @@ void create_neural_network(struct NNInput *input, struct NN *neural_network) {
     neural_network->neurons_size = (int*)malloc(input->layer_number * sizeof(int));
     neural_network->neurons_size = input->neurons_size;
 
-    neural_network->AW = (float***)malloc((input->layer_number - 1) * sizeof(float**));
-    neural_network->BW = (float***)malloc((input->layer_number - 2) * sizeof(float**));
+    neural_network->AW = (struct Matrix **)malloc((input->layer_number - 1) * sizeof(struct Matrix *));
+    neural_network->BW = (struct Matrix **)malloc((input->layer_number - 2) * sizeof(struct Matrix *));
 
     // create size for all matrixes
     int layer_index = 0;
     for(int i=0; i<input->layer_number - 1; i++){
-        neural_network->AW[i] = (float**)malloc(input->neurons_size[layer_index + 1] * sizeof(float*));
-        neural_network->BW[i] = (float**)malloc(input->neurons_size[layer_index + 1] * sizeof(float*));
-        
-        for(int y=0; y<input->neurons_size[layer_index + 1]; y++){
-            neural_network->AW[i][y] = (float*)malloc(input->neurons_size[layer_index] * sizeof(float));
-            neural_network->BW[i][y] = (float*)malloc(1 * sizeof(float));
-        }
+        neural_network->AW[i] = (struct Matrix*)malloc(sizeof(struct Matrix));
+        neural_network->BW[i] = (struct Matrix*)malloc(sizeof(struct Matrix));
+
+        int sizes_AW[] = {input->neurons_size[layer_index + 1], input->neurons_size[layer_index]};
+        int sizes_BW[] = {input->neurons_size[layer_index + 1], 1};
+
+        create_matrix(neural_network->AW[i], sizes_AW);
+        create_matrix(neural_network->BW[i], sizes_BW);
+
         layer_index += 2;
     }
 
@@ -46,15 +50,9 @@ void create_neural_network(struct NNInput *input, struct NN *neural_network) {
 
 void clear_neural_network(struct NN *neural_network) {
     // free matrixes
-    int layer_index = 0;
      for(int i=0; i<neural_network->layer_number - 1; i++){
-        for(int y=0; y<neural_network->neurons_size[layer_index + 1]; y++){
-            free(neural_network->AW[i][y]);
-            free(neural_network->BW[i][y]);
-        }
-        free(neural_network->AW[i]);
-        free(neural_network->BW[i]);
-        layer_index += 2;
+        matrix_delete(neural_network->AW[i]);
+        matrix_delete(neural_network->BW[i]);
      }
      free(neural_network->AW);
      free(neural_network->BW);
@@ -88,9 +86,9 @@ void clear_neural_network_input(struct NNInput *input){
     free(input);
 }
 
-void de_normalization_process(struct NN *neural_network, float *input, int way){
+void de_normalization_process(struct NN *neural_network, struct Matrix *input, int way){
     float r_min, r_max, t_min, t_max;
-    for(int i=0; i<neural_network->layer_number; i++){
+    for(int i=0; i<neural_network->neurons_size[0]; i++){
         if(way == 0){
             r_min = neural_network->normalization_matrix[1][i];
             r_max = neural_network->normalization_matrix[0][i];
@@ -103,6 +101,6 @@ void de_normalization_process(struct NN *neural_network, float *input, int way){
             t_max = neural_network->denormalization_matrix[0][i];
         }
         
-        input[i] = ((input[i] - r_min)/(r_max - r_min)) * (t_max - t_min) + t_min;
+        input->matrix[i][0] = ((input->matrix[i][0] - r_min)/(r_max - r_min)) * (t_max - t_min) + t_min;
     }
 }
