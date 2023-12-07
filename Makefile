@@ -14,7 +14,7 @@ H_FILES := $(shell find . -type f -name '*.h' -not -path './.*')
 # Executable name
 EXECUTABLE = myprogram
 
-all: $(EXECUTABLE)
+all: $(EXECUTABLE) clean
 
 $(EXECUTABLE): $(MAIN_OBJ) $(C_FILES:.c=.o)
 	$(CC) $(CFLAGS) -o $@ $^ $(LIBS)
@@ -26,4 +26,5 @@ $(MAIN_OBJ): $(MAIN_SRC) $(H_FILES)
 	$(CC) $(CFLAGS) -c -o $@ $<
 
 clean:
-	rm -f $(EXECUTABLE) $(MAIN_OBJ) $(C_FILES:.c=.o)
+	find . -name \*.o -type f -delete
+	find . -name \*Zone.Identifier -type f -delete

@@ -63,10 +63,6 @@ void matrix_multiply(struct Matrix *A, struct Matrix *B, struct Matrix *output){
             output->matrix[y][i] = sum;
         }
     }
-    
-    // delete input matrixes
-    matrix_delete(A);
-    matrix_delete(B);
 }
 
 void matrix_subst(struct Matrix *A, struct Matrix *B, struct Matrix *output){
@@ -82,8 +78,6 @@ void matrix_subst(struct Matrix *A, struct Matrix *B, struct Matrix *output){
             output->matrix[i][y] = A->matrix[i][y] - B->matrix[i][y];
         }
     }
-    matrix_delete(A);
-    matrix_delete(B);
 }
 
 void matrix_all_values_formula(struct Matrix *matrix, float (*func_ptr)(float)){

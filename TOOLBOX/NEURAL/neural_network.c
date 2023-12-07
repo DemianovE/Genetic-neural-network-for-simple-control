@@ -44,6 +44,9 @@ void create_neural_network(struct NNInput *input, struct NN *neural_network) {
         neural_network->denormalization_matrix[i] = input->denormalization_matrix[i];
     }
 
+    neural_network->func_ptr = malloc(sizeof(input->func_ptr));
+    neural_network->func_ptr = input->func_ptr;
+
     // delete input structure
     clear_neural_network_input(input);
 }
@@ -68,7 +71,10 @@ void clear_neural_network(struct NN *neural_network) {
     // free last pointer
     free(neural_network->neurons_size);
 
-    //delete full structure
+    // free activation function 
+    free(neural_network->func_ptr);
+
+    // delete full structure
     free(neural_network);
 }
 
@@ -83,6 +89,10 @@ void clear_neural_network_input(struct NNInput *input){
     free(input->normalization_matrix);
     free(input->denormalization_matrix);
 
+    // free activation function
+    free(input->func_ptr);
+
+    // delete full strcture
     free(input);
 }
 
@@ -103,4 +113,38 @@ void de_normalization_process(struct NN *neural_network, struct Matrix *input, i
         
         input->matrix[i][0] = ((input->matrix[i][0] - r_min)/(r_max - r_min)) * (t_max - t_min) + t_min;
     }
+}
+
+void one_calculation(struct NN *neural_network, struct Matrix *input_init, float output_value){
+
+    struct Matrix *output = (struct Matrix*)malloc(sizeof(struct Matrix));
+    struct Matrix *input = (struct Matrix*)malloc(sizeof(struct Matrix));
+    // go though each layer intersaction and calculate
+    for(int i=0; i<neural_network->layer_number - 1; i++){
+        // calculate first multiplication W*x
+        if(i == 0){
+            matrix_multiply(input_init, neural_network->AW[i], output);
+            matrix_delete(input_init);
+            struct Matrix *input = (struct Matrix*)malloc(sizeof(struct Matrix));
+        } else{
+            matrix_multiply(input, neural_network->AW[i], output);
+            matrix_delete(input);
+            struct Matrix *input = (struct Matrix*)malloc(sizeof(struct Matrix));
+        }
+
+        // calculate sbstruction of W*x - omega
+        if(i != neural_network->layer_number - 2){
+            matrix_subst(output, neural_network->BW[i], input);
+            matrix_delete(output);
+
+            matrix_all_values_formula(input, neural_network->func_ptr);
+            struct Matrix *output = (struct Matrix*)malloc(sizeof(struct Matrix));
+        } else {
+            matrix_all_values_formula(output, neural_network->func_ptr);
+        }
+    }   
+
+    output_value = output->matrix[0][0];
+    matrix_delete(output);
+    matrix_delete(input);
 }
