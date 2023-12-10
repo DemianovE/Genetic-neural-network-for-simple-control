@@ -65,9 +65,21 @@ void matrix_multiply(struct Matrix *A, struct Matrix *B, struct Matrix *output){
     }
 }
 
-void matrix_subst(struct Matrix *A, struct Matrix *B, struct Matrix *output){
+void fully_copy_matrix(struct Matrix *input, struct Matrix *output){
+    create_matrix(output, input->sizes);
+
+    for(int i=0; i<input->sizes[0]; i++){
+        for(int x=0; x<input->sizes[1]; x++){
+            output->matrix[i][x] = input->matrix[i][x];
+        }
+    }
+}
+
+void matrix_subst_add(struct Matrix *A, struct Matrix *B, struct Matrix *output, int type){
     // please not that the sizes should be in following format:
     // [ rows cols ]
+
+    // type: 0 - subs, 1 - add
 
     int sizes[] = {A->sizes[0], B->sizes[1]};
     create_matrix(output, sizes);
@@ -75,7 +87,7 @@ void matrix_subst(struct Matrix *A, struct Matrix *B, struct Matrix *output){
     for(int i=0; i<sizes[0]; i++){
 
         for(int y=0; y<sizes[1]; y++){
-            output->matrix[i][y] = A->matrix[i][y] - B->matrix[i][y];
+            output->matrix[i][y] = type == 0 ? A->matrix[i][y] - B->matrix[i][y] : A->matrix[i][y] + B->matrix[i][y];
         }
     }
 }

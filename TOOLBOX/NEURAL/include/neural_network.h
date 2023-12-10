@@ -19,6 +19,10 @@ typedef struct NN{
     // number of normalization max/min pairs should be same as the number of inpputs. Same for denormalization and outputs
 
     float (*func_ptr)(float); // activation function pointer
+
+    struct Matrix **AM; // place to save all additional matrixes
+    int **type_AM;      // matrix types of each value of AM  
+    int type;           // type of the NN: 0-FF 1-SD 2-RR
 }NN;
 
 // struct used to deffine needed values for NN to be created
@@ -30,6 +34,8 @@ typedef struct NNInput{
     float **denormalization_matrix; // matrix of all denormalization values max and mins 
 
     float (*func_ptr)(float); // activation function pointer
+
+    int type;
 }NNInput;
 
 // function to create new neural network out of input structure and deletion of the input structure at the end
@@ -37,5 +43,8 @@ void create_neural_network(struct NNInput *input, struct NN *neural_network);
 
 // function to delete neural network 
 void clear_neural_network(struct NN *neural_network);
+
+// function to calculate the output of network based on the input
+void one_calculation(struct NN *neural_network, struct Matrix *input, struct Matrix *output);
 
 #endif
