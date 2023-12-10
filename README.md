@@ -8,7 +8,7 @@ The main purpose of this models is to be used in simple controll tasks replacing
 ## Models
 Status of the models' types:
 - FF - under development 
-- SD - planned
+- SD - under development 
 - RR - planned
 
 ## Activation functions
