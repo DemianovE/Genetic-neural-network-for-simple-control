@@ -5,8 +5,8 @@
 
 // struct used to store and use NN
 typedef struct NN{
-    struct MyStruct **AW; // all layers vweights connecting them (matrix of matrixes)
-    struct MyStruct **BW; // all values of biases of each level
+    struct Matrix **AW; // all layers vweights connecting them (matrix of matrixes)
+    struct Matrix **BW; // all values of biases of each level
 
     int *neurons_size;  // matrix of number of neurons per layer incl. input and output
     int  layer_number;  // number representing the number of layers incl. input and output
@@ -21,7 +21,7 @@ typedef struct NN{
     float (*func_ptr)(float); // activation function pointer
 
     struct Matrix **AM; // place to save all additional matrixes
-    int **type_AM;      // matrix types of each value of AM  
+    int **type_AM;      // matrix types of each value of AM genes
     int type;           // type of the NN: 0-FF 1-SD 2-RR
 }NN;
 
@@ -46,5 +46,8 @@ void clear_neural_network(struct NN *neural_network);
 
 // function to calculate the output of network based on the input
 void one_calculation(struct NN *neural_network, struct Matrix *input, struct Matrix *output);
+
+// function to set all matrixes based on one row of population
+void fill_matrixes_nn(struct NN *neural_network, float *population);
 
 #endif

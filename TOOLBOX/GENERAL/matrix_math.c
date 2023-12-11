@@ -22,7 +22,9 @@ void create_matrix(struct Matrix *matrix, int *sizes){
         matrix->matrix[i] = (float*)malloc(sizes[1] * sizeof(float));
     }
     matrix->sizes = (int*)malloc(2 * sizeof(int));
-    matrix->sizes = sizes;
+    matrix->sizes[0] = sizes[0];
+    matrix->sizes[1] = sizes[1];
+    
     free(sizes);
 }
 
@@ -46,21 +48,19 @@ void matrix_multiply(struct Matrix *A, struct Matrix *B, struct Matrix *output){
         fprintf(stderr, "Error: Sizes of matrixes are incorect\n");
         exit(EXIT_FAILURE);
     } 
-
-    int sizes[] = {A->sizes[0], B->sizes[1]};
+    int *sizes = (int*)malloc(2 * sizeof(int));
+    sizes[0] = A->sizes[0];
+    sizes[1] = B->sizes[1];
     create_matrix(output, sizes);
-
-    int sum;
     for(int i=0; i<B->sizes[1]; i++){
         // start of a collumn of matrix
         for(int y=0; y<A->sizes[0]; y++){
             // start of a row of matrix 
-            sum = 0;
+            output->matrix[y][i] = 0;
 
             for(int x=0; x<A->sizes[1]; x++){
-                sum += A->matrix[y][x] * B->matrix[x][i];
+                output->matrix[y][i] += A->matrix[y][x] * B->matrix[x][i];
             }
-            output->matrix[y][i] = sum;
         }
     }
 }
@@ -81,13 +81,21 @@ void matrix_subst_add(struct Matrix *A, struct Matrix *B, struct Matrix *output,
 
     // type: 0 - subs, 1 - add
 
-    int sizes[] = {A->sizes[0], B->sizes[1]};
+    int *sizes = (int *)malloc(2 * sizeof(int));
+    sizes[0] = A->sizes[0];
+    sizes[1] = B->sizes[1];
+
     create_matrix(output, sizes);
 
-    for(int i=0; i<sizes[0]; i++){
+    for(int i=0; i<output->sizes[0]; i++){
 
-        for(int y=0; y<sizes[1]; y++){
-            output->matrix[i][y] = type == 0 ? A->matrix[i][y] - B->matrix[i][y] : A->matrix[i][y] + B->matrix[i][y];
+        for(int y=0; y<output->sizes[1]; y++){
+            printf("%f - %f\n", A->matrix[i][y], B->matrix[i][y]);
+            if(type == 0){
+                output->matrix[i][y] = A->matrix[i][y] - B->matrix[i][y];
+            } else{
+                output->matrix[i][y] = A->matrix[i][y] + B->matrix[i][y];
+            }
         }
     }
 }
