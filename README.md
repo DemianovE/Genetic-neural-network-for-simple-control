@@ -17,3 +17,7 @@ As activation functions following functions are used:
 2) Tangenth ![equation](https://latex.codecogs.com/svg.image?%5Ctanh(x)=%5Cfrac%7Be%5E%7Bx%7D-e%5E%7B-x%7D%7D%7Be%5E%7Bx%7D&plus;e%5E%7B-x%7D%7D,%5Cquad%5Csigma%5Cin%3C-1,1%3E)
 
 Tangenth activation function is prefered due to better range.
+
+## Testing
+### Code testing
+Currently the tests are writen in the folder TEST with test_main being used as a linking file to other test files. Each of specific test files includes methods to test different function of the parts of system. The 

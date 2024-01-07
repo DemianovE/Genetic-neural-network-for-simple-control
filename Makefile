@@ -7,19 +7,30 @@ LIBS += -lm
 MAIN_SRC = ./main.c
 MAIN_OBJ = $(MAIN_SRC:.c=.o)
 
+# Source test and object files
+TEST_SRC = ./test.c
+TEST_OBJ = $(TEST_SRC:.c=.o)
+
 # Find all .c and .h files in subdirectories
 C_FILES := $(shell find . -type f -name '*.c' -not -path './.*')
 H_FILES := $(shell find . -type f -name '*.h' -not -path './.*')
 
 # Executable name
-EXECUTABLE = myprogram
+EXECUTABLE     = myprogram
+TESTEXECUTABLE = testprogram 
 
-all: $(EXECUTABLE) clean
+all: $(EXECUTABLE) $(TESTEXECUTABLE) clean
 
-$(EXECUTABLE): $(MAIN_OBJ) $(C_FILES:.c=.o)
+$(EXECUTABLE): $(MAIN_OBJ) $(filter-out $(TEST_OBJ), $(C_FILES:.c=.o))
 	$(CC) $(CFLAGS) -o $@ $^ $(LIBS)
 
 $(MAIN_OBJ): $(MAIN_SRC) $(H_FILES)
+	$(CC) $(CFLAGS) -c -o $@ $<
+
+$(TESTEXECUTABLE): $(TEST_OBJ) $(filter-out $(MAIN_OBJ), $(C_FILES:.c=.o))
+	$(CC) $(CFLAGS) -o $@ $^ $(LIBS)
+
+$(TEST_OBJ): $(TEST_SRC) $(H_FILES)
 	$(CC) $(CFLAGS) -c -o $@ $<
 
 %.o: %.c

@@ -33,13 +33,12 @@ void create_matrix_from_pointer(struct Matrix *output, float *input, int *size){
     create_matrix(output, size);
 
     int global_index = 0;
-    for(int i=0; i<size[0]; i++){
-        for(int y=0; y<size[1]; y++){
+    for(int i=0; i<output->sizes[0]; i++){
+        for(int y=0; y<output->sizes[1]; y++){
             output->matrix[i][y] = input[global_index];
             global_index++;
         }
     }
-    free(size);
 }
 
 void matrix_multiply(struct Matrix *A, struct Matrix *B, struct Matrix *output){
@@ -66,10 +65,14 @@ void matrix_multiply(struct Matrix *A, struct Matrix *B, struct Matrix *output){
 }
 
 void fully_copy_matrix(struct Matrix *input, struct Matrix *output){
-    create_matrix(output, input->sizes);
+    int *size = (int*)malloc(2*sizeof(int));
+    size[0] = input->sizes[0];
+    size[1] = input->sizes[1];
 
-    for(int i=0; i<input->sizes[0]; i++){
-        for(int x=0; x<input->sizes[1]; x++){
+    create_matrix(output, size);
+
+    for(int i=0; i < output->sizes[0]; i++){
+        for(int x=0; x<output->sizes[1]; x++){
             output->matrix[i][x] = input->matrix[i][x];
         }
     }

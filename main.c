@@ -1,7 +1,6 @@
 #include "TOOLBOX/GENETIC/include/population.h"
 #include "TOOLBOX/GENERAL/include/matrix_math.h"
 #include "TOOLBOX/GENERAL/include/sort.h"
-#include "TEST/include/test_main.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -26,6 +25,5 @@ void create_input_pop(struct InputPop *inputPop, int* max, int* min){
 int main(){
   srand(time(0));
 
-  test_matrix_all_values_formula();
 }
 

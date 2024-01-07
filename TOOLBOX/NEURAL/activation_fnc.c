@@ -12,6 +12,14 @@ float sigmoid(float x) {
     return 1.0 / (1.0 + exp(-x));
 }
 
+void select_tang_activation_function(float (**func_ptr)(float)){
+    *func_ptr = tangenth;
+}
+
+void select_sigm_activation_function(float (**func_ptr)(float)){
+    *func_ptr = sigmoid;
+}
+
 void select_activation_function(float (**func_ptr)(float)){
     printf("Please select the AF:\n1 - tanh\n2 - sigmoid\nSelect: ");
     int userChoice;
