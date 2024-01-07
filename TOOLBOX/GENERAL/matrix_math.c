@@ -5,13 +5,14 @@
 #include <stdio.h>
 
 void matrix_delete(struct Matrix *matrix){
-
-    for(int i=0; i<matrix->sizes[0]; i++){
+    if(matrix){
+      for(int i=0; i<matrix->sizes[0]; i++){
         free(matrix->matrix[i]);
+      }
+      free(matrix->matrix);
+      free(matrix->sizes);
+      free(matrix);
     }
-    free(matrix->matrix);
-    free(matrix->sizes);
-    free(matrix);
 }
 
 void create_matrix(struct Matrix *matrix, int *sizes){

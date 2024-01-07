@@ -1,6 +1,8 @@
 #include  "include/genetic_operations.h"
 #include "../GENETIC/include/population.h"
 #include "../GENERAL/include/sort.h"
+#include "../GENERAL/include/general_math.h"
+
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -111,7 +113,7 @@ void mutx(struct Pop* population, float chance){
   for(int x=0; x<population->rows; x++){
     for(int y=0; y<population->cols; y++){
       if(randomFloat < chance){
-        randomFloat = (rand() % (population->S[0][y] - population->S[1][y] + 1)) + population->S[1][y];
+        randomFloat = create_random_float(population->S[1][y], population->S[0][y]);
         population->pop[x][y] = randomFloat;
       }
     }

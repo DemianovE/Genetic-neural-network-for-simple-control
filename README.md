@@ -20,4 +20,11 @@ Tangenth activation function is prefered due to better range.
 
 ## Testing
 ### Code testing
-Currently the tests are writen in the folder TEST with test_main being used as a linking file to other test files. Each of specific test files includes methods to test different function of the parts of system. The 
+Currently the tests are writen in the folder TEST with test_main being used as a linking file to other test files. Each of specific test files includes methods to test different function of the parts of system. The tests should be run with following terminal prompt:
+```shell
+valgrind --leak-check=full ./testprogram
+```
+Also, following line can be used to get number of lines of code used in the project:
+```shell
+find . -type f \( -name "*.c" -o -name "*.h" \) -exec wc -l {} +
+```

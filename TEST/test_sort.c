@@ -10,8 +10,8 @@
 #define ANSI_BOLD         "\x1b[1m"
 #define ANSI_COLOR_RESET   "\x1b[0m"
 
-int test_sort(){
-  printf(ANSI_BOLD "=======TEST SORT STARTED=======" ANSI_COLOR_RESET "\n");
+int test_quicksort(){
+  printf(ANSI_BOLD "=======TEST QUICK SORT STARTED=======" ANSI_COLOR_RESET "\n");
 
   int length = 5;
   float fit[] = {9.6, 3.4, 10, 4.6, 0.4};
@@ -30,9 +30,9 @@ int test_sort(){
   free(result);
 
   if(flag == 0){
-    printf(ANSI_BOLD ANSI_COLOR_RED "=======TEST SORT FAILED=======" ANSI_COLOR_RESET "\n");
+    printf(ANSI_BOLD ANSI_COLOR_RED "=======TEST QUICK SORT FAILED=======" ANSI_COLOR_RESET "\n");
     return 0;
   }
-  printf(ANSI_BOLD ANSI_COLOR_GREEN "=======TEST SORT SUCCESSFUL=======" ANSI_COLOR_RESET "\n");
+  printf(ANSI_BOLD ANSI_COLOR_GREEN "=======TEST QUICK SORT SUCCESSFUL=======" ANSI_COLOR_RESET "\n");
   return 1;
 }
