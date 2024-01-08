@@ -9,8 +9,8 @@
 
 void create_input_pop(struct InputPop *inputPop, float* max, float* min, int* size){
   
-  inputPop->cols = size[0];
-  inputPop->rows = size[1];
+  inputPop->cols = size[1];
+  inputPop->rows = size[0];
 
   inputPop->S    = (float**)malloc(2 * sizeof(float*));
   inputPop->S[0] = (float* )malloc(inputPop->cols * sizeof(float));
