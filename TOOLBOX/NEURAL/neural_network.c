@@ -1,4 +1,5 @@
 #include  "include/neural_network.h"
+
 #include "../GENETIC/include/population.h"
 #include "../GENERAL/include/sort.h"
 #include "../GENERAL/include/matrix_math.h"
@@ -7,31 +8,91 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <string.h>
 
 void create_neural_network(struct NNInput *input, struct NN *neural_network) {
     // create list of neurons sizes
     neural_network->layer_number = input->layer_number;
     neural_network->neurons_size = (int*)malloc(input->layer_number * sizeof(int));
-    *neural_network->neurons_size = *input->neurons_size;
-    neural_network->count_of_values = 0; 
+    memcpy(neural_network->neurons_size, input->neurons_size, neural_network->layer_number * sizeof(int));
 
-    // deffine the type of the NN
-    neural_network->type = input->type;
+    // copy all layer info and neurons type
+    neural_network->layer_type = (int*)malloc(neural_network->layer_number * sizeof(int));
+    memcpy(neural_network->layer_type, input->layer_type, neural_network->layer_number * sizeof(int));
+
+    neural_network->sd_neurons_types = (int**)malloc(input->sd_number * sizeof(int*));
+    neural_network->SD_memory = (struct Matrix **)malloc(input->sd_number * sizeof(struct Matrix *));
+
+    // here the SD memory is allocated
+    int global_index_sd = 0;
+    for(int i=0; i<neural_network->layer_number; i++){
+        if(neural_network->layer_type[i] == 1){
+            // first the sd_neurons_types is created to hold matrix of types of each neuron for future calculations
+            // the logis is: 50% straight links, 25% S links and 25% D links
+            neural_network->sd_neurons_types[global_index_sd] = (int*)malloc(neural_network->neurons_size[i] * sizeof(int));
+
+            for(int j=0; j<neural_network->neurons_size[i]/2; j++){
+                neural_network->sd_neurons_types[global_index_sd][j] = 0; // straight links
+            }
+            int mid_index_slice = neural_network->neurons_size[i]/2 + (neural_network->neurons_size[i] - neural_network->neurons_size[i]/2)/2;
+            for(int j=neural_network->neurons_size[i]/2; j < mid_index_slice; j++){
+                neural_network->sd_neurons_types[global_index_sd][j] = 1; // s links
+            } for(int j=mid_index_slice; j<neural_network->neurons_size[i]; j++){
+                neural_network->sd_neurons_types[global_index_sd][j] = 2; // d link
+            }
+            
+            // now the memory matrix is created for future usage in caculations
+            neural_network->SD_memory[global_index_sd] = (struct Matrix *)malloc(sizeof(struct Matrix));
+            int *sizes_sd_matrix = (int*)malloc(2*sizeof(int));
+
+            sizes_sd_matrix[0] = neural_network->neurons_size[i];
+            sizes_sd_matrix[1] = 1;
+
+            create_matrix(neural_network->SD_memory[global_index_sd], sizes_sd_matrix);
+
+            // now all matrix is set to .0 to not crash first calculations
+            for(int j=0; j<neural_network->neurons_size[i]; j++){
+                neural_network->SD_memory[global_index_sd]->matrix[j][0] = .0;
+            }
+            global_index_sd++;
+        }
+    }
+
+    // create de/normalization matrixes of the system
+    neural_network->normalization_matrix   = (float**)malloc(2 * sizeof(float*));
+    neural_network->denormalization_matrix = (float**)malloc(2 * sizeof(float*));
+
+    for(int i = 0; i < 2; i++){
+        neural_network->normalization_matrix[i]   = (float*)malloc(neural_network->neurons_size[0] * sizeof(float));
+        neural_network->denormalization_matrix[i] = (float*)malloc(neural_network->neurons_size[neural_network->layer_number - 1] * sizeof(float));
+        
+        memcpy(neural_network->normalization_matrix[i],   input->normalization_matrix[i],   neural_network->neurons_size[0] * sizeof(float));
+        memcpy(neural_network->denormalization_matrix[i], input->denormalization_matrix[i], neural_network->neurons_size[neural_network->layer_number - 1] * sizeof(float));
+    }
+
+    select_activation_function(&neural_network->func_ptr);
 
     // delete input structure
     clear_neural_network_input(input);
 
     neural_network->AW = (struct Matrix **)malloc((neural_network->layer_number - 1) * sizeof(struct Matrix *));
-    neural_network->BW = (struct Matrix **)malloc((neural_network->layer_number - 2) * sizeof(struct Matrix *));
+    neural_network->BW = (struct Matrix **)malloc((neural_network->layer_number - 1) * sizeof(struct Matrix *));
 
     // create size for all matrixes
     int layer_index = 0;
-    for(int i=0; i<neural_network->layer_number - 1; i++){
+    neural_network->count_of_values = 0; 
+    for(int i=0; i<neural_network->layer_number - 2; i++){
         neural_network->AW[i] = (struct Matrix*)malloc(sizeof(struct Matrix));
         neural_network->BW[i] = (struct Matrix*)malloc(sizeof(struct Matrix));
 
-        int sizes_AW[] = {neural_network->neurons_size[layer_index + 1], neural_network->neurons_size[layer_index]};
-        int sizes_BW[] = {neural_network->neurons_size[layer_index + 1], 1};
+        int *sizes_AW = (int*)malloc(2*sizeof(int));
+        int *sizes_BW = (int*)malloc(2*sizeof(int));
+
+        sizes_AW[0] = neural_network->neurons_size[layer_index + 1];
+        sizes_AW[1] = neural_network->neurons_size[layer_index];
+
+        sizes_BW[0] = neural_network->neurons_size[layer_index + 1];
+        sizes_BW[1] = 1;
 
         // add number of genes needed
         neural_network->count_of_values += neural_network->neurons_size[layer_index + 1] * neural_network->neurons_size[layer_index] + neural_network->neurons_size[layer_index + 1];
@@ -41,78 +102,16 @@ void create_neural_network(struct NNInput *input, struct NN *neural_network) {
 
         layer_index += 2;
     }
-
-    // create de/normalization matrixes of the system
-    neural_network->normalization_matrix   = (float**)malloc(2 * sizeof(float*));
-    neural_network->denormalization_matrix = (float**)malloc(2 * sizeof(float*));
-
-    for(int i = 0; i < 2; i++){
-        neural_network->normalization_matrix[i]   = (float*)malloc(neural_network->layer_number * sizeof(float));
-        neural_network->denormalization_matrix[i] = (float*)malloc(neural_network->layer_number * sizeof(float));
-
-        neural_network->normalization_matrix[i]   = neural_network->normalization_matrix[i];
-        neural_network->denormalization_matrix[i] = neural_network->denormalization_matrix[i];
-    }
-
-    neural_network->func_ptr = malloc(sizeof(neural_network->func_ptr));
-    neural_network->func_ptr = neural_network->func_ptr;
-
-    // alocate AM if type != 0
-    if(neural_network->type == 1){ // SD
-        neural_network->AM = (struct Matrix**)malloc(2 * sizeof(Matrix*));
-         
-        int sizes_AM_start[] = {neural_network->neurons_size[1], 1};   // size of the strat SD matrix which is the size of the 1 HL
-        int size_AM_end[]    = {neural_network->neurons_size[neural_network->layer_number - 2], 1}; // size of the end SD layer which is the size of last HL
-        
-        create_matrix(neural_network->AM[0], sizes_AM_start);
-        create_matrix(neural_network->AM[1], size_AM_end);
-
-        // create type_AM array and fill with types for S and D of SD NN
-        neural_network->type_AM = (int**)malloc(2* sizeof(int*));
-        neural_network->type_AM[0] = (int*)malloc(neural_network->neurons_size[1] * sizeof(int));
-        neural_network->type_AM[1] = (int*)malloc(neural_network->neurons_size[neural_network->layer_number - 2] * sizeof(int));
-
-        int till_D_start = neural_network->neurons_size[1] % 2 == 0 ? neural_network->neurons_size[1] / 2 : (neural_network->neurons_size[1] - 1) / 2;
-        int till_D_end   = neural_network->neurons_size[neural_network->layer_number - 2] % 2 == 0 ? neural_network->neurons_size[neural_network->layer_number - 2] / 2 : (neural_network->neurons_size[neural_network->layer_number - 2] - 1) / 2;
-
-        for(int i=0; i< neural_network->neurons_size[neural_network->layer_number - 2]; i++){
-            if(i<till_D_end){
-                neural_network->type_AM[1][i] = 0; // s type SD neuron
-            } else{
-                neural_network->type_AM[1][i] = 1; // D type SD neuron
-            }
-        }
-
-        for(int i=0; i< neural_network->neurons_size[1]; i++){
-            if(i<till_D_start){
-                neural_network->type_AM[0][i] = 0; // S type SD neuron
-            } else{
-                neural_network->type_AM[0][i] = 1; // D type SD neuron
-            }
-        }
-    }
 }
 
 void clear_neural_network(struct NN *neural_network) {
     // free matrixes
-    for(int i=0; i<neural_network->layer_number - 1; i++){
+    for(int i=0; i<neural_network->layer_number - 2; i++){
        matrix_delete(neural_network->AW[i]);
        matrix_delete(neural_network->BW[i]);
     }
     free(neural_network->AW);
     free(neural_network->BW);
-
-    // free AM
-    if(neural_network->type == 1){
-        matrix_delete(neural_network->AM[0]);
-        matrix_delete(neural_network->AM[1]);
-        free(neural_network->AM);
-        
-        // free type_AM array
-        free(neural_network->type_AM[0]);
-        free(neural_network->type_AM[1]);
-        free(neural_network->type_AM);
-    }
 
     // free de_normalization matrixes
     for(int i = 0; i < 2; i++){
@@ -125,8 +124,18 @@ void clear_neural_network(struct NN *neural_network) {
     // free last pointer
     free(neural_network->neurons_size);
 
-    // free activation function 
-    free(neural_network->func_ptr);
+    // free all sd memory
+    int index_sd  = 0;
+    for(int i=0; i<neural_network->layer_number; i++){
+        if(neural_network->layer_type[i] == 1){
+            free(neural_network->sd_neurons_types[index_sd]);
+            matrix_delete(neural_network->SD_memory[index_sd]);
+            index_sd++;
+        }
+    }
+    free(neural_network->sd_neurons_types);
+    free(neural_network->SD_memory);
+    free(neural_network->layer_type);
 
     // delete full structure
     free(neural_network);
@@ -143,8 +152,8 @@ void clear_neural_network_input(struct NNInput *input){
     free(input->normalization_matrix);
     free(input->denormalization_matrix);
 
-    // free activation function
-    free(input->func_ptr);
+    // free the layer type matrix
+    free(input->layer_type);
 
     // delete full strcture
     free(input);
@@ -191,38 +200,7 @@ void de_normalization_process(struct NN *neural_network, struct Matrix *input, i
     }
 }
 
-void set_SD_neurons(struct NN *neural_network, struct Matrix *data, int type, int where){
-    // where: 0 - start, 1 - end;
-
-    int limit     = where == 0 ? neural_network->neurons_size[1] : neural_network->neurons_size[neural_network->layer_number - 2];
-    int index_col = where == 0 ? 0 : 1;
-    for(int i=0; i<limit; i++){
-        if(type == neural_network->type_AM[i][index_col]){
-            // if type is D then value should be negative to reflect operation of substraction
-            if (type == 1){
-                neural_network->AM[index_col]->matrix[i][0] = data->matrix[i][0] * -1;
-            }  else{
-                neural_network->AM[index_col]->matrix[i][0] = data->matrix[i][0];
-            }
-        }
-    }
-}
-
-void set_SD_start(struct NN *neural_network){
-    for(int i=0; i<2; i++){
-        for(int x=0; i<neural_network->AM[i]->sizes[0]; x++){
-            for(int y=0; y<neural_network->AM[i]->sizes[1]; y++){
-                neural_network->AM[i]->matrix[x][y] = 0;
-            }
-        }
-    }
-    
-}
-
 void one_calculation(struct NN *neural_network, struct Matrix *input, struct Matrix *output){
-    if(neural_network->type == 1){
-        set_SD_start(neural_network);
-    }
 
     for(int i=0; i<neural_network->layer_number - 1; i++){
         // perform W*input
@@ -248,37 +226,5 @@ void one_calculation(struct NN *neural_network, struct Matrix *input, struct Mat
             matrix_all_values_formula(output, neural_network->func_ptr);
         }
 
-        // if the type is SD 
-        if(neural_network->type == 1){
-            struct Matrix *input_sd = (struct Matrix*)malloc(sizeof(struct Matrix));
-
-            int type;
-            int where;
-            // perform first layer of the 
-            if(i == 1){
-                // make sd action
-                where = 0;
-                type = 1;
-                matrix_subst_add(input, neural_network->AM[0], input_sd, type);
-            } else if(i == neural_network->layer_number - 3){
-                where = 1;
-                type = 1;
-                matrix_subst_add(input, neural_network->AM[1], input_sd, type);
-            }
-
-            // save new values to SD
-            type = 1; // D neuron
-            set_SD_neurons(neural_network, input, type, where);
-            type = 0; // S neurons
-            set_SD_neurons(neural_network, input_sd, type, where);
-
-            // re-create input matrix to continue
-            matrix_delete(input);
-            struct Matrix *input = (struct Matrix*)malloc(sizeof(struct Matrix));
-
-            // copy input_sd to input
-            fully_copy_matrix(input_sd, input);
-            matrix_delete(input_sd);
-        }
     }
 }

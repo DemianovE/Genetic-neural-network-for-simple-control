@@ -20,9 +20,10 @@ typedef struct NN{
 
     float (*func_ptr)(float); // activation function pointer
 
-    struct Matrix **AM; // place to save all additional matrixes
-    int **type_AM;      // matrix types of each value of AM genes
-    int type;           // type of the NN: 0-FF 1-SD 2-RR
+    int    *layer_type; // array showing the type of each HL 0 - FF, 1 - SD
+
+    int   **sd_neurons_types;  // matrix containing type for each neuron in the SD layer 0 - straight, 1 - S, 2 - D
+    struct Matrix **SD_memory; // array of Matrixes for each SD layer
 }NN;
 
 // struct used to deffine needed values for NN to be created
@@ -33,9 +34,9 @@ typedef struct NNInput{
     float **normalization_matrix;  // matrix of all normalization values max and min. Max is on 0 row, min on 1
     float **denormalization_matrix; // matrix of all denormalization values max and mins 
 
-    float (*func_ptr)(float); // activation function pointer
+    int    *layer_type; // array showing the type of each HL 0 - FF, 1 - SD
 
-    int type;
+    int  sd_number;           // the number of sd layers
 }NNInput;
 
 // function to create new neural network out of input structure and deletion of the input structure at the end

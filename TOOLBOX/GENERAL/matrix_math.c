@@ -73,9 +73,7 @@ void fully_copy_matrix(struct Matrix *input, struct Matrix *output){
     create_matrix(output, size);
 
     for(int i=0; i < output->sizes[0]; i++){
-        for(int x=0; x<output->sizes[1]; x++){
-            output->matrix[i][x] = input->matrix[i][x];
-        }
+        memcpy(output->matrix[i], input->matrix[i], output->sizes[1] * sizeof(float));
     }
 }
 
