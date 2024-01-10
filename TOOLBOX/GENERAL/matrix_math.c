@@ -15,6 +15,19 @@ void matrix_delete(struct Matrix *matrix){
     }
 }
 
+void matrix_delete_only_data(struct Matrix *matrix){
+    if(matrix){
+        for(int i=0; i<matrix->sizes[0]; i++){
+            free(matrix->matrix[i]);
+        }
+        free(matrix->matrix);
+        free(matrix->sizes);
+
+        matrix->matrix = NULL;
+        matrix->sizes  = NULL;
+    }
+}
+
 void create_matrix(struct Matrix *matrix, int *sizes){
     // sizes are in format [row, col]
 

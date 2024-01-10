@@ -25,6 +25,9 @@ void create_matrix_from_pointer(struct Matrix *output, float *input, int *size);
 // function to delete matrix
 void matrix_delete(struct Matrix *matrix);
 
+// function to delete the 
+void matrix_delete_only_data(struct Matrix *matrix);
+
 // create full coppy of the matrix
 void fully_copy_matrix(struct Matrix *input, struct Matrix *output);
 

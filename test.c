@@ -136,6 +136,18 @@ void neural_network_test(){
   success_count += flag;
   count++;
 
+  flag = test_fill_matrixes_nn();
+  success_count += flag;
+  count++;
+
+  flag = test_de_normalization_process();
+  success_count += flag;
+  count++;
+
+  flag = test_one_calculation();
+  success_count += flag;
+  count++;
+
   if(success_count != count){
     printf(ANSI_BOLD ANSI_COLOR_RED "Tests resulted in %d errors" ANSI_COLOR_RESET "\n", count - success_count);
   } 
