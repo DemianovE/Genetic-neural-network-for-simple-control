@@ -10,7 +10,7 @@
 #define ANSI_BOLD         "\x1b[1m"
 #define ANSI_COLOR_RESET   "\x1b[0m"
 
-int test_quicksort(){
+int testQuicksort(){
   printf(ANSI_BOLD "=======TEST QUICK SORT STARTED=======" ANSI_COLOR_RESET "\n");
 
   int length = 5;
@@ -19,7 +19,7 @@ int test_quicksort(){
 
   int resultCorrect[] = {2, 0, 3, 1, 4};
 
-  quick_sort(fit, result, length);
+  quickSort(fit, result, length);
 
   int flag = 1;
   for(int i=0; i<length; i++){

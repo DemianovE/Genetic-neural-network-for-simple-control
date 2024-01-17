@@ -13,7 +13,7 @@
 
 
 
-int test_population(){
+int testPopulation(){
   printf(ANSI_BOLD "=======TEST POPULATION STARTED=======" ANSI_COLOR_RESET "\n");
   
   struct InputPop *input = (struct InputPop*)malloc(sizeof(struct InputPop));
@@ -22,8 +22,8 @@ int test_population(){
   float min[]  = {.0, 50.0, -20.0};
   int size[] = {3, 3};
 
-  create_input_pop(input, max, min, size);
-  create_structure(input, pop);
+  createInputPop(input, max, min, size);
+  createStructure(input, pop);
 
   int flag = 1;
   
@@ -46,7 +46,7 @@ int test_population(){
     printf("\n");
   }
 
-  clear_population(pop);
+  clearPopulation(pop);
 
   if(flag == 0){
     printf(ANSI_BOLD ANSI_COLOR_RED "=======TEST POPULATION FAILED=======" ANSI_COLOR_RESET "\n");

@@ -11,7 +11,7 @@
 #define ANSI_BOLD         "\x1b[1m"
 #define ANSI_COLOR_RESET   "\x1b[0m"
 
-int compare_matrixes(struct Matrix *A, struct Matrix *B){
+int compareMatrixes(struct Matrix *A, struct Matrix *B){
   // check if both matrixes have same size
   if(A->sizes[0] != B->sizes[0] || A->sizes[1] != B->sizes[1]){
     return 0;
@@ -28,7 +28,7 @@ int compare_matrixes(struct Matrix *A, struct Matrix *B){
   return 1;
 }
 
-int test_matrix_add_sub(){
+int testMatrixAddSub(){
   printf(ANSI_BOLD "=======TEST MATRIX ADD SUB STARTED=======" ANSI_COLOR_RESET "\n");
   int type;
 
@@ -55,11 +55,11 @@ int test_matrix_add_sub(){
   struct Matrix *DESIREDADD = (struct Matrix*)malloc(sizeof(struct Matrix));
   struct Matrix *DESIREDSUB = (struct Matrix*)malloc(sizeof(struct Matrix));
 
-  create_matrix(A, sizes1);
-  create_matrix(B, sizes2);
+  createMatrix(A, sizes1);
+  createMatrix(B, sizes2);
 
-  create_matrix(DESIREDADD, sizesDesiredAdd);
-  create_matrix(DESIREDSUB, sizesDesiredSub);
+  createMatrix(DESIREDADD, sizesDesiredAdd);
+  createMatrix(DESIREDSUB, sizesDesiredSub);
 
   A->matrix[0][0] = 1;
   A->matrix[0][1] = 1;
@@ -82,7 +82,7 @@ int test_matrix_add_sub(){
   DESIREDSUB->matrix[1][1] = 0;
 
   type = 1; // 0 - sub, 1 - add
-  matrix_subst_add(A, B, ABSADD, type);
+  matrixSubstAdd(A, B, ABSADD, type);
   printf("result of the add: \n");
   for(int x=0; x<ABSADD->sizes[0]; x++){
     for(int y=0; y<ABSADD->sizes[1]; y++){
@@ -94,7 +94,7 @@ int test_matrix_add_sub(){
   
 
   type = 0; // 0 - sub, 1 - add
-  matrix_subst_add(A, B, ABSSUB, type);
+  matrixSubstAdd(A, B, ABSSUB, type);
   printf("result of the sub: \n");
   for(int x=0; x<ABSSUB->sizes[0]; x++){
     for(int y=0; y<ABSSUB->sizes[1]; y++){
@@ -104,18 +104,18 @@ int test_matrix_add_sub(){
   }
 
   // ensure the correct output of the function
-  int flagAdd = compare_matrixes(ABSADD, DESIREDADD);
-  int flagSub = compare_matrixes(ABSSUB, DESIREDSUB);
+  int flagAdd = compareMatrixes(ABSADD, DESIREDADD);
+  int flagSub = compareMatrixes(ABSSUB, DESIREDSUB);
 
   // clear all matrixes
-  matrix_delete(A);
-  matrix_delete(B);
+  matrixDelete(A);
+  matrixDelete(B);
 
-  matrix_delete(ABSADD);
-  matrix_delete(ABSSUB);
+  matrixDelete(ABSADD);
+  matrixDelete(ABSSUB);
 
-  matrix_delete(DESIREDADD);
-  matrix_delete(DESIREDSUB);
+  matrixDelete(DESIREDADD);
+  matrixDelete(DESIREDSUB);
 
   if(flagAdd == 0 || flagSub == 0){
     if(flagAdd == 0){
@@ -135,7 +135,7 @@ int test_matrix_add_sub(){
   return 1;
 }
 
-int test_matrix_multiply(){
+int testMatrixMultiply(){
   printf(ANSI_BOLD "=======TEST MATRIX MULTIPLY STARTED=======" ANSI_COLOR_RESET "\n");
 
   int *sizes1 = (int *)malloc(2 * sizeof(int));
@@ -156,10 +156,10 @@ int test_matrix_multiply(){
   struct Matrix *AB = (struct Matrix*)malloc(sizeof(struct Matrix));
   struct Matrix *DESIREDMULT = (struct Matrix*)malloc(sizeof(struct Matrix));
 
-  create_matrix(A, sizes1);
-  create_matrix(B, sizes2);
+  createMatrix(A, sizes1);
+  createMatrix(B, sizes2);
 
-  create_matrix(DESIREDMULT, sizesDesiredMult);
+  createMatrix(DESIREDMULT, sizesDesiredMult);
 
   A->matrix[0][0] = 1;
   A->matrix[0][1] = 1;
@@ -182,7 +182,7 @@ int test_matrix_multiply(){
   DESIREDMULT->matrix[1][0] = 6;
   DESIREDMULT->matrix[1][1] = 12;
 
-  matrix_multiply(A, B, AB);
+  matrixMultiply(A, B, AB);
   printf("Result of the multiply:\n");
   for(int x=0; x<AB->sizes[0]; x++){
     for(int y=0; y<AB->sizes[1]; y++){
@@ -192,15 +192,15 @@ int test_matrix_multiply(){
   }
 
   // ensure the matrixe is as desired
-  int flag = compare_matrixes(AB, DESIREDMULT);
+  int flag = compareMatrixes(AB, DESIREDMULT);
 
   // clear all matrixes
-  matrix_delete(A);
-  matrix_delete(B);
+  matrixDelete(A);
+  matrixDelete(B);
 
-  matrix_delete(AB);
+  matrixDelete(AB);
 
-  matrix_delete(DESIREDMULT);
+  matrixDelete(DESIREDMULT);
 
   if(flag == 0){
     printf(ANSI_BOLD ANSI_COLOR_RED "=======TEST MATRIX MULTIPLY FAILED=======" ANSI_COLOR_RESET "\n");
@@ -210,7 +210,7 @@ int test_matrix_multiply(){
   return 1;
 }
 
-int test_matrix_all_values_formula(){
+int testMatrixAllValuesFormula(){
   printf(ANSI_BOLD "=======TEST MATRIX ALL VALUES FORMULA STARTED=======" ANSI_COLOR_RESET "\n");
   int *sizesTanh = (int *)malloc(2 * sizeof(int));
   sizesTanh[0] = 2;
@@ -234,11 +234,11 @@ int test_matrix_all_values_formula(){
   struct Matrix *DESIREDTANH = (struct Matrix*)malloc(sizeof(struct Matrix));
   struct Matrix *DESIREDSIGM = (struct Matrix*)malloc(sizeof(struct Matrix));
 
-  create_matrix(dataTanh, sizesTanh);
-  create_matrix(dataSigm, sizesSigm);
+  createMatrix(dataTanh, sizesTanh);
+  createMatrix(dataSigm, sizesSigm);
 
-  create_matrix(DESIREDTANH, sizesTanhDesired);
-  create_matrix(DESIREDSIGM, sizesSigmDesired);
+  createMatrix(DESIREDTANH, sizesTanhDesired);
+  createMatrix(DESIREDSIGM, sizesSigmDesired);
 
   dataTanh->matrix[0][0] = 1;
   dataTanh->matrix[0][1] = 1;
@@ -251,10 +251,10 @@ int test_matrix_all_values_formula(){
   dataSigm->matrix[1][1] = 2;
 
   float (*func_ptr_tanh)(float);
-  select_tang_activation_function(&func_ptr_tanh);
+  selectTangActivationFunction(&func_ptr_tanh);
 
   float (*func_ptr_sigm)(float);
-  select_sigm_activation_function(&func_ptr_sigm);
+  selectSigmActivationFunction(&func_ptr_sigm);
 
   DESIREDTANH->matrix[0][0] = func_ptr_tanh(1);
   DESIREDTANH->matrix[0][1] = func_ptr_tanh(1);
@@ -266,7 +266,7 @@ int test_matrix_all_values_formula(){
   DESIREDSIGM->matrix[1][0] = func_ptr_sigm(2);
   DESIREDSIGM->matrix[1][1] = func_ptr_sigm(2);
 
-  matrix_all_values_formula(dataTanh, func_ptr_tanh);
+  matrixAllValuesFormula(dataTanh, func_ptr_tanh);
   printf("Result of the tanh:\n");
   for(int x=0; x<dataTanh->sizes[0]; x++){
     for(int y=0; y<dataTanh->sizes[1]; y++){
@@ -275,7 +275,7 @@ int test_matrix_all_values_formula(){
     printf("\n");
   }
 
-  matrix_all_values_formula(dataSigm, func_ptr_sigm);
+  matrixAllValuesFormula(dataSigm, func_ptr_sigm);
   printf("Result of the sigm:\n");
   for(int x=0; x<dataSigm->sizes[0]; x++){
     for(int y=0; y<dataSigm->sizes[1]; y++){
@@ -284,14 +284,14 @@ int test_matrix_all_values_formula(){
     printf("\n");
   }
 
-  int flagTang = compare_matrixes(dataTanh, DESIREDTANH);
-  int flagSigm = compare_matrixes(dataSigm, DESIREDSIGM);
+  int flagTang = compareMatrixes(dataTanh, DESIREDTANH);
+  int flagSigm = compareMatrixes(dataSigm, DESIREDSIGM);
 
-  matrix_delete(dataTanh);
-  matrix_delete(dataSigm);
+  matrixDelete(dataTanh);
+  matrixDelete(dataSigm);
 
-  matrix_delete(DESIREDTANH);
-  matrix_delete(DESIREDSIGM);
+  matrixDelete(DESIREDTANH);
+  matrixDelete(DESIREDSIGM);
 
   func_ptr_tanh = NULL;
   func_ptr_sigm = NULL;
@@ -312,7 +312,7 @@ int test_matrix_all_values_formula(){
   return 1;
 }
 
-int test_matrix_create_from_pointer(){
+int testMatrixCreateFromPointer(){
   printf(ANSI_BOLD "=======TEST MATRIX FROM POINTER STARTED=======" ANSI_COLOR_RESET "\n");
   int *sizes = (int *)malloc(2 * sizeof(int));
   sizes[0] = 3;
@@ -325,7 +325,7 @@ int test_matrix_create_from_pointer(){
   struct Matrix *data    = (struct Matrix*)malloc(sizeof(struct Matrix));
   struct Matrix *DESIRED = (struct Matrix*)malloc(sizeof(struct Matrix));
 
-  create_matrix(DESIRED, sizesDesired);
+  createMatrix(DESIRED, sizesDesired);
 
   DESIRED->matrix[0][0] = 1.0;
   DESIRED->matrix[0][1] = 2.0;
@@ -334,9 +334,9 @@ int test_matrix_create_from_pointer(){
   DESIRED->matrix[2][0] = 5.0;
   DESIRED->matrix[2][1] = 6.0;
 
-  float data_pointer[] = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0};
+  float dataPointer[] = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0};
 
-  create_matrix_from_pointer(data, data_pointer, sizes);
+  createMatrixFromPointer(data, dataPointer, sizes);
   printf("Result of the matrix from pointer:\n");
   for(int x=0; x<data->sizes[0]; x++){
     for(int y=0; y<data->sizes[1]; y++){
@@ -345,10 +345,10 @@ int test_matrix_create_from_pointer(){
     printf("\n");
   }
 
-  int flag = compare_matrixes(data, DESIRED);
+  int flag = compareMatrixes(data, DESIRED);
 
-  matrix_delete(data);
-  matrix_delete(DESIRED);
+  matrixDelete(data);
+  matrixDelete(DESIRED);
 
   if(flag == 0){
     printf(ANSI_BOLD ANSI_COLOR_RED "=======TEST MATRIX FROM POINTER FAILED=======" ANSI_COLOR_RESET "\n");
@@ -358,7 +358,7 @@ int test_matrix_create_from_pointer(){
   return 1;
 }
 
-int test_matrix_fully_coppy_matrix(){
+int testMatrixFullyCoppyMatrix(){
   printf(ANSI_BOLD "=======TEST MATRIX FULLY COPY STARTED=======" ANSI_COLOR_RESET "\n");
 
   int *sizesDesired = (int *)malloc(2 * sizeof(int));
@@ -368,7 +368,7 @@ int test_matrix_fully_coppy_matrix(){
   struct Matrix *data    = (struct Matrix*)malloc(sizeof(struct Matrix));
   struct Matrix *DESIRED = (struct Matrix*)malloc(sizeof(struct Matrix));
 
-  create_matrix(DESIRED, sizesDesired);
+  createMatrix(DESIRED, sizesDesired);
 
   DESIRED->matrix[0][0] = 1.0;
   DESIRED->matrix[0][1] = 2.0;
@@ -377,11 +377,11 @@ int test_matrix_fully_coppy_matrix(){
   DESIRED->matrix[2][0] = 5.0;
   DESIRED->matrix[2][1] = 6.0;
 
-  fully_copy_matrix(DESIRED, data);
-  int flag = compare_matrixes(data, DESIRED);
+  fullyCopyMatrix(DESIRED, data);
+  int flag = compareMatrixes(data, DESIRED);
 
-  matrix_delete(data);
-  matrix_delete(DESIRED);
+  matrixDelete(data);
+  matrixDelete(DESIRED);
 
   if(flag == 0){
     printf(ANSI_BOLD ANSI_COLOR_RED "=======TEST MATRIX FULLY COPY FAILED=======" ANSI_COLOR_RESET "\n");

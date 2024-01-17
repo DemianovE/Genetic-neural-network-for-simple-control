@@ -2,12 +2,14 @@
 #define TEST_GENETIC_OPERATIONS_H
 
 // the function to test selbest in two ways
-int test_selbest();
+int testSelbest();
 
 // the function to test crossov
-int test_crossov();
+int testCrossov();
 
 // the function is not a test but code to test function for memory leaks
-int test_mutx();
+int testMutx();
 
+// the function to test selrand operation
+int testSelrand();
 #endif

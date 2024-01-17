@@ -6,8 +6,9 @@
 #include <stdlib.h>
 #include <time.h>
 #include <stddef.h>
+#include <string.h>
 
-void create_input_pop(struct InputPop *inputPop, float* max, float* min, int* size){
+void createInputPop(struct InputPop *inputPop, float* max, float* min, int* size){
   
   inputPop->cols = size[1];
   inputPop->rows = size[0];
@@ -20,7 +21,7 @@ void create_input_pop(struct InputPop *inputPop, float* max, float* min, int* si
   memcpy(inputPop->S[1], min, inputPop->cols * sizeof(float));
 }
 
-void alocate_population(struct InputPop* input, struct Pop* population){
+void alocatePopulation(struct InputPop* input, struct Pop* population){
   population->cols = input->cols;
   population->rows = input->rows;
 
@@ -37,10 +38,10 @@ void alocate_population(struct InputPop* input, struct Pop* population){
   memcpy(population->S[1], input->S[1], population->cols * sizeof(float));
 
   // clear the input pop
-  clear_input_pop(input);
+  clearInputPop(input);
 }
 
-void clear_population(struct Pop* population) {
+void clearPopulation(struct Pop* population) {
   if (population) {
     // free the pop part
     for (int i = 0; i < population->rows; i++) {
@@ -58,7 +59,7 @@ void clear_population(struct Pop* population) {
   }
 }
 
-void clear_input_pop(struct InputPop* input){
+void clearInputPop(struct InputPop* input){
   if(input){
     free(input->S[0]);
     free(input->S[1]);
@@ -67,17 +68,25 @@ void clear_input_pop(struct InputPop* input){
   }
 }
 
-void create_structure(struct InputPop *input, struct Pop *population) {
+void createStructure(struct InputPop *input, struct Pop *population) {
     float newValue;
 
-    alocate_population(input, population);
+    alocatePopulation(input, population);
 
     for(int y = 0; y < population->rows; y++){
       for(int i=0; i < population->cols; i++ ){
         
-        newValue = create_random_float(population->S[1][i], population->S[0][i]);
+        newValue = createRandomFloat(population->S[1][i], population->S[0][i]);
         population->pop[y][i] = newValue;
       }
-      printf("\n");
     }
+}
+
+void placePartOfPop(struct Pop *pop, struct Pop *source, int *indexes){
+  // the rows of the source are placed into pop between two indexes in the indexes, not including the second index
+  int globalIndex = 0;
+  for(int i=indexes[0]; i<indexes[1]; i++){
+    memcpy(pop->pop[i], source->pop[globalIndex], source->cols * sizeof(float));
+    globalIndex++;
+  }
 }

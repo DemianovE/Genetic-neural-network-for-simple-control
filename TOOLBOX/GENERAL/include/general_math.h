@@ -2,6 +2,6 @@
 #define GENERAL_MATH_H
 
 // function to create float in range
-float create_random_float(float min, float max);
+float createRandomFloat(float min, float max);
 
 #endif

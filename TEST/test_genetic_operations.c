@@ -12,7 +12,7 @@
 #define ANSI_BOLD         "\x1b[1m"
 #define ANSI_COLOR_RESET   "\x1b[0m"
 
-int arrays_equal(int *arr1, int *arr2, int size) {
+int arraysEqual(int *arr1, int *arr2, int size) {
     for (int i = 0; i < size; ++i) {
         if (arr1[i] != arr2[i]) {
             return 0; 
@@ -21,16 +21,16 @@ int arrays_equal(int *arr1, int *arr2, int size) {
     return 1; 
 }
 
-void create_population(struct Pop *population, int* size){
+void createPopulation(struct Pop *population, int* size){
   struct InputPop *input = (struct InputPop*)malloc(sizeof(struct InputPop));
   float max[]  = {10.0, 100.0, -10.0};
   float min[]  = {.0, 50.0, -20.0};
 
-  create_input_pop(input, max, min, size);
-  create_structure(input, population);
+  createInputPop(input, max, min, size);
+  createStructure(input, population);
 }
 
-int test_selbest(){
+int testSelbest(){
   printf(ANSI_BOLD "=======TEST SELBEST STARTED=======" ANSI_COLOR_RESET "\n");
 
   struct Pop *newPopulationHigher = (struct Pop*)malloc(sizeof(struct Pop));
@@ -46,7 +46,7 @@ int test_selbest(){
   int wayhigher     = 0;
   int waylower      = 1;
 
-  create_population(population, size);
+  createPopulation(population, size);
   selbest(fit, fitLength, population, newPopulationHigher, selects, selectsLength, wayhigher);
   selbest(fit, fitLength, population, newPopulationLower,  selects, selectsLength, waylower);
 
@@ -74,15 +74,15 @@ int test_selbest(){
     printf("\n");
   }
 
-  int flagHigher1 = arrays_equal(population->pop[1], newPopulationHigher->pop[0], population->cols);
-  int flagHigher2 = arrays_equal(population->pop[1], newPopulationHigher->pop[1], population->cols);
-  int flagHigher3 = arrays_equal(population->pop[0], newPopulationHigher->pop[2], population->cols);
-  int flagHigher4 = arrays_equal(population->pop[0], newPopulationHigher->pop[3], population->cols);
+  int flagHigher1 = arraysEqual(population->pop[1], newPopulationHigher->pop[0], population->cols);
+  int flagHigher2 = arraysEqual(population->pop[1], newPopulationHigher->pop[1], population->cols);
+  int flagHigher3 = arraysEqual(population->pop[0], newPopulationHigher->pop[2], population->cols);
+  int flagHigher4 = arraysEqual(population->pop[0], newPopulationHigher->pop[3], population->cols);
 
-  int flagLower1 = arrays_equal(population->pop[2], newPopulationLower->pop[0], population->cols);
-  int flagLower2 = arrays_equal(population->pop[2], newPopulationLower->pop[1], population->cols);
-  int flagLower3 = arrays_equal(population->pop[0], newPopulationLower->pop[2], population->cols);
-  int flagLower4 = arrays_equal(population->pop[0], newPopulationLower->pop[3], population->cols);
+  int flagLower1 = arraysEqual(population->pop[2], newPopulationLower->pop[0], population->cols);
+  int flagLower2 = arraysEqual(population->pop[2], newPopulationLower->pop[1], population->cols);
+  int flagLower3 = arraysEqual(population->pop[0], newPopulationLower->pop[2], population->cols);
+  int flagLower4 = arraysEqual(population->pop[0], newPopulationLower->pop[3], population->cols);
 
   int flag = 1;
   if (flagHigher1 == 0 || flagHigher2 == 0 || flagHigher3 == 0 || flagHigher4 == 0){
@@ -93,9 +93,9 @@ int test_selbest(){
     flag = 0;
   }
 
-  clear_population(population);
-  clear_population(newPopulationHigher);
-  clear_population(newPopulationLower);
+  clearPopulation(population);
+  clearPopulation(newPopulationHigher);
+  clearPopulation(newPopulationLower);
   
   if(flag == 0){
     printf(ANSI_BOLD ANSI_COLOR_RED "=======TEST SELBEST FAILED=======" ANSI_COLOR_RESET "\n");
@@ -105,7 +105,7 @@ int test_selbest(){
   return 1;
 }
 
-int test_crossov(){
+int testCrossov(){
   printf(ANSI_BOLD "=======TEST CROSSOV STARTED=======" ANSI_COLOR_RESET "\n");
 
   struct Pop *population = (struct Pop*)malloc(sizeof(struct Pop));
@@ -122,7 +122,7 @@ int test_crossov(){
   selects[2] = 7;
 
   // created one row population row is made to new row in order to proceed
-  create_population(population, size);
+  createPopulation(population, size);
   memcpy(population->pop[0], row1, population->cols * sizeof(float));
   memcpy(population->pop[1], row2, population->cols * sizeof(float));
 
@@ -136,10 +136,10 @@ int test_crossov(){
     printf("\n");
   }
 
-  int flag1 = arrays_equal(population->pop[0], row1Check, population->cols);
-  int flag2 = arrays_equal(population->pop[1], row2Check, population->cols);
+  int flag1 = arraysEqual(population->pop[0], row1Check, population->cols);
+  int flag2 = arraysEqual(population->pop[1], row2Check, population->cols);
 
-  clear_population(population);
+  clearPopulation(population);
 
   if(flag1 == 0 || flag2 == 0){
     printf(ANSI_BOLD ANSI_COLOR_RED "=======TEST CROSSOV FAILED=======" ANSI_COLOR_RESET "\n");
@@ -149,22 +149,22 @@ int test_crossov(){
   return 1;
 }
 
-int test_mutx(){
+int testMutx(){
   printf(ANSI_BOLD "=======TEST MUTX STARTED=======" ANSI_COLOR_RESET "\n");
   
   struct Pop *population = (struct Pop*)malloc(sizeof(struct Pop));
   int size[] = {2, 9};
   int chance = 0.3;
 
-  create_population(population, size);
+  createPopulation(population, size);
   mutx(population, chance);
-  clear_population(population);
+  clearPopulation(population);
   
   printf(ANSI_BOLD ANSI_COLOR_GREEN "=======TEST MUTX SUCCESSFUL=======" ANSI_COLOR_RESET "\n");
   return 1;
 }
 
-int test_selrand(){
+int testSelrand(){
   printf(ANSI_BOLD "=======TEST SELRAND STARTED=======" ANSI_COLOR_RESET "\n");
   
   struct Pop *population    = (struct Pop*)malloc(sizeof(struct Pop));
@@ -172,7 +172,7 @@ int test_selrand(){
   int size[] = {5, 3};
   int rows = 10;
 
-  create_population(population, size);
+  createPopulation(population, size);
   selrand(population, newPopulation, rows);
   
   printf("The result population:\n");
@@ -183,8 +183,8 @@ int test_selrand(){
     printf("\n");
   }
 
-  clear_population(population);
-  clear_population(newPopulation);
+  clearPopulation(population);
+  clearPopulation(newPopulation);
   
   printf(ANSI_BOLD ANSI_COLOR_GREEN "=======TEST SELRAND SUCCESSFUL=======" ANSI_COLOR_RESET "\n");
   return 1;

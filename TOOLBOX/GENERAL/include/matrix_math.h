@@ -8,28 +8,28 @@ typedef struct Matrix{
 }Matrix;
 
 // function to create new matrix
-void create_matrix(struct Matrix *matrix, int *sizes);
+void createMatrix(struct Matrix *matrix, int *sizes);
 
 // function to multiply two matrixes in form A * B
-void matrix_multiply(struct Matrix *A, struct Matrix *B, struct Matrix *output);
+void matrixMultiply(struct Matrix *A, struct Matrix *B, struct Matrix *output);
 
 // function to add/substruct two matrixes in format A-B or A+B
-void matrix_subst_add(struct Matrix *A, struct Matrix *B, struct Matrix *output, int type);
+void matrixSubstAdd(struct Matrix *A, struct Matrix *B, struct Matrix *output, int type);
 
 // function to pass all values trough function
-void matrix_all_values_formula(struct Matrix *matrix, float (*func_ptr)(float));
+void matrixAllValuesFormula(struct Matrix *matrix, float (*func_ptr)(float));
 
 // function to create matrix from values of pointer
-void create_matrix_from_pointer(struct Matrix *output, float *input, int *size);
+void createMatrixFromPointer(struct Matrix *output, float *input, int *size);
 
 // function to delete matrix
-void matrix_delete(struct Matrix *matrix);
+void matrixDelete(struct Matrix *matrix);
 
 // function to delete the 
-void matrix_delete_only_data(struct Matrix *matrix);
+void matrixDeleteOnlyData(struct Matrix *matrix);
 
 // create full coppy of the matrix
-void fully_copy_matrix(struct Matrix *input, struct Matrix *output);
+void fullyCopyMatrix(struct Matrix *input, struct Matrix *output);
 
 #endif
  

@@ -1,8 +1,8 @@
 #ifndef TEST_ACTIVATION_FNC_H
 #define TEST_ACTIVATION_FNC_H
 
-int test_activation_fnc_tanh();
+int testActivationFncTanh();
 
-int test_activation_fnc_sigm();
+int testActivationFncSigm();
 
 #endif

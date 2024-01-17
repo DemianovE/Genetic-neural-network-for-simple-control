@@ -3,5 +3,11 @@
 
 #include "../../TOOLBOX/NEURAL/include/neural_network.h"
 
+int testNeuralNetworkCreate();
 
+int testFillMatrixesNN();
+
+int testDeNormalizationProcess();
+
+int testOneCalculation();
 #endif

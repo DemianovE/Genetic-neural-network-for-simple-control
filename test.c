@@ -1,8 +1,13 @@
+#include "TEST/include/test_signal_designer.h"
+#include "TEST/include/test_pid_controller.h"
 #include "TEST/include/test_activation_fnc.h"
 #include "TEST/include/test_neural_network.h"
+#include "TEST/include/test_system_builder.h"
 #include "TEST/include/test_population.h"
 #include "TEST/include/test_matrixes.h"
+#include "TEST/include/test_full_run.h"
 #include "TEST/include/test_sort.h"
+
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -14,157 +19,227 @@
 #define ANSI_COLOR_RESET   "\x1b[0m"
 #define ANSI_COLOR_YELLOW  "\x1b[33m"
 
-void matrix_tests(){
-  int success_count = 0;
+void matrixTests(){
+  int successCount = 0;
   int count = 0;
   int flag;
   printf(ANSI_BOLD "=======TEST MATRIX STARTED=======" ANSI_COLOR_RESET "\n");
 
-  flag = test_matrix_add_sub();
-  success_count += flag;
+  flag = testMatrixAddSub();
+  successCount += flag;
   count++;
 
-  flag = test_matrix_multiply();
-  success_count += flag;
+  flag = testMatrixMultiply();
+  successCount += flag;
   count++;
 
-  flag = test_matrix_all_values_formula();
-  success_count += flag;
+  flag = testMatrixAllValuesFormula();
+  successCount += flag;
   count++;
 
-  flag = test_matrix_create_from_pointer();
-  success_count += flag;
+  flag = testMatrixCreateFromPointer();
+  successCount += flag;
   count++;
 
-  flag = test_matrix_fully_coppy_matrix();
-  success_count += flag;
+  flag = testMatrixFullyCoppyMatrix();
+  successCount += flag;
   count++;
 
-  if(success_count != count){
-    printf(ANSI_BOLD ANSI_COLOR_RED "Tests resulted in %d errors" ANSI_COLOR_RESET "\n", count - success_count);
+  if(successCount != count){
+    printf(ANSI_BOLD ANSI_COLOR_RED "Tests resulted in %d errors" ANSI_COLOR_RESET "\n", count - successCount);
   } 
-  printf(ANSI_BOLD ANSI_COLOR_YELLOW "=======TEST MATRIX ENDED [%d/%d]=======" ANSI_COLOR_RESET "\n", success_count, count);
+  printf(ANSI_BOLD ANSI_COLOR_YELLOW "=======TEST MATRIX ENDED [%d/%d]=======" ANSI_COLOR_RESET "\n", successCount, count);
 }
 
-void act_fnc_tests(){
-  int success_count = 0;
+void actFncTests(){
+  int successCount = 0;
   int count = 0;
   int flag;
   printf(ANSI_BOLD "=======TEST ACT FNC STARTED=======" ANSI_COLOR_RESET "\n");
 
-  flag = test_activation_fnc_tanh();
-  success_count += flag;
+  flag = testActivationFncTanh();
+  successCount += flag;
   count++;
 
-  flag = test_activation_fnc_sigm();
-  success_count += flag;
+  flag = testActivationFncSigm();
+  successCount += flag;
   count++;
 
-  if(success_count != count){
-    printf(ANSI_BOLD ANSI_COLOR_RED "Tests resulted in %d errors" ANSI_COLOR_RESET "\n", count - success_count);
+  if(successCount != count){
+    printf(ANSI_BOLD ANSI_COLOR_RED "Tests resulted in %d errors" ANSI_COLOR_RESET "\n", count - successCount);
   } 
-  printf(ANSI_BOLD ANSI_COLOR_YELLOW "=======TEST ACT FNC ENDED [%d/%d]=======" ANSI_COLOR_RESET "\n", success_count, count);
+  printf(ANSI_BOLD ANSI_COLOR_YELLOW "=======TEST ACT FNC ENDED [%d/%d]=======" ANSI_COLOR_RESET "\n", successCount, count);
 }
 
-void sort_test(){
-  int success_count = 0;
+void sortTest(){
+  int successCount = 0;
   int count = 0;
   int flag;
   printf(ANSI_BOLD "=======TEST SORT FULL STARTED=======" ANSI_COLOR_RESET "\n");
 
-  flag = test_quicksort();
-  success_count += flag;
+  flag = testQuicksort();
+  successCount += flag;
   count++;
 
-  if(success_count != count){
-    printf(ANSI_BOLD ANSI_COLOR_RED "Tests resulted in %d errors" ANSI_COLOR_RESET "\n", count - success_count);
+  if(successCount != count){
+    printf(ANSI_BOLD ANSI_COLOR_RED "Tests resulted in %d errors" ANSI_COLOR_RESET "\n", count - successCount);
   } 
-  printf(ANSI_BOLD ANSI_COLOR_YELLOW "=======TEST SORT FULL ENDED [%d/%d]=======" ANSI_COLOR_RESET "\n", success_count, count);
+  printf(ANSI_BOLD ANSI_COLOR_YELLOW "=======TEST SORT FULL ENDED [%d/%d]=======" ANSI_COLOR_RESET "\n", successCount, count);
 }
 
-void population_test(){
-  int success_count = 0;
+void populationTest(){
+  int successCount = 0;
   int count = 0;
   int flag;
   printf(ANSI_BOLD "=======TEST POPULATION STARTED=======" ANSI_COLOR_RESET "\n");
 
-  flag = test_population();
-  success_count += flag;
+  flag = testPopulation();
+  successCount += flag;
   count++;
 
-  if(success_count != count){
-    printf(ANSI_BOLD ANSI_COLOR_RED "Tests resulted in %d errors" ANSI_COLOR_RESET "\n", count - success_count);
+  if(successCount != count){
+    printf(ANSI_BOLD ANSI_COLOR_RED "Tests resulted in %d errors" ANSI_COLOR_RESET "\n", count - successCount);
   } 
-  printf(ANSI_BOLD ANSI_COLOR_YELLOW "=======TEST POPULATION ENDED [%d/%d]=======" ANSI_COLOR_RESET "\n", success_count, count);
+  printf(ANSI_BOLD ANSI_COLOR_YELLOW "=======TEST POPULATION ENDED [%d/%d]=======" ANSI_COLOR_RESET "\n", successCount, count);
 }
 
-void genetic_operations_test(){
-  int success_count = 0;
+void geneticOperationsTest(){
+  int successCount = 0;
   int count = 0;
   int flag;
   printf(ANSI_BOLD "=======TEST GENETIC OPERATIONS STARTED=======" ANSI_COLOR_RESET "\n");
 
-  flag = test_selbest();
-  success_count += flag;
+  flag = testSelbest();
+  successCount += flag;
   count++;
 
-  flag = test_crossov();
-  success_count += flag;
+  flag = testCrossov();
+  successCount += flag;
   count++;
 
-  flag = test_mutx();
-  success_count += flag;
+  flag = testMutx();
+  successCount += flag;
   count++;
 
-  flag = test_selrand();
-  success_count += flag;
+  flag = testSelrand();
+  successCount += flag;
   count++;
 
-  if(success_count != count){
-    printf(ANSI_BOLD ANSI_COLOR_RED "Tests resulted in %d errors" ANSI_COLOR_RESET "\n", count - success_count);
+  if(successCount != count){
+    printf(ANSI_BOLD ANSI_COLOR_RED "Tests resulted in %d errors" ANSI_COLOR_RESET "\n", count - successCount);
   } 
-  printf(ANSI_BOLD ANSI_COLOR_YELLOW "=======TEST GENETIC OPERATIONS ENDED [%d/%d]=======" ANSI_COLOR_RESET "\n", success_count, count);
+  printf(ANSI_BOLD ANSI_COLOR_YELLOW "=======TEST GENETIC OPERATIONS ENDED [%d/%d]=======" ANSI_COLOR_RESET "\n", successCount, count);
 }
 
-void neural_network_test(){
-  int success_count = 0;
+void neuralNetworkTest(){
+  int successCount = 0;
   int count = 0;
   int flag;
   printf(ANSI_BOLD "=======TEST NEURAL NETWORK STARTED=======" ANSI_COLOR_RESET "\n");
 
-  flag = test_neural_network_create();
-  success_count += flag;
+  flag = testNeuralNetworkCreate();
+  successCount += flag;
   count++;
 
-  flag = test_fill_matrixes_nn();
-  success_count += flag;
+  flag = testFillMatrixesNN();
+  successCount += flag;
   count++;
 
-  flag = test_de_normalization_process();
-  success_count += flag;
+  flag = testDeNormalizationProcess();
+  successCount += flag;
   count++;
 
-  flag = test_one_calculation();
-  success_count += flag;
+  flag = testOneCalculation();
+  successCount += flag;
   count++;
 
-  if(success_count != count){
-    printf(ANSI_BOLD ANSI_COLOR_RED "Tests resulted in %d errors" ANSI_COLOR_RESET "\n", count - success_count);
+  if(successCount != count){
+    printf(ANSI_BOLD ANSI_COLOR_RED "Tests resulted in %d errors" ANSI_COLOR_RESET "\n", count - successCount);
   } 
-  printf(ANSI_BOLD ANSI_COLOR_YELLOW "=======TEST URAL NETWORK ENDED [%d/%d]=======" ANSI_COLOR_RESET "\n", success_count, count);
+  printf(ANSI_BOLD ANSI_COLOR_YELLOW "=======TEST NEURAL NETWORK ENDED [%d/%d]=======" ANSI_COLOR_RESET "\n", successCount, count);
 }
+
+void systemBuilderTest(){
+  int successCount = 0;
+  int count = 0;
+  int flag;
+  printf(ANSI_BOLD "=======TEST SYSTEM BUILDER STARTED=======" ANSI_COLOR_RESET "\n");
+
+  flag = testSelectSystem();
+  successCount += flag;
+  count++;
+
+  if(successCount != count){
+    printf(ANSI_BOLD ANSI_COLOR_RED "Tests resulted in %d errors" ANSI_COLOR_RESET "\n", count - successCount);
+  } 
+  printf(ANSI_BOLD ANSI_COLOR_YELLOW "=======TEST SYSTEM BUILDER ENDED [%d/%d]=======" ANSI_COLOR_RESET "\n", successCount, count);
+}
+
+void signalDesignerTest(){
+  int successCount = 0;
+  int count = 0;
+  int flag;
+  printf(ANSI_BOLD "=======TEST SYSTEM BUILDER STARTED=======" ANSI_COLOR_RESET "\n");
+
+  flag = testSignalCreate();
+  successCount += flag;
+  count++;
+
+  if(successCount != count){
+    printf(ANSI_BOLD ANSI_COLOR_RED "Tests resulted in %d errors" ANSI_COLOR_RESET "\n", count - successCount);
+  } 
+  printf(ANSI_BOLD ANSI_COLOR_YELLOW "=======TEST SYSTEM BUILDER ENDED [%d/%d]=======" ANSI_COLOR_RESET "\n", successCount, count);
+}
+
+void pidControllerTest(){
+  int successCount = 0;
+  int count = 0;
+  int flag;
+  printf(ANSI_BOLD "=======TEST SYSTEM BUILDER STARTED=======" ANSI_COLOR_RESET "\n");
+
+  flag = testPIDCreate();
+  successCount += flag;
+  count++;
+
+  if(successCount != count){
+    printf(ANSI_BOLD ANSI_COLOR_RED "Tests resulted in %d errors" ANSI_COLOR_RESET "\n", count - successCount);
+  } 
+  printf(ANSI_BOLD ANSI_COLOR_YELLOW "=======TEST SYSTEM BUILDER ENDED [%d/%d]=======" ANSI_COLOR_RESET "\n", successCount, count);
+}
+
+void fullRunTest(){
+  int successCount = 0;
+  int count = 0;
+  int flag;
+  printf(ANSI_BOLD "=======TEST FULL RUN STARTED=======" ANSI_COLOR_RESET "\n");
+
+  flag = testPIDRun();
+  successCount += flag;
+  count++;
+
+  if(successCount != count){
+    printf(ANSI_BOLD ANSI_COLOR_RED "Tests resulted in %d errors" ANSI_COLOR_RESET "\n", count - successCount);
+  } 
+  printf(ANSI_BOLD ANSI_COLOR_YELLOW "=======TEST FULL RUN ENDED [%d/%d]=======" ANSI_COLOR_RESET "\n", successCount, count);
+}
+
+
 
 int main(){
   srand(time(0));
   int userChoice;
 
   while (1) {
-    printf("1. matrixes\n");
-    printf("2. act fnc\n");
-    printf("3. sort\n");
-    printf("4. population\n");
-    printf("5. genetic operations\n");
-    printf("6. neural network\n");
+    printf("1.  matrixes\n");
+    printf("2.  act fnc\n");
+    printf("3.  sort\n");
+    printf("4.  population\n");
+    printf("5.  genetic operations\n");
+    printf("6.  neural network\n");
+    printf("7.  system builder\n");
+    printf("8.  signal designer\n");
+    printf("9.  pid\n");
+    printf("10. full run\n");
     printf("99. Exit\n");
 
     printf("Enter your choice: ");
@@ -172,22 +247,34 @@ int main(){
 
     switch (userChoice) {
       case 1:
-        matrix_tests();
+        matrixTests();
         break;
       case 2:
-        act_fnc_tests();
+        actFncTests();
         break;
       case 3:
-        sort_test();
+        sortTest();
         break;
       case 4:
-        population_test();
+        populationTest();
         break;
       case 5:
-        genetic_operations_test();
+        geneticOperationsTest();
         break;
       case 6:
-        neural_network_test();
+        neuralNetworkTest();
+        break;
+      case 7:
+        systemBuilderTest();
+        break;
+      case 8:
+        signalDesignerTest();
+        break;
+      case 9:
+        pidControllerTest();
+        break;
+      case 10:
+        fullRunTest();
         break;
       case 99:
         printf("Exiting the tests\n");

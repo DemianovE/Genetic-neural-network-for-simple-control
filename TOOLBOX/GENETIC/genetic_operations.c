@@ -43,7 +43,7 @@ void selbest(float *fit, int fitLength, struct Pop *population, struct Pop *newP
 
   int* result = (int*)malloc(fitLength * sizeof(int));
 
-  quick_sort(fit, result, fitLength);
+  quickSort(fit, result, fitLength);
 
   // now depending on the way the starting index is selected
   int resultIndex = 0;
@@ -60,7 +60,7 @@ void selbest(float *fit, int fitLength, struct Pop *population, struct Pop *newP
   struct InputPop *inputPop = (struct InputPop*)malloc(sizeof(struct InputPop));
   create_input_pop_custom(inputPop, rows, population);
 
-  create_structure(inputPop, newPopulation);
+  createStructure(inputPop, newPopulation);
 
   // the main purpose of this loop is iterate though the selects and add new rows to new population based on the sorted fit and old population
   int globalIndex = 0;
@@ -86,7 +86,7 @@ void selrand(struct Pop *population, struct Pop *newPopulation, int rows){
   struct InputPop *inputPop = (struct InputPop*)malloc(sizeof(struct InputPop));
   create_input_pop_custom(inputPop, rows, population);
 
-  create_structure(inputPop, newPopulation);
+  createStructure(inputPop, newPopulation);
   int index;
   for(int i=0; i<rows; i++){
     index  = rand() % population->rows;
@@ -137,7 +137,7 @@ void mutx(struct Pop *population, float chance){
     for(int y=0; y<population->cols; y++){
       randomFloat = (float)rand() / RAND_MAX;
       if(randomFloat < chance){
-        randomFloat = create_random_float(population->S[1][y], population->S[0][y]);
+        randomFloat = createRandomFloat(population->S[1][y], population->S[0][y]);
         population->pop[x][y] = randomFloat;
       }
     }

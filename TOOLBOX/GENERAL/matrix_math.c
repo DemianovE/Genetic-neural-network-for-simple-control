@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-void matrix_delete(struct Matrix *matrix){
+void matrixDelete(struct Matrix *matrix){
     if(matrix){
       for(int i=0; i<matrix->sizes[0]; i++){
         free(matrix->matrix[i]);
@@ -15,7 +15,7 @@ void matrix_delete(struct Matrix *matrix){
     }
 }
 
-void matrix_delete_only_data(struct Matrix *matrix){
+void matrixDeleteOnlyData(struct Matrix *matrix){
     if(matrix){
         for(int i=0; i<matrix->sizes[0]; i++){
             free(matrix->matrix[i]);
@@ -28,7 +28,7 @@ void matrix_delete_only_data(struct Matrix *matrix){
     }
 }
 
-void create_matrix(struct Matrix *matrix, int *sizes){
+void createMatrix(struct Matrix *matrix, int *sizes){
     // sizes are in format [row, col]
 
     matrix->matrix = (float**)malloc(sizes[0] * sizeof(float*));
@@ -42,20 +42,20 @@ void create_matrix(struct Matrix *matrix, int *sizes){
     free(sizes);
 }
 
-void create_matrix_from_pointer(struct Matrix *output, float *input, int *size){
+void createMatrixFromPointer(struct Matrix *output, float *input, int *size){
     // sizes are in format [row, col]
-    create_matrix(output, size);
+    createMatrix(output, size);
 
-    int global_index = 0;
+    int globalIndex = 0;
     for(int i=0; i<output->sizes[0]; i++){
         for(int y=0; y<output->sizes[1]; y++){
-            output->matrix[i][y] = input[global_index];
-            global_index++;
+            output->matrix[i][y] = input[globalIndex];
+            globalIndex++;
         }
     }
 }
 
-void matrix_multiply(struct Matrix *A, struct Matrix *B, struct Matrix *output){
+void matrixMultiply(struct Matrix *A, struct Matrix *B, struct Matrix *output){
 
     if(A->sizes[1] != B->sizes[0]){
         fprintf(stderr, "Error: Sizes of matrixes are incorect\n");
@@ -64,7 +64,7 @@ void matrix_multiply(struct Matrix *A, struct Matrix *B, struct Matrix *output){
     int *sizes = (int*)malloc(2 * sizeof(int));
     sizes[0] = A->sizes[0];
     sizes[1] = B->sizes[1];
-    create_matrix(output, sizes);
+    createMatrix(output, sizes);
     for(int i=0; i<B->sizes[1]; i++){
         // start of a collumn of matrix
         for(int y=0; y<A->sizes[0]; y++){
@@ -78,19 +78,19 @@ void matrix_multiply(struct Matrix *A, struct Matrix *B, struct Matrix *output){
     }
 }
 
-void fully_copy_matrix(struct Matrix *input, struct Matrix *output){
+void fullyCopyMatrix(struct Matrix *input, struct Matrix *output){
     int *size = (int*)malloc(2*sizeof(int));
     size[0] = input->sizes[0];
     size[1] = input->sizes[1];
 
-    create_matrix(output, size);
+    createMatrix(output, size);
 
     for(int i=0; i < output->sizes[0]; i++){
         memcpy(output->matrix[i], input->matrix[i], output->sizes[1] * sizeof(float));
     }
 }
 
-void matrix_subst_add(struct Matrix *A, struct Matrix *B, struct Matrix *output, int type){
+void matrixSubstAdd(struct Matrix *A, struct Matrix *B, struct Matrix *output, int type){
     // please not that the sizes should be in following format:
     // [ rows cols ]
 
@@ -100,7 +100,7 @@ void matrix_subst_add(struct Matrix *A, struct Matrix *B, struct Matrix *output,
     sizes[0] = A->sizes[0];
     sizes[1] = B->sizes[1];
 
-    create_matrix(output, sizes);
+    createMatrix(output, sizes);
 
     for(int i=0; i<output->sizes[0]; i++){
 
@@ -115,7 +115,7 @@ void matrix_subst_add(struct Matrix *A, struct Matrix *B, struct Matrix *output,
     }
 }
 
-void matrix_all_values_formula(struct Matrix *matrix, float (*func_ptr)(float)){
+void matrixAllValuesFormula(struct Matrix *matrix, float (*func_ptr)(float)){
     for(int i=0; i<matrix->sizes[0]; i++){
         for(int y=0; y<matrix->sizes[1]; y++){
             matrix->matrix[i][y] = func_ptr(matrix->matrix[i][y]);

@@ -19,12 +19,15 @@ typedef struct Pop {
 }Pop;
 
 // function to create population from InputPop structure 
-void create_structure(struct InputPop *input,  struct Pop *pop);
+void createStructure(struct InputPop *input,  struct Pop *pop);
 
 // function to clear population
-void clear_population(struct Pop* population);
+void clearPopulation(struct Pop* population);
 
 // function to create InputPop for future pop
-void create_input_pop(struct InputPop *inputPop, float* max, float* min, int* size);
+void createInputPop(struct InputPop *inputPop, float* max, float* min, int* size);
+
+// function to copy rows from the source to pop between two indexes in the indexes array not including second one
+void placePartOfPop(struct Pop *pop, struct Pop *source, int *indexes);
 
 #endif
