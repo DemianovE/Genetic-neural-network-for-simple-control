@@ -39,3 +39,4 @@ $(TEST_OBJ): $(TEST_SRC) $(H_FILES)
 clean:
 	find . -name \*.o -type f -delete
 	find . -name \*Zone.Identifier -type f -delete
+	find . -name \*.sig -type f -delete
