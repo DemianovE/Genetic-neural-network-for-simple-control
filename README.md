@@ -24,6 +24,11 @@ Currently the tests are writen in the folder TEST with test_main being used as a
 ```shell
 valgrind --leak-check=full ./testprogram
 ```
+As well as following combination of commands can provide valid data for the function time running and performance:
+```shell
+./testprogram
+gprof testprogram
+```
 Also, following line can be used to get number of lines of code used in the project:
 ```shell
 find . -type f \( -name "*.c" -o -name "*.h" \) -exec wc -l {} +

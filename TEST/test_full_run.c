@@ -17,8 +17,7 @@
 
 float getMinFit(float *fit, int length){
   float min = fit[0];
-  printf("%f\n", min);
-  exit(0);
+
   for(int i=0; i<length; i++){
     if( min > fit[i]){
       min = fit[i];
@@ -36,12 +35,13 @@ int testPIDRun(){
   FILE *csvFile2 = fopen("TOOLBOX/PYTHON/input/data_pid_.csv", "w");
   fprintf(csvFile2, "P,I,D,CV,RV\n");
 
-  float chance = 0.05;
-  int bestIndex[]   = {0, 6};
-  int randOneIndex[] = {6, 28};
-  int randTwoIndex[] = {28, 50};
+  float chance = 0.1;
+  int generations = 5000;
+  int bestIndex[]    = {0, 100};
+  int randOneIndex[] = {100, 550};
+  int randTwoIndex[] = {550, 1000};
 
-  int bestNums[] = {2, 2, 2};
+  int bestNums[] = {40, 20, 20, 20};
   int *restCros  = (int*)malloc(2 * sizeof(int));
   restCros[0] = 1;
   restCros[1] = 2;
@@ -51,9 +51,10 @@ int testPIDRun(){
   // create first the population
   struct InputPop *input = (struct InputPop*)malloc(sizeof(struct InputPop));
   struct Pop *pop = (struct Pop*)malloc(sizeof(struct Pop));
-  float max[]  = { 1000.0, 10.0,  1.0};
-  float min[]  = {    0.0,  0.0,  0.0};
-  int size[]   = {50, 3};
+  float max[]  = { 1.0,  0.1,  0.1};
+  float min[]  = {-1.0, -0.1, -0.1};
+  //EST PID: 0.509101 0.002693 0.059616
+  int size[]   = {1000, 3};
 
   createInputPop(input, max, min, size);
   createStructure(input, pop);
@@ -68,12 +69,11 @@ int testPIDRun(){
   pid->iMax = 50;
   pid->iMin = -50;
 
-  for(int i=0; i<1000; i++){
+  for(int i=0; i<generations; i++){
     
     pidFitFunction(pop, fit, pid, csvFile2);
     bestFit = getMinFit(fit, pop->rows);
-    printf("%f", bestFit);
-    break;
+
     fprintf(csvFile, "%f\n", bestFit);
     if(i % 100 == 0){
       printf("GENERATION[%d] - %f\n", i, bestFit);
@@ -87,11 +87,11 @@ int testPIDRun(){
     // now the genetic operations are runned
 
     // the best pop with 50 records is created
-    selbest(fit, pop->rows, pop, bestPop, bestNums, 3, 1);
+    selbest(fit, pop->rows, pop, bestPop, bestNums, 4, 1);
     
     // 2 rand arrays are created
-    selrand(pop, randPopOne, 22);
-    selrand(pop, randPopTwo, 22);
+    selrand(pop, randPopOne, 450);
+    selrand(pop, randPopTwo, 450);
 
     // now crosov is run
     int *restCrosOne  = (int*)malloc(2 * sizeof(int));
@@ -112,22 +112,20 @@ int testPIDRun(){
     placePartOfPop(pop, randPopOne, randOneIndex);
     placePartOfPop(pop, randPopTwo, randTwoIndex);
 
-    if(i == 999){
+    if(i == generations - 1){
       // plot best values
       pid->Kp = bestPop->pop[0][0];
       pid->Ki = bestPop->pop[0][1];
       pid->Kd = bestPop->pop[0][2];
-      int way = 1;
-      makeSimulationOfSignal(pid, csvFile2, way);
-      plotGraph();
+      makeSimulationOfSignal(pid, csvFile2, 1);
+      printf("BEST PID: %f %f %f\n", pid->Kp, pid->Ki, pid->Kd);
     }
 
     clearPopulation(bestPop);
     clearPopulation(randPopOne);
     clearPopulation(randPopTwo);
 
-  }
-  exit(0);
+  }  
 
   clearPopulation(pop);
 
@@ -139,6 +137,8 @@ int testPIDRun(){
   free(fit);
 
   fclose(csvFile2);
+
+  plotGraph();
 
   int flag = 1;
   if(flag == 0){

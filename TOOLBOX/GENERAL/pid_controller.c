@@ -78,14 +78,15 @@ void makeSimulationOfSignal(struct PID *pid, FILE *csvFile, int csv){
         pid->dataSystem[0] = CV;
         
         pid->output->signal[i] = pid->output->signal[i-1] + pid->func_system(pid->dataSystem);
-        for(int j=0; j<6; j++){
-            printf("%f - ", pid->dataSystem[j]);
+
+        if(pid->output->signal[i] > pid->iMax){
+            pid->output->signal[i] = pid->iMax;
+        } else if(pid->output->signal[i] < pid->iMin){
+            pid->output->signal[i] = pid->iMin;
         }
-        printf('\n');
-        
+
         if(csv == 1){
             fprintf(csvFile, "%f,%f,%f,%f,%f\n", P, I, D, pid->output->signal[i], pid->signal->signal[i]);
-            
         }
 
         // set prevError

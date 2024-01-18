@@ -27,10 +27,10 @@ void selectCustomASignal(struct Signal *signal){
         signal->signal[globalIndex] = 0.0;
         globalIndex++;
     } for(float i = 1.0 + signal->dt; i < 3.0; i += signal->dt){
-        signal->signal[globalIndex] = 10.0;
+        signal->signal[globalIndex] = 30.0;
         globalIndex++;
     } for(float i = 3.0 + signal->dt; i < 5.0; i += signal->dt){
-        signal->signal[globalIndex] = 5.0;
+        signal->signal[globalIndex] = 15.0;
         globalIndex++;
     }
 }

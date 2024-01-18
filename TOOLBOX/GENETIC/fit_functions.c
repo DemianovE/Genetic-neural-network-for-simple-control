@@ -13,7 +13,6 @@ void pidFitFunction(struct Pop *population, float *fit, struct PID *pid, FILE *c
   float fitValue;
 
   for(int i=0; i<population->rows; i++){
-
     // clear system memory before running
     for(int j=0; j<pid->sizeDataSystem; j++){
       pid->dataSystem[j] = 0.0;
@@ -34,9 +33,6 @@ void pidFitFunction(struct Pop *population, float *fit, struct PID *pid, FILE *c
       fitValue += fabs(pid->signal->signal[j] - pid->output->signal[j]);
     }
     fit[i] = fitValue;
-    printf("%f\n", fit[i]);
-    break;
     
   }
-  exit(0);
 }
