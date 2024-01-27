@@ -9,6 +9,9 @@ void selbest(float *fit, int fitLength, struct Pop *population, struct Pop *newP
 // is used to select random genes to result in new population 
 void selrand(struct Pop *population, struct Pop *newPopulation, int rows);
 
+// is used to select by turn genes for new population
+void selturn(struct Pop *population, float* fit, struct Pop *newPopulation, int rows);
+
 // is used to do crossover of the gens of population and return population
 void crosov(struct Pop *population, int *selects, int selectsLength);
 

@@ -10,7 +10,20 @@ float linear(float *data){
     return data[0];
 }
 
-float complexA(float *data){
+float complexYDot(float *data){
+    // in this case
+    // 0 - u
+    // 1 - dt
+    // 2 - y
+    // 3 - dot_y
+    
+    data[2] = data[2] + data[0] * data[1];
+
+    return data[2];
+}
+
+
+float complexYDddot(float *data){
     // in this case data is:
     // 0 - u
     // 5 - dddot_y
@@ -28,28 +41,24 @@ float complexA(float *data){
     return data[4];
 }
 
-void makeDataSystem(struct PID *pid, int size){
-    pid->dataSystem = (float*)malloc(size * sizeof(float));
-    for(int i=0; i<size; i++){
-        pid->dataSystem[i] = 0.0;
-    }
-    pid->sizeDataSystem = size;
-}
-
-void selectSystem(float (**func_ptr)(float*), struct PID *pid){
+int selectSystem(float (**func_ptr)(float*)){
     printf("Please select the system:\n");
     printf("1 - linear\n");
-    printf("2 - complexA\n");
+    printf("2 - complexYDddot\n");
+    printf("3 - complexYDot\n");
     printf("Select: ");
     int userChoice;
     scanf("%d", &userChoice);
 
     if (userChoice == 1) {
         *func_ptr = linear;
-        makeDataSystem(pid, 2);
+        return 2;
     } else if (userChoice == 2){
-        *func_ptr = complexA;
-        makeDataSystem(pid, 6);
+        *func_ptr = complexYDddot;
+        return 6;
+    } else if (userChoice == 3){
+        *func_ptr = complexYDot;
+        return 4;
     } else{
         exit(0);
     }

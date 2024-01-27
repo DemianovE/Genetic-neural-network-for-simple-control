@@ -3,6 +3,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 
 void matrixDelete(struct Matrix *matrix){
     if(matrix){

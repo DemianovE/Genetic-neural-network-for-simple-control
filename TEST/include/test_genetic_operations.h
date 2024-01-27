@@ -12,4 +12,8 @@ int testMutx();
 
 // the function to test selrand operation
 int testSelrand();
+
+// the function to test selturn operation
+int testSelturn();
+
 #endif

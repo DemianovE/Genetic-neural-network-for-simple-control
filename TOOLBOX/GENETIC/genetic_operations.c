@@ -9,6 +9,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <string.h>
+#include <float.h>
 
 
 void create_input_pop_custom(struct InputPop *inputPop, int rows, struct Pop *population){
@@ -42,15 +43,18 @@ void selbest(float *fit, int fitLength, struct Pop *population, struct Pop *newP
   }
 
   int* result = (int*)malloc(fitLength * sizeof(int));
+  for(int i=0; i<fitLength; i++){
+    result[i] = i;
+  }
 
   quickSort(fit, result, fitLength);
 
   // now depending on the way the starting index is selected
   int resultIndex = 0;
   if(way == 0){
-    resultIndex = 0;
-  } else if(way == 1){
     resultIndex = fitLength -1;
+  } else if(way == 1){
+    resultIndex = 0;
   } else{
     fprintf(stderr, "Error: way should be 0 or 1\n");
     exit(EXIT_FAILURE);
@@ -72,11 +76,13 @@ void selbest(float *fit, int fitLength, struct Pop *population, struct Pop *newP
       globalIndex++;
     }
     if(way == 0){
-      resultIndex++;
-    } else{
       resultIndex--;
+    } else{
+      resultIndex++;
     }
   }
+
+  
   free(result);
 }
 
@@ -91,6 +97,28 @@ void selrand(struct Pop *population, struct Pop *newPopulation, int rows){
   for(int i=0; i<rows; i++){
     index  = rand() % population->rows;
     memcpy(newPopulation->pop[i], population->pop[index], population->cols * sizeof(float));
+  }
+}
+
+void selturn(struct Pop *population, float* fit, struct Pop *newPopulation, int rows){
+
+  // this code is a copy of the code created by prof. Ivan Sekaj STU 2002 using Matlab 
+
+  struct InputPop *inputPop = (struct InputPop*)malloc(sizeof(struct InputPop));
+  create_input_pop_custom(inputPop, rows, population);
+  createStructure(inputPop, newPopulation);
+  
+  for(int i=0; i<rows; i++){
+    int j = rand() % population->rows;
+    int k = rand() % population->rows;
+
+    if(j == k){
+      memcpy(newPopulation->pop[i], population->pop[j], population->cols * sizeof(float));
+    } else if (fit[j] <= fit[k]){
+      memcpy(newPopulation->pop[i], population->pop[j], population->cols * sizeof(float));
+    } else{
+      memcpy(newPopulation->pop[i], population->pop[k], population->cols * sizeof(float));
+    }
   }
 }
 

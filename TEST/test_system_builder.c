@@ -18,7 +18,7 @@ int testSelectSystem(){
   
   float (*func_ptr)(float);
   struct PID *pid = (struct PID*)malloc(sizeof(struct PID));
-  selectSystem(&func_ptr, pid);
+  selectSystem(&func_ptr);
 
   deletePid(pid);
 

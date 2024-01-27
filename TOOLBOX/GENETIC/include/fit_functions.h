@@ -8,6 +8,6 @@
 #include <stdio.h>
 
 // function to get fit value of the pid designed controller
-void pidFitFunction(struct Pop *population, float *fit, struct PID *pid, FILE *csvFile);
+void pidFitFunction(struct Pop *population, float *fit, struct PID *pid);
 
 #endif

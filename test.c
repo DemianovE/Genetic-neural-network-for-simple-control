@@ -3,6 +3,7 @@
 #include "TEST/include/test_activation_fnc.h"
 #include "TEST/include/test_neural_network.h"
 #include "TEST/include/test_system_builder.h"
+#include "TEST/include/test_model_system.h"
 #include "TEST/include/test_population.h"
 #include "TEST/include/test_matrixes.h"
 #include "TEST/include/test_full_run.h"
@@ -125,6 +126,10 @@ void geneticOperationsTest(){
   successCount += flag;
   count++;
 
+  flag = testSelturn();
+  successCount += flag;
+  count++;
+
   if(successCount != count){
     printf(ANSI_BOLD ANSI_COLOR_RED "Tests resulted in %d errors" ANSI_COLOR_RESET "\n", count - successCount);
   } 
@@ -223,6 +228,22 @@ void fullRunTest(){
   printf(ANSI_BOLD ANSI_COLOR_YELLOW "=======TEST FULL RUN ENDED [%d/%d]=======" ANSI_COLOR_RESET "\n", successCount, count);
 }
 
+void modelSystemTest(){
+  int successCount = 0;
+  int count = 0;
+  int flag;
+  printf(ANSI_BOLD "=======TEST MODEL SYSTEM STARTED=======" ANSI_COLOR_RESET "\n");
+
+  flag = testSystemCreate();
+  successCount += flag;
+  count++;
+
+  if(successCount != count){
+    printf(ANSI_BOLD ANSI_COLOR_RED "Tests resulted in %d errors" ANSI_COLOR_RESET "\n", count - successCount);
+  } 
+  printf(ANSI_BOLD ANSI_COLOR_YELLOW "=======TEST MODEL SYSTEM ENDED [%d/%d]=======" ANSI_COLOR_RESET "\n", successCount, count);
+}
+
 
 
 int main(){
@@ -240,6 +261,7 @@ int main(){
     printf("8.  signal designer\n");
     printf("9.  pid\n");
     printf("10. full run\n");
+    printf("11. system model\n");
     printf("99. Exit\n");
 
     printf("Enter your choice: ");
@@ -275,6 +297,9 @@ int main(){
         break;
       case 10:
         fullRunTest();
+        break;
+      case 11:
+        modelSystemTest();
         break;
       case 99:
         printf("Exiting the tests\n");

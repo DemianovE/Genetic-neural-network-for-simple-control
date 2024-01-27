@@ -189,3 +189,31 @@ int testSelrand(){
   printf(ANSI_BOLD ANSI_COLOR_GREEN "=======TEST SELRAND SUCCESSFUL=======" ANSI_COLOR_RESET "\n");
   return 1;
 }
+
+int testSelturn(){
+  printf(ANSI_BOLD "=======TEST SELTURN STARTED=======" ANSI_COLOR_RESET "\n");
+  
+  struct Pop *population    = (struct Pop*)malloc(sizeof(struct Pop));
+  struct Pop *newPopulation = (struct Pop*)malloc(sizeof(struct Pop));
+  int size[] = {3, 3};
+  int rows = 10;
+
+  float fit[] = {0.9, 0.3, 0.5};
+
+  createPopulation(population, size);
+  selturn(population, fit, newPopulation, rows);
+  
+  printf("The result population:\n");
+  for(int i=0; i<newPopulation->rows; i++){
+    for(int j=0; j<newPopulation->cols; j++){
+        printf("%f ", newPopulation->pop[i][j]);
+    }
+    printf("\n");
+  }
+
+  clearPopulation(population);
+  clearPopulation(newPopulation);
+  
+  printf(ANSI_BOLD ANSI_COLOR_GREEN "=======TEST SELTURN SUCCESSFUL=======" ANSI_COLOR_RESET "\n");
+  return 1;
+}

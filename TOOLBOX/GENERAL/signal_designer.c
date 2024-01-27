@@ -1,25 +1,30 @@
 #include "include/signal_designer.h"
 
-#define DT 0.01; // the time step constant
+#include <stdio.h>
+#include <stdlib.h>
+
+// the time step constant
+#define DT001 0.001; 
+#define DT01  0.01; 
 
 void selectStepSignal(struct Signal *signal){
-    signal->length = 100;
-    signal->dt     = DT;
+    signal->length = 2000;
+    signal->dt     = DT001;
 
     signal->signal = (float*)malloc(signal->length * sizeof(float));   
     int globalIndex = 0;
     for(float i = 0.0; i < 0.3; i += signal->dt){
         signal->signal[globalIndex] = 0.0;
         globalIndex++;
-    } for(float i = 0.3 + signal->dt; i < 1.0 - signal->dt; i += signal->dt){
+    } for(float i = 0.3 + signal->dt; i < 2.0; i += signal->dt){
         signal->signal[globalIndex] = 1.0;
         globalIndex++;
     }
 }
 
 void selectCustomASignal(struct Signal *signal){
-    signal->length = 500;
-    signal->dt     = DT;
+    signal->length = 1000;
+    signal->dt     = DT01;
 
     signal->signal = (float*)malloc(signal->length * sizeof(float));   
     int globalIndex = 0;
@@ -31,6 +36,12 @@ void selectCustomASignal(struct Signal *signal){
         globalIndex++;
     } for(float i = 3.0 + signal->dt; i < 5.0; i += signal->dt){
         signal->signal[globalIndex] = 15.0;
+        globalIndex++;
+    } for(float i = 5.0 + signal->dt; i < 8.0; i += signal->dt){
+        signal->signal[globalIndex] = 5.0;
+        globalIndex++;
+    } for(float i = 8.0 + signal->dt; i < 10.0; i += signal->dt){
+        signal->signal[globalIndex] = 25.0;
         globalIndex++;
     }
 }

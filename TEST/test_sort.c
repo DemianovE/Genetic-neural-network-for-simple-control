@@ -16,6 +16,9 @@ int testQuicksort(){
   int length = 5;
   float fit[] = {9.6, 3.4, 10, 4.6, 0.4};
   int *result = (int*)malloc(length*sizeof(int));
+  for(int i=0; i<length; i++){
+    result[i] = i;
+  }
 
   int resultCorrect[] = {2, 0, 3, 1, 4};
 
@@ -23,6 +26,7 @@ int testQuicksort(){
 
   int flag = 1;
   for(int i=0; i<length; i++){
+    printf("%d - %f\n", result[i], fit[result[i]]);
     if(resultCorrect[i] != result[i]){
       flag = 0;
     }

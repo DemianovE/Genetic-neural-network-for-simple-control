@@ -6,33 +6,27 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <math.h>
 #include <time.h>
 
-void pidFitFunction(struct Pop *population, float *fit, struct PID *pid, FILE *csvFile){
-  float fitValue;
+void pidFitFunction(struct Pop *population, float *fit, struct PID *pid){
+  int csv = 0;
+  FILE *trash;
 
   for(int i=0; i<population->rows; i++){
     // clear system memory before running
     for(int j=0; j<pid->sizeDataSystem; j++){
       pid->dataSystem[j] = 0.0;
     }
-    pid->dataSystem[1] = pid->signal->dt;
 
     // first set the coeficients
-    pid->Kp = population->pop[i][0];
-    pid->Ki = population->pop[i][1];
-    pid->Kd = population->pop[i][2];
+    pid->Kp   = population->pop[i][0];
+    pid->Ki   = population->pop[i][1];
+    pid->Kd   = population->pop[i][2];
+    pid->tauD = population->pop[i][3];
 
-    int csv = 0;
-    makeSimulationOfSignal(pid, csvFile, csv);
+    makeSimulationOfSignal(pid, trash, csv);
 
-    // now calculate the fit value
-    fitValue = 0;
-    for(int j=0; j<pid->output->length; j++){
-      fitValue += fabs(pid->signal->signal[j] - pid->output->signal[j]);
-    }
-    fit[i] = fitValue;
+    fit[i] = pid->fit;
     
   }
 }

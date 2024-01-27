@@ -21,16 +21,21 @@ int testPIDCreate(){
   FILE *csvFile = fopen("TOOLBOX/PYTHON/input/data_pid_.csv", "w");
   fprintf(csvFile, "P,I,D,CV,RV\n");
 
-  pid->Kp = 0.1;
-  pid->Ki = 0.01;
-  pid->Kd = 0.001;
+  pid->Kp = 1.0;
+  pid->Ki = 1.0;
+  pid->Kd = 0.0;
 
-  pid->iMax = 5.0;
-  pid->iMin = -5.0;
+  pid->limMax = 10.0;
+  pid->limMin = -10.0;
+
+  pid->limMaxInt = pid->limMax / 2.0;
+  pid->limMinInt = pid->limMin / 2.0;
 
   int csv = 1;
 
   makeSimulationOfSignal(pid, csvFile, csv);
+
+  printf("%f\n",pid->fit);
 
   plotGraph();
 
