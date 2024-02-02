@@ -3,6 +3,8 @@
 #include "include/population.h"
 #include "../GENERAL/include/pid_controller.h"
 #include "../GENERAL/include/signal_designer.h"
+#include "../NEURAL/include/model_system.h"
+#include "../NEURAL/include/neural_network.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -30,3 +32,24 @@ void pidFitFunction(struct Pop *population, float *fit, struct PID *pid){
     
   }
 }
+
+void nnFitFunction(struct Pop *population, float *fit, struct SystemNN *systemNN){
+  FILE *trash;
+
+  for(int i=0; i<population->rows; i++){
+    // clear system memory before running
+    for(int j=0; j<systemNN->sizeDataSystem; j++){
+      systemNN->dataSystem[j] = 0.0;
+    }
+
+    // first set the NN wages
+    fillMatrixesNN(systemNN->neuralNetwork, population->pop[i]);
+
+    // now model is simulated
+    makeSimulationOfSignalNN(systemNN, trash, 0);
+
+    fit[i] = systemNN->fit;
+    
+  }
+}
+

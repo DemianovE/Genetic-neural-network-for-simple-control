@@ -67,10 +67,12 @@ void selbest(float *fit, int fitLength, struct Pop *population, struct Pop *newP
   createStructure(inputPop, newPopulation);
 
   // the main purpose of this loop is iterate though the selects and add new rows to new population based on the sorted fit and old population
+  printf("===================");
   int globalIndex = 0;
   for(int i=0; i<selectsLength; i++){
     int num = selects[i];
     for(int y=0; y<num; y++){
+      printf("%f \n", fit[result[resultIndex]]);
       // the desired row is copied to the population
       memcpy(newPopulation->pop[globalIndex], population->pop[result[resultIndex]], newPopulation->cols * sizeof(float));
       globalIndex++;
@@ -81,6 +83,7 @@ void selbest(float *fit, int fitLength, struct Pop *population, struct Pop *newP
       resultIndex++;
     }
   }
+  printf("===================");
 
   
   free(result);

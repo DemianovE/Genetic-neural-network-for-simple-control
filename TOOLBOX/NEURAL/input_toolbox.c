@@ -41,25 +41,35 @@ void typeOne(float *data) {
   data[12] =  data[6];
 }
 
-void makeInputDataSystem(struct SystemNN *systemInput, int size, int full){
-  systemInput->inputData = (float*)malloc(full * sizeof(float));
+void makeInputDataSystem(struct SystemNN *systemNN, int size, int full){
+  systemNN->inputData = (float*)malloc(full * sizeof(float));
   for(int i=0; i<full; i++){
-      systemInput->inputData[i] = 0.0;
+      systemNN->inputData[i] = 0.0;
   }
 
-  systemInput->inputDataSize = (int*)malloc(3 * sizeof(int));
-  systemInput->inputDataSize[2] = full;
-  systemInput->inputDataSize[2] = 1;
-  systemInput->inputDataSize[2] = size + 1;
+  systemNN->inputDataSize = (int*)malloc(3 * sizeof(int));
+  systemNN->inputDataSize[0] = full;
+  systemNN->inputDataSize[1] = 1;
+  systemNN->inputDataSize[2] = size + 1;
+
+  systemNN->inputTypes    = (int*)malloc(size * sizeof(int));
+  systemNN->inputTypes[0] = 0;  // e
+  systemNN->inputTypes[1] = 1;  // u
+  systemNN->inputTypes[2] = 2;  // y
+  systemNN->inputTypes[3] = 4;  // de
+  systemNN->inputTypes[4] = 5;  // ie
+  systemNN->inputTypes[5] = 9;  // dy
+  systemNN->inputTypes[6] = 10; // ddy
+  systemNN->inputTypes[7] = 6;  // du
 }
 
-void selectInputNNFunction(void (**func_ptr)(float*), struct SystemNN *systemInput){
+void selectInputNNFunction(void (**func_ptr)(float*), struct SystemNN *systemNN){
     printf("Please select the AF:\n1 - typeOne\nSelect: ");
     int userChoice;
     scanf("%d", &userChoice);
 
     if (userChoice == 1) {
         *func_ptr = typeOne;
-        makeInputDataSystem(systemInput, 8, 13);
+        makeInputDataSystem(systemNN, 8, 13);
     }
 }

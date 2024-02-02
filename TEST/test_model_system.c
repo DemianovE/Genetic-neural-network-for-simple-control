@@ -27,28 +27,13 @@ void createSystemNeuralNetworkInput(struct NNInput *input, int check){
 
   input->layerNumber = 4;
 
-  input->normalizationMatrix   = (float**)malloc(2 * sizeof(float*));
-  input->denormalizationMatrix = (float**)malloc(2 * sizeof(float*));
-
-  input->normalizationMatrix[0]   = (float*)malloc(sizeof(float));
-  input->normalizationMatrix[1]   = (float*)malloc(sizeof(float));
-
-  input->denormalizationMatrix[0] = (float*)malloc(sizeof(float));
-  input->denormalizationMatrix[1] = (float*)malloc(sizeof(float));
-
-  input->normalizationMatrix[0][0]   = 100;
-  input->normalizationMatrix[1][0]   = .0;
-
-  input->denormalizationMatrix[0][0] = 100;
-  input->denormalizationMatrix[1][0] = 0.0;
-
   input->layerType = (int*)malloc(input->layerNumber * sizeof(int));
   input->layerType[0] = 0;
-  input->layerType[1] = 1;
+  input->layerType[1] = 0;
   input->layerType[2] = 0;
   input->layerType[3] = 0;
 
-  input->sdNumber = 1;
+  input->sdNumber = 0;
 }
 
 int testSystemCreate(){
@@ -61,7 +46,43 @@ int testSystemCreate(){
 
   createNNSystem(systemNN, input);
 
+  systemNN->maxSys =  50.0;
+  systemNN->minSys = -50.0;
+
+  struct InputPop *inputPop = (struct InputPop*)malloc(sizeof(struct InputPop));
+  struct Pop *pop = (struct Pop*)malloc(sizeof(struct Pop));
+  int size[] = {1, systemNN->neuralNetwork->countOfValues};
+  float *max = (float*)malloc(systemNN->neuralNetwork->countOfValues * sizeof(float));
+  float *min = (float*)malloc(systemNN->neuralNetwork->countOfValues * sizeof(float));
+  for(int i=0; i < systemNN->neuralNetwork->countOfValues; i++){
+    max[i] = 1.0;
+    min[i] =  0.0;
+  }
+
+  FILE *csvFile = fopen("TOOLBOX/PYTHON/input/data_nn.csv", "w");
+  fprintf(csvFile, "CV,RV\n");
+
+  createInputPop(inputPop, max, min, size);
+  createStructure(inputPop, pop);
+
+  fillMatrixesNN(systemNN->neuralNetwork, pop->pop[0]);
+  makeSimulationOfSignalNN(systemNN, csvFile, 1);
+
+  FILE *csvFile2 = fopen("TOOLBOX/PYTHON/input/data_nn_fit.csv", "w");
+  fprintf(csvFile2, "best\n");
+  fprintf(csvFile, "%f\n", systemNN->fit);
+
+  fclose(csvFile);
+  fclose(csvFile2);
+
+  plotGraphNN();
+
   clearNNSystem(systemNN);
+  clearPopulation(pop);
+  free(max);
+  free(min);
+
+  
  
   printf(ANSI_BOLD ANSI_COLOR_GREEN "=======TEST SYSTEM NN CREATE SUCCESSFUL=======" ANSI_COLOR_RESET "\n");
   return 1;

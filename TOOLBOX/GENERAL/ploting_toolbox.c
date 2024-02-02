@@ -13,3 +13,11 @@ void plotGraph() {
 
     int status = system(command);
 }
+
+
+void plotGraphNN() {
+
+    const char *command = "python3 TOOLBOX/PYTHON/ploting_code_NN.py";
+
+    int status = system(command);
+}

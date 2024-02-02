@@ -173,27 +173,27 @@ void fillMatrixesNN(struct NN *neuralNetwork, float *population){
   
   for(int i=0; i<neuralNetwork->layerNumber - 1; i++){
     // first the AW matrix is set
-    printf("=====Matrix AW[%d]=====\n", i);
+    //printf("=====Matrix AW[%d]=====\n", i);
     for(int x=0; x<neuralNetwork->AW[i]->sizes[0]; x++){
       for(int y=0; y<neuralNetwork->AW[i]->sizes[1]; y++){
         neuralNetwork->AW[i]->matrix[x][y] = population[globalIndex];
-        printf("%f ", neuralNetwork->AW[i]->matrix[x][y]);
+        //printf("%f ", neuralNetwork->AW[i]->matrix[x][y]);
         globalIndex++;
       }
-      printf("\n");
+      //printf("\n");
     }
 
     
     // second the BW is set
     if( i < neuralNetwork->layerNumber - 2){
-      printf("=====Matrix BW[%d]=====\n", i);
+      //printf("=====Matrix BW[%d]=====\n", i);
       for(int x=0; x<neuralNetwork->BW[i]->sizes[0]; x++){
         for(int y=0; y<neuralNetwork->BW[i]->sizes[1]; y++){
           neuralNetwork->BW[i]->matrix[x][y] = population[globalIndex];
-          printf("%f ", neuralNetwork->BW[i]->matrix[x][y]);
+          //printf("%f ", neuralNetwork->BW[i]->matrix[x][y]);
           globalIndex++;
         }
-        printf("\n");
+        //printf("\n");
       }
     }
   }
@@ -203,7 +203,7 @@ void deNormalizationProcess(struct NN *neuralNetwork, struct Matrix *input, int 
   // way -> 0 - normalize
   // way -> 1 - de_normalize
   float rMin, rMax, tMin, tMax;
-  for(int i=0; i<neuralNetwork->neuronsSize[0]; i++){
+  for(int i=0; i< input->sizes[0]; i++){
     if(way == 0){
       rMin = neuralNetwork->normalizationMatrix[1][i];
       rMax = neuralNetwork->normalizationMatrix[0][i];
@@ -229,14 +229,14 @@ void makeSDLayerAction(struct NN *neuralNetwork, struct Matrix *input, int sdInd
 
   // 1 action 
   // due to delay in saving the copy of D neurons is made and after action 2 the data is saved to memory
-  printf("The D layer:\n");
+  //printf("The D layer:\n");
   float *DSDMemory = (float*)malloc(sizeof(float));
   int dNeuronsCount = 0;
   for(int i=0; i<neuralNetwork->neuronsSize[layerIndex]; i++){
     if(neuralNetwork->sdNeuronsTypes[sdIndex][i] == 2){
       dNeuronsCount++;
       DSDMemory = (float*)realloc(DSDMemory, dNeuronsCount * sizeof(float));
-      printf("%f \n", input->matrix[i][0]);
+      //printf("%f \n", input->matrix[i][0]);
       DSDMemory[dNeuronsCount - 1] = (-1) * input->matrix[i][0];
       // neuralNetwork->SDMemory[sdIndex]->matrix[i][0] = (-1) * input->matrix[i][0];
     }
@@ -256,10 +256,10 @@ void makeSDLayerAction(struct NN *neuralNetwork, struct Matrix *input, int sdInd
   }
   
   // 3 action
-  printf("The S layer:\n");
+  //printf("The S layer:\n");
   for(int i=0; i<neuralNetwork->neuronsSize[layerIndex]; i++){
     if(neuralNetwork->sdNeuronsTypes[sdIndex][i] == 1){
-      printf("%f \n", input->matrix[i][0]);
+      //printf("%f \n", input->matrix[i][0]);
       neuralNetwork->SDMemory[sdIndex]->matrix[i][0] = output->matrix[i][0];
     }
   }
@@ -274,6 +274,10 @@ void makeSDLayerAction(struct NN *neuralNetwork, struct Matrix *input, int sdInd
 void oneCalculation(struct NN *neuralNetwork, struct Matrix *input, struct Matrix *output){
   int sdIndex = 0;
   int layerIndex;
+
+  // first the normalization should be made
+  deNormalizationProcess(neuralNetwork, input, 0);
+
   for(int i=0; i<neuralNetwork->layerNumber - 1; i++){
     // perform W*input
     matrixMultiply(neuralNetwork->AW[i], input, output);
@@ -299,4 +303,7 @@ void oneCalculation(struct NN *neuralNetwork, struct Matrix *input, struct Matri
   }
   fullyCopyMatrix(input, output);
   matrixDelete(input);
+
+  // de_normalization can be made
+  deNormalizationProcess(neuralNetwork, output, 1);
 }

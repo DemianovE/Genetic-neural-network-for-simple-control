@@ -20,10 +20,11 @@ void selectStepSignal(struct Signal *signal){
         signal->signal[globalIndex] = 1.0;
         globalIndex++;
     }
+    signal->length = globalIndex;
 }
 
 void selectCustomASignal(struct Signal *signal){
-    signal->length = 1000;
+    signal->length = 1002;
     signal->dt     = DT01;
 
     signal->signal = (float*)malloc(signal->length * sizeof(float));   
@@ -31,19 +32,20 @@ void selectCustomASignal(struct Signal *signal){
     for(float i = 0.0; i < 1.0; i += signal->dt){
         signal->signal[globalIndex] = 0.0;
         globalIndex++;
-    } for(float i = 1.0 + signal->dt; i < 3.0; i += signal->dt){
+    } for(float i = 1.0; i < 3.0; i += signal->dt){
         signal->signal[globalIndex] = 30.0;
         globalIndex++;
-    } for(float i = 3.0 + signal->dt; i < 5.0; i += signal->dt){
+    } for(float i = 3.0; i < 5.0; i += signal->dt){
         signal->signal[globalIndex] = 15.0;
         globalIndex++;
-    } for(float i = 5.0 + signal->dt; i < 8.0; i += signal->dt){
+    } for(float i = 5.0; i < 8.0; i += signal->dt){
         signal->signal[globalIndex] = 5.0;
         globalIndex++;
-    } for(float i = 8.0 + signal->dt; i < 10.0; i += signal->dt){
+    } for(float i = 8.0; i < 10.0; i += signal->dt){
         signal->signal[globalIndex] = 25.0;
         globalIndex++;
     }
+    signal->length = globalIndex;
 }
 
 

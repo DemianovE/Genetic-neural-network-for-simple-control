@@ -4,4 +4,7 @@
 // function to test run with pid values
 int testPIDRun();
 
+// function to test run with nn system
+testNNRun();
+
 #endif

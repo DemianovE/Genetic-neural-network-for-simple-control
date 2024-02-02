@@ -106,7 +106,6 @@ void matrixSubstAdd(struct Matrix *A, struct Matrix *B, struct Matrix *output, i
     for(int i=0; i<output->sizes[0]; i++){
 
         for(int y=0; y<output->sizes[1]; y++){
-            printf("%f - %f\n", A->matrix[i][y], B->matrix[i][y]);
             if(type == 0){
                 output->matrix[i][y] = A->matrix[i][y] - B->matrix[i][y];
             } else{

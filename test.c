@@ -218,7 +218,7 @@ void fullRunTest(){
   int flag;
   printf(ANSI_BOLD "=======TEST FULL RUN STARTED=======" ANSI_COLOR_RESET "\n");
 
-  flag = testPIDRun();
+  flag = testNNRun();
   successCount += flag;
   count++;
 
