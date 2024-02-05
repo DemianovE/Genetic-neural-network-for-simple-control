@@ -12,7 +12,7 @@
 #define ANSI_BOLD         "\x1b[1m"
 #define ANSI_COLOR_RESET   "\x1b[0m"
 
-int arraysEqual(int *arr1, int *arr2, int size) {
+static int arraysEqual(int *arr1, int *arr2, int size) {
     for (int i = 0; i < size; ++i) {
         if (arr1[i] != arr2[i]) {
             return 0; 
@@ -21,7 +21,7 @@ int arraysEqual(int *arr1, int *arr2, int size) {
     return 1; 
 }
 
-void createPopulation(struct Pop *population, int* size){
+static void createPopulation(struct Pop *population, int* size){
   struct InputPop *input = (struct InputPop*)malloc(sizeof(struct InputPop));
   float max[]  = {10.0, 100.0, -10.0};
   float min[]  = {.0, 50.0, -20.0};

@@ -7,8 +7,8 @@ The main purpose of this model is to be used in simple control tasks replacing t
 
 ## Models
 Status of the models' types:
-- FF - under development 
-- SD - under development 
+- FF - working 
+- SD - in testing  
 - RR - planned
 
 ## Activation functions
@@ -29,7 +29,15 @@ As well as following combination of commands can provide valid data for the func
 ./testprogram
 gprof testprogram
 ```
-Also, the following line can be used to get to get the number of lines of code used in the project:
+Also, the following line can be used to get the number of lines of code used in the project:
 ```shell
+# to find number of rows in project
 find . -type f \( -name "*.c" -o -name "*.h" \) -exec wc -l {} +
+# to find number of symbols in project
+find . -type f \( -name "*.c" -o -name "*.h" \) -exec cat {} + | wc -c
+```
+Also, if the WSL is used before commit following command should be executed to allow terminal GPG key
+```shell
+GPG_TTY=$(tty)
+export GPG_TTY
 ```

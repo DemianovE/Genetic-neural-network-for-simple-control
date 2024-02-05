@@ -20,6 +20,14 @@ int testSelectSystem(){
   struct PID *pid = (struct PID*)malloc(sizeof(struct PID));
   selectSystem(&func_ptr);
 
+  pid->signal = (struct Signal*)malloc(sizeof(struct Signal));
+  pid->output = (struct Signal*)malloc(sizeof(struct Signal));
+
+  pid->signal->signal = (float*)malloc(sizeof(float));
+  pid->output->signal = (float*)malloc(sizeof(float));
+
+  pid->dataSystem = (float*)malloc(sizeof(float));
+
   deletePid(pid);
 
   printf(ANSI_BOLD ANSI_COLOR_GREEN "=======TEST SELECT SYSTEM SUCCESSFUL=======" ANSI_COLOR_RESET "\n");

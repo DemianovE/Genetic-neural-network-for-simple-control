@@ -12,7 +12,7 @@
 #define ANSI_BOLD         "\x1b[1m"
 #define ANSI_COLOR_RESET   "\x1b[0m"
 
-void createSystemNeuralNetworkInput(struct NNInput *input, int check){
+static void createSystemNeuralNetworkInput(struct NNInput *input, int check){
 
   input->neuronsSize = (int*)malloc(4 * sizeof(int));
   input->neuronsSize[0] = 1;
@@ -48,6 +48,8 @@ int testSystemCreate(){
 
   systemNN->maxSys =  50.0;
   systemNN->minSys = -50.0;
+
+  createDeNormalization(systemNN);
 
   struct InputPop *inputPop = (struct InputPop*)malloc(sizeof(struct InputPop));
   struct Pop *pop = (struct Pop*)malloc(sizeof(struct Pop));

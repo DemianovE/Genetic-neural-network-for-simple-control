@@ -41,7 +41,7 @@ void typeOne(float *data) {
   data[12] =  data[6];
 }
 
-void makeInputDataSystem(struct SystemNN *systemNN, int size, int full){
+static void makeInputDataSystem(struct SystemNN *systemNN, int size, int full){
   systemNN->inputData = (float*)malloc(full * sizeof(float));
   for(int i=0; i<full; i++){
       systemNN->inputData[i] = 0.0;

@@ -67,7 +67,7 @@ void clearNNSystem(struct SystemNN *systemNN){
   free(systemNN);
 }
 
-void cleanNNSystem(struct SystemNN *systemNN){
+static void cleanNNSystem(struct SystemNN *systemNN){
   // clear output and system data
   for(int i=0; i < systemNN->signal->length; i++){
       systemNN->output->signal[i] = 0.0;
@@ -78,16 +78,18 @@ void cleanNNSystem(struct SystemNN *systemNN){
   systemNN->dataSystem[1] = systemNN->signal->dt;
 
   // clear input data
-  for(int i=0; i<systemNN->inputDataSize; i++){
+  for(int i=0; i<systemNN->inputDataSize[0]; i++){
       systemNN->inputData[i] = 0.0;
   }
   systemNN->inputData[0] = systemNN->signal->dt;
 
   systemNN->steadyRiseCheck = 1;
   systemNN->maxCounter = 0;
+
+  systemNN->fit = 0.0;
 }
 
-void getMaxMinSignalValues(struct Signal *signal, float *max, float *min){
+static void getMaxMinSignalValues(struct Signal *signal, float *max, float *min){
   *max = 0.0; // max
   *min = 0.0; // min of system
 
@@ -100,7 +102,7 @@ void getMaxMinSignalValues(struct Signal *signal, float *max, float *min){
   }
 }
 
-float findUOneRound(struct SystemNN *systemNN, float *forValues, float *maxSig){
+static float findUOneRound(struct SystemNN *systemNN, float *forValues, float *maxSig){
   float analyzedValue; 
   float finValue, sysOutput;
 
@@ -132,7 +134,7 @@ float findUOneRound(struct SystemNN *systemNN, float *forValues, float *maxSig){
   return finValue;
 }
 
-float findUForSystemAndSignal(struct SystemNN *systemNN, float *maxSig){
+static float findUForSystemAndSignal(struct SystemNN *systemNN, float *maxSig){
 
   float forValueOne[] = {0.0, 10000.0, 100.0};
   float roundOne = findUOneRound(systemNN, &forValueOne, maxSig);
@@ -146,7 +148,7 @@ float findUForSystemAndSignal(struct SystemNN *systemNN, float *maxSig){
   return finValue;
 }
 
-float makeDerivation(float *x, float *x_t, float *dt){
+static float makeDerivation(float *x, float *x_t, float *dt){
   return (*x - *x_t) / *dt;
 }
 
@@ -234,28 +236,8 @@ void createDeNormalization(struct SystemNN *systemNN){
   free(systemNN->inputTypes);
 }
 
-void resetNNDataMemory(struct SystemNN *systemNN){
-  for(int i=0; i < systemNN->signal->length; i++){
-      systemNN->output->signal[i] = 0.0;
-  }
-  for(int i=0; i<systemNN->sizeDataSystem; i++){
-      systemNN->dataSystem[i] = 0.0;
-  }
-  systemNN->dataSystem[1] = systemNN->signal->dt;
-
-  for(int i=0; i<systemNN->inputDataSize[0]; i++){
-    systemNN->inputData[i] = 0.0;
-  }
-  systemNN->inputData[0] = systemNN->signal->dt;
-
-  systemNN->fit = 0.0;
-
-  systemNN->steadyRiseCheck = 1;
-  systemNN->maxCounter = 0;
-}
-
 void makeSimulationOfSignalNN(struct SystemNN *systemNN, FILE *csvFile, int csv){
-  resetNNDataMemory(systemNN);
+  cleanNNSystem(systemNN);
 
   
   float error, diff;

@@ -7,12 +7,6 @@ typedef struct Signal {
     int length;    // length of the signal in seconds                     
 }Signal;
 
-// function to select and create step signal
-void selectStepSignal(struct Signal *signal);
-
-// function to create custom signal of type A
-void selectCustomASignal(struct Signal *signal);
-
 // the function to clean the signal
 void deleteSignal(struct Signal *signal);
 

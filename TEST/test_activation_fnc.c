@@ -11,14 +11,14 @@
 #define ANSI_BOLD         "\x1b[1m"
 #define ANSI_COLOR_RESET   "\x1b[0m"
 
-int compareResults(float a, float b){
+static int compareResults(float a, float b){
   if(a == b){
     return 1;
   } 
   return 0;
 }
 
-float testSigmoid(float x) {
+static float testSigmoid(float x) {
     return 1.0 / (1.0 + exp(-x));
 }
 

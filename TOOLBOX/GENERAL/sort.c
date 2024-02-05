@@ -5,13 +5,6 @@
 #include <time.h> 
 #include <stdbool.h>
 
-
-void clearArrayArray(int** array, int size){
-  for(int i = 0; i<size; i++){
-    free(array[i]);
-  }
-}
-
 void quickSort(float *fit, int *input, int length){
   // in this sort the fit is only used as a datasource for the result
   // the length is the data for the result, not fit

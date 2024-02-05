@@ -7,7 +7,7 @@
 #define DT001 0.001; 
 #define DT01  0.01; 
 
-void selectStepSignal(struct Signal *signal){
+static void selectStepSignal(struct Signal *signal){
     signal->length = 2000;
     signal->dt     = DT001;
 
@@ -23,7 +23,7 @@ void selectStepSignal(struct Signal *signal){
     signal->length = globalIndex;
 }
 
-void selectCustomASignal(struct Signal *signal){
+static void selectCustomASignal(struct Signal *signal){
     signal->length = 1002;
     signal->dt     = DT01;
 

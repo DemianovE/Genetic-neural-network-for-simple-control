@@ -53,7 +53,7 @@ void deletePid(struct PID *pid){
     free(pid);
 }
 
-void resetOutputMemoryPid(struct PID *pid){
+static void resetOutputMemoryPid(struct PID *pid){
     for(int i=0; i < pid->signal->length; i++){
         pid->output->signal[i] = 0.0;
     }

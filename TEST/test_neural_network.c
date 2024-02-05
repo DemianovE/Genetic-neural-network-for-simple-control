@@ -17,7 +17,7 @@
 #define ANSI_BOLD         "\x1b[1m"
 #define ANSI_COLOR_RESET   "\x1b[0m"
 
-int arraysEqualNN(int *arr1, int *arr2, int size) {
+static int arraysEqualNN(int *arr1, int *arr2, int size) {
     for (int i = 0; i < size; ++i) {
         if (arr1[i] != arr2[i]) {
             return 0; 
@@ -26,7 +26,7 @@ int arraysEqualNN(int *arr1, int *arr2, int size) {
     return 1; 
 }
 
-int checkMatrixesNN(struct NN *neuralNetwork, float *population){
+static int checkMatrixesNN(struct NN *neuralNetwork, float *population){
   int globalIndex = 0;
   int flag = 1;
   
@@ -57,7 +57,7 @@ int checkMatrixesNN(struct NN *neuralNetwork, float *population){
   return flag;
 }
 
-void createSimpleNeuralNetwork(struct NN *neuralNetwork, int check){
+static void createSimpleNeuralNetwork(struct NN *neuralNetwork, int check){
   struct NNInput *input = (struct NNInput*)malloc(sizeof(struct NNInput));
 
   input->neuronsSize = (int*)malloc(4 * sizeof(int));

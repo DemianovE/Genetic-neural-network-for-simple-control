@@ -11,7 +11,7 @@
 #define ANSI_BOLD         "\x1b[1m"
 #define ANSI_COLOR_RESET   "\x1b[0m"
 
-int compareMatrixes(struct Matrix *A, struct Matrix *B){
+static int compareMatrixes(struct Matrix *A, struct Matrix *B){
   // check if both matrixes have same size
   if(A->sizes[0] != B->sizes[0] || A->sizes[1] != B->sizes[1]){
     return 0;

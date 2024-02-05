@@ -15,7 +15,7 @@
 #define ANSI_BOLD         "\x1b[1m"
 #define ANSI_COLOR_RESET   "\x1b[0m"
 
-int getMinFit(float *fit, int length){
+static int getMinFit(float *fit, int length){
   int min = 0;
 
   for(int i=0; i<length; i++){
@@ -26,7 +26,7 @@ int getMinFit(float *fit, int length){
   return min;
 }
 
-void createSystemNeuralNetworkInputTEST(struct NNInput *input, int check){
+static void createSystemNeuralNetworkInputTEST(struct NNInput *input, int check){
 
   input->neuronsSize = (int*)malloc(4 * sizeof(int));
   input->neuronsSize[0] = 1;
@@ -208,7 +208,7 @@ int testNNRun(){
   // 37
 
   float chance = 0.1;
-  int generations = 11;
+  int generations = 1000;
   int bestIndex[]    = {0,   10};
   int randOneIndex[] = {10,  195};
   int randTwoIndex[] = {195, 380};
@@ -267,6 +267,7 @@ int testNNRun(){
     if(i % 10 == 0 || i>9990){
       printf("GENERATION[%05d] - fit: %f  - %d\n", i, fit[bestFit], bestFit);
     }
+    
 
     struct Pop *bestPop    = (struct Pop*)malloc(sizeof(struct Pop));
     struct Pop *randPopOne = (struct Pop*)malloc(sizeof(struct Pop));

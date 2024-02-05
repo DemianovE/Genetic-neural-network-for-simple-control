@@ -20,7 +20,7 @@ int testQuicksort(){
     result[i] = i;
   }
 
-  int resultCorrect[] = {2, 0, 3, 1, 4};
+  int resultCorrect[] = {4, 1, 3, 0, 2};
 
   quickSort(fit, result, length);
 

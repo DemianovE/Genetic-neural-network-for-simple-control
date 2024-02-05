@@ -10,6 +10,24 @@
 #include <time.h>
 #include <string.h>
 
+static void clearNNInput(struct NNInput *input){
+  free(input->neuronsSize);
+
+  // free de_normalization matrixes
+  for(int i = 0; i < 2; i++){
+    free(input->normalizationMatrix[i]);
+    free(input->denormalizationMatrix[i]);
+  }
+  free(input->normalizationMatrix);
+  free(input->denormalizationMatrix);
+
+  // free the layer type matrix
+  free(input->layerType);
+
+  // delete full strcture
+  free(input);
+}
+
 void createNeuralNetwork(struct NNInput *input, struct NN *neuralNetwork) {
   // create list of neurons sizes
   neuralNetwork->layerNumber = input->layerNumber;
@@ -73,7 +91,7 @@ void createNeuralNetwork(struct NNInput *input, struct NN *neuralNetwork) {
   selectActivationFunction(&neuralNetwork->func_ptr);
 
   // delete input structure
-  clearNeuralNetworkInput(input);
+  clearNNInput(input);
 
   neuralNetwork->AW = (struct Matrix **)malloc((neuralNetwork->layerNumber - 1) * sizeof(struct Matrix *));
   neuralNetwork->BW = (struct Matrix **)malloc((neuralNetwork->layerNumber - 1) * sizeof(struct Matrix *));
@@ -150,24 +168,6 @@ void clearNeuralNetwork(struct NN *neuralNetwork) {
   free(neuralNetwork);
 }
 
-void clearNeuralNetworkInput(struct NNInput *input){
-  free(input->neuronsSize);
-
-  // free de_normalization matrixes
-  for(int i = 0; i < 2; i++){
-    free(input->normalizationMatrix[i]);
-    free(input->denormalizationMatrix[i]);
-  }
-  free(input->normalizationMatrix);
-  free(input->denormalizationMatrix);
-
-  // free the layer type matrix
-  free(input->layerType);
-
-  // delete full strcture
-  free(input);
-}
-
 void fillMatrixesNN(struct NN *neuralNetwork, float *population){
   int globalIndex = 0;
   
@@ -220,7 +220,7 @@ void deNormalizationProcess(struct NN *neuralNetwork, struct Matrix *input, int 
   }
 }
 
-void makeSDLayerAction(struct NN *neuralNetwork, struct Matrix *input, int sdIndex, int layerIndex){
+static void makeSDLayerAction(struct NN *neuralNetwork, struct Matrix *input, int sdIndex, int layerIndex){
   // this is action invocedonly when calculation has achived the SD layer
   // there are 3 steps:
   // 1) save the D data into the SD memory layer with the *-1 action 

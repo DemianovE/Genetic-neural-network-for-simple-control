@@ -8,6 +8,16 @@
 #include <stddef.h>
 #include <string.h>
 
+static void clearInputPop(struct InputPop* input){
+  if(input){
+    free(input->S[0]);
+    free(input->S[1]);
+    free(input->S);
+    free(input);
+  }
+}
+
+
 void createInputPop(struct InputPop *inputPop, float* max, float* min, int* size){
   
   inputPop->cols = size[1];
@@ -21,7 +31,7 @@ void createInputPop(struct InputPop *inputPop, float* max, float* min, int* size
   memcpy(inputPop->S[1], min, inputPop->cols * sizeof(float));
 }
 
-void alocatePopulation(struct InputPop* input, struct Pop* population){
+static void alocatePopulation(struct InputPop* input, struct Pop* population){
   population->cols = input->cols;
   population->rows = input->rows;
 
@@ -56,15 +66,6 @@ void clearPopulation(struct Pop* population) {
 
     // free population struct
     free(population);
-  }
-}
-
-void clearInputPop(struct InputPop* input){
-  if(input){
-    free(input->S[0]);
-    free(input->S[1]);
-    free(input->S);
-    free(input);
   }
 }
 
