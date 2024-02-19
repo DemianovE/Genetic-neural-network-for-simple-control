@@ -36,7 +36,7 @@ find . -type f \( -name "*.c" -o -name "*.h" \) -exec wc -l {} +
 # to find number of symbols in project
 find . -type f \( -name "*.c" -o -name "*.h" \) -exec cat {} + | wc -c
 ```
-Also, if the WSL is used before commit following command should be executed to allow terminal GPG key
+Also, if the WSL is used before the commit following command should be executed to allow the terminal GPG key
 ```shell
 GPG_TTY=$(tty)
 export GPG_TTY

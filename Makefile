@@ -1,6 +1,6 @@
 # Compiler and flags
 CC = gcc
-CFLAGS = -g -Wall -I TOOLBOX/GENETIC/include
+CFLAGS = -g -Wall -I TOOLBOX/GENETIC/include -pg
 LIBS += -lm
 
 # Source files and object files
@@ -40,3 +40,4 @@ clean:
 	find . -name \*.o -type f -delete
 	find . -name \*Zone.Identifier -type f -delete
 	find . -name \*.sig -type f -delete
+	find . -name \gmon.out -type f -delete

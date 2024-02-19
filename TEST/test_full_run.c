@@ -26,28 +26,32 @@ static int getMinFit(float *fit, int length){
   return min;
 }
 
-static void createSystemNeuralNetworkInputTEST(struct NNInput *input, int check){
-
-  input->neuronsSize = (int*)malloc(4 * sizeof(int));
-  input->neuronsSize[0] = 1;
-  if(check == 1){
-    input->neuronsSize[1] = 3;
-    input->neuronsSize[2] = 2;
-  } else{
-    input->neuronsSize[1] = 5;
-    input->neuronsSize[2] = 5;
+static void closeRandomSizeGeneration(struct Pop *population, float* sizes){
+  for(int i=0; i<population->cols; i++){
+    population->S[0][i] = sizes[i] + 0.7;
+    population->S[1][i] = sizes[i] - 0.7;
   }
-  input->neuronsSize[3] = 1;
+}
 
-  input->layerNumber = 4;
+static void createSystemNeuralNetworkInputTEST(struct NNInput *input){
+
+  input->layerNumber = 5;
+
+  input->neuronsSize = (int*)malloc(input->layerNumber * sizeof(int));
+  input->neuronsSize[0] = 1;
+  input->neuronsSize[1] = 8;
+  input->neuronsSize[2] = 6;
+  input->neuronsSize[3] = 3;
+  input->neuronsSize[4] = 1;
 
   input->layerType = (int*)malloc(input->layerNumber * sizeof(int));
   input->layerType[0] = 0;
-  input->layerType[1] = 0;
+  input->layerType[1] = 1;
   input->layerType[2] = 0;
   input->layerType[3] = 0;
+  input->layerType[4] = 0;
 
-  input->sdNumber = 0;
+  input->sdNumber = 1;
 }
 // ##################################################################################################################
 
@@ -78,7 +82,7 @@ int testPIDRun(){
   struct InputPop *input = (struct InputPop*)malloc(sizeof(struct InputPop));
   struct Pop *pop = (struct Pop*)malloc(sizeof(struct Pop));
   //              |    P   |   I    |    D    | tau |
-  float max[]  = { 10000.0, 10000.0,  10000.0, 1.0};
+  float max[]  = {   100.0,   100.0,    100.0, 1.0};
   float min[]  = {     0.0,     0.0,      0.0, 0.0};
 
   int size[]    = {500, 4};
@@ -155,7 +159,7 @@ int testPIDRun(){
     placePartOfPop(pop, randPopTwo, randTwoIndex);
     placePartOfPop(pop, popRandom,  randFulIndex);
 
-    if(i == generations - 1){
+    if(i == generations - 1 || i % 100 == 0){
       FILE *csvFile2 = fopen("TOOLBOX/PYTHON/input/data_pid_.csv", "w");
       fprintf(csvFile2, "P,I,D,CV,RV\n");
 
@@ -202,41 +206,68 @@ int testPIDRun(){
 int testNNRun(){
   printf(ANSI_BOLD "=======TEST NN RUN STARTED=======" ANSI_COLOR_RESET "\n");
 
-  FILE *csvFile = fopen("TOOLBOX/PYTHON/input/data_nn_run.csv", "w");
+  FILE *csvFile = fopen("TOOLBOX/PYTHON/input/data_nn_fit.csv", "w");
   fprintf(csvFile, "best\n");
-
-  // 37
-
-  float chance = 0.1;
-  int generations = 1000;
-  int bestIndex[]    = {0,   10};
-  int randOneIndex[] = {10,  195};
-  int randTwoIndex[] = {195, 380};
-  int randFulIndex[] = {380, 500};
-
-  int sizeOneIndex = 185;
-  int sizeTwoIndex = 185;
-
-  int size[]    = {500, 37};
-  int sizeFul[] = {120, 37};
-
-  int bestNums[] = {4, 2, 2, 2};
-  int *restCros  = (int*)malloc(2 * sizeof(int));
-  restCros[0] = 1;
-  restCros[1] = 2;
-
-  int bestFit;
 
   // the system is created and denormilized
   struct NNInput *inputNN = (struct NNInput*)malloc(sizeof(struct NNInput));
   struct SystemNN *systemNN = (struct SystemNN*)malloc(sizeof(struct SystemNN));
 
-  createSystemNeuralNetworkInputTEST(inputNN, 1);
+  createSystemNeuralNetworkInputTEST(inputNN);
 
   createNNSystem(systemNN, inputNN);
 
-  systemNN->maxSys =  50.0;
-  systemNN->minSys = -10.0;
+  // 37
+
+  float chance = 0.1;
+  int generations = 50000;
+
+  // 500
+  // int bestIndex[]      = {0,   10};
+  // int randOneIndex[]   = {10,  180};
+  // int randTwoIndex[]   = {180, 350};
+  // int randRandIndex[]  = {350, 475};
+  // int randRandCIndex[] = {475, 500};
+
+  // int sizeOneIndex = 170;
+  // int sizeTwoIndex = 170;
+
+  // int size[]            = {500, systemNN->neuralNetwork->countOfValues};
+  // int sizeRandom[]      = {125, systemNN->neuralNetwork->countOfValues};
+  // int sizeCloseRandom[] = {25,  systemNN->neuralNetwork->countOfValues};
+
+  // int bestNums[] = {4, 2, 2, 2};
+  // int bestCount = 4;
+
+  // systemNN->maxSys =  3.0;
+  // systemNN->minSys = -1.0;
+
+  // 100
+  int bestIndex[]      = {0,  5};
+  int randOneIndex[]   = {5,  43};
+  int randTwoIndex[]   = {43, 70};
+  int randRandIndex[]  = {70, 95};
+  int randRandCIndex[] = {95, 100};
+
+  int sizeOneIndex = 38;
+  int sizeTwoIndex = 27;
+
+  int size[]            = {100, systemNN->neuralNetwork->countOfValues};
+  int sizeRandom[]      = {25,  systemNN->neuralNetwork->countOfValues};
+  int sizeCloseRandom[] = {5,   systemNN->neuralNetwork->countOfValues};
+
+  int bestNums[] = {2, 2, 1};
+  int bestCount = 3;
+
+  systemNN->maxSys =  3.0;
+  systemNN->minSys = -1.0;
+
+
+  int *restCros  = (int*)malloc(2 * sizeof(int));
+  restCros[0] = 1;
+  restCros[1] = 2;
+
+  int bestFit;
 
   createDeNormalization(systemNN);
 
@@ -249,12 +280,23 @@ int testNNRun(){
   for(int i=0; i < systemNN->neuralNetwork->countOfValues; i++){
     max[i] =  1.0;
     min[i] = -1.0;
-  }
+  } 
 
   createInputPop(inputPop, max, min, &size);
   createStructure(inputPop, pop);
 
   float *fit = (float*)malloc(pop->rows * sizeof(float));
+
+  // add the random 200 at the end of each generation
+  struct InputPop *inputRandom = (struct InputPop*)malloc(sizeof(struct InputPop));
+  struct Pop *popRandom        = (struct Pop*)malloc(sizeof(struct Pop));
+  createInputPop(inputRandom, max, min, sizeRandom);
+  createStructure(inputRandom, popRandom);
+
+  struct InputPop *inputCRandom = (struct InputPop*)malloc(sizeof(struct InputPop));
+  struct Pop *popCloseRandom    = (struct Pop*)malloc(sizeof(struct Pop));
+  createInputPop(inputCRandom, max, min, sizeCloseRandom);
+  createStructure(inputCRandom, popCloseRandom);
 
   for(int i=0; i<generations; i++){
     
@@ -276,7 +318,7 @@ int testNNRun(){
     // now the genetic operations are runned
    
     // the best pop with 50 records is created
-    selbest(fit, pop->rows, pop, bestPop, bestNums, 4, 1);
+    selbest(fit, pop->rows, pop, bestPop, bestNums, bestCount, 1);
 
     // 2 seturn arrays are created
     selturn(pop, fit, randPopOne, sizeOneIndex);
@@ -302,24 +344,18 @@ int testNNRun(){
     mutx(randPopOne, chance);
     mutx(randPopTwo, chance);
 
-    // add the random 200 at the end of each generation
-    struct InputPop *input = (struct InputPop*)malloc(sizeof(struct InputPop));
-    struct Pop *popRandom  = (struct Pop*)malloc(sizeof(struct Pop));
-    createInputPop(input, max, min, sizeFul);
-    createStructure(input, popRandom);
+    // create new pop random and close random pop
+    closeRandomSizeGeneration(popCloseRandom, pop->pop[bestFit]);
 
-    // now copy pops to main pop
-    placePartOfPop(pop, bestPop,    bestIndex);
-    placePartOfPop(pop, randPopOne, randOneIndex);
-    placePartOfPop(pop, randPopTwo, randTwoIndex);
-    placePartOfPop(pop, popRandom,  randFulIndex);
+    generateRandomPopulation(popRandom);
+    generateRandomPopulation(popCloseRandom);
 
-    if(i % 10 == 0){
+    if((i % 100 == 0 || i == generations - 1) && i != 0){
       FILE *csvFile2 = fopen("TOOLBOX/PYTHON/input/data_nn.csv", "w");
       fprintf(csvFile2, "CV,RV, System Output, Corrected Output\n");
 
-      // plot best values
-      fillMatrixesNN(systemNN->neuralNetwork, bestPop->pop[0]);
+      // first set the NN wages
+      fillMatrixesNN(systemNN->neuralNetwork, pop->pop[bestFit]);
 
       // now model is simulated
       makeSimulationOfSignalNN(systemNN, csvFile2, 1);
@@ -327,20 +363,31 @@ int testNNRun(){
       printf("BEST NN: FIT: %f Count: %d\n", systemNN->fit, systemNN->maxCounter);
 
       fclose(csvFile2);
+      fclose(csvFile);
+
+
       plotGraphNN();
+
+      FILE *csvFile = fopen("TOOLBOX/PYTHON/input/data_nn_fit.csv", "a");
     }
+
+    // now copy pops to main pop
+    placePartOfPop(pop, bestPop,         bestIndex);
+    placePartOfPop(pop, randPopOne,      randOneIndex);
+    placePartOfPop(pop, randPopTwo,      randTwoIndex);
+    placePartOfPop(pop, popRandom,       randRandIndex);
+    placePartOfPop(pop, popCloseRandom,  randRandCIndex);
+
 
     clearPopulation(bestPop);
     clearPopulation(randPopOne);
     clearPopulation(randPopTwo);
-    clearPopulation(popRandom);
   }  
 
   clearPopulation(pop);
+  clearPopulation(popRandom);
 
   clearNNSystem(systemNN);
-
-  fclose(csvFile);
 
   free(restCros);
   free(fit);

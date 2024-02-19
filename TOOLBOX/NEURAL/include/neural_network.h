@@ -22,7 +22,7 @@ typedef struct NN{
 
     int    *layerType; // array showing the type of each HL 0 - FF, 1 - SD
 
-    int   **sdNeuronsTypes;  // matrix containing type for each neuron in the SD layer 0 - straight, 1 - S, 2 - D
+    int   **sdNeuronsTypes;   // matrix containing type for each neuron in the SD layer 0 - straight, 1 - S, 2 - D
     struct Matrix **SDMemory; // array of Matrixes for each SD layer
 }NN;
 
@@ -52,5 +52,8 @@ void oneCalculation(struct NN *neuralNetwork, struct Matrix *input, struct Matri
 void fillMatrixesNN(struct NN *neuralNetwork, float *population);
 
 void deNormalizationProcess(struct NN *neuralNetwork, struct Matrix *input, int way);
+
+// function to clear SD
+void clearSDMemory(struct NN *neuralNetwork);
 
 #endif

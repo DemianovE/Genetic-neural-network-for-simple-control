@@ -199,6 +199,20 @@ void fillMatrixesNN(struct NN *neuralNetwork, float *population){
   }
 }
 
+void clearSDMemory(struct NN *neuralNetwork){
+  int globalIndex = 0;
+  // go though layers to find SD ones
+  for(int i=0; i<neuralNetwork->layerNumber; i++){
+    if(neuralNetwork->layerType[i] == 1){
+      // if layer SD then clear matrix
+      for(int j=0; j<neuralNetwork->neuronsSize[i]; j++){
+        neuralNetwork->SDMemory[globalIndex]->matrix[j][0] = .0;
+      }
+      globalIndex++;
+    }
+  }
+}
+
 void deNormalizationProcess(struct NN *neuralNetwork, struct Matrix *input, int way){
   // way -> 0 - normalize
   // way -> 1 - de_normalize
@@ -207,16 +221,30 @@ void deNormalizationProcess(struct NN *neuralNetwork, struct Matrix *input, int 
     if(way == 0){
       rMin = neuralNetwork->normalizationMatrix[1][i];
       rMax = neuralNetwork->normalizationMatrix[0][i];
-      tMin = -1;
-      tMax = 1;
+      tMin = -1.0;
+      tMax =  1.0;
     } else if(way == 1){
-      rMin = -1;
-      rMax = 1;
+      rMin = -1.0;
+      rMax =  1.0;
       tMin = neuralNetwork->denormalizationMatrix[1][i];
       tMax = neuralNetwork->denormalizationMatrix[0][i];
     }
     
     input->matrix[i][0] = ((input->matrix[i][0] - rMin)/(rMax - rMin)) * (tMax - tMin) + tMin;
+    
+    if(way == 0){
+      if(input->matrix[i][0] > 1.0){
+        input->matrix[i][0] = 1.0;
+      } else if(input->matrix[i][0] < -1.0){
+        input->matrix[i][0] = -1.0;
+      }
+    } else if (way == 1){
+      if(input->matrix[i][0] > neuralNetwork->denormalizationMatrix[0][i]){
+        input->matrix[i][0] = neuralNetwork->denormalizationMatrix[0][i];
+      } else if(input->matrix[i][0] < neuralNetwork->denormalizationMatrix[1][i]){
+        input->matrix[i][0] = neuralNetwork->denormalizationMatrix[1][i];
+      }
+    }
   }
 }
 

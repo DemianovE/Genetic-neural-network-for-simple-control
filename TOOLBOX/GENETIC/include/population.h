@@ -30,4 +30,7 @@ void createInputPop(struct InputPop *inputPop, float* max, float* min, int* size
 // function to copy rows from the source to pop between two indexes in the indexes array not including second one
 void placePartOfPop(struct Pop *pop, struct Pop *source, int *indexes);
 
+// function to re-generate random population in the size matrix
+void generateRandomPopulation(struct Pop *population);
+
 #endif

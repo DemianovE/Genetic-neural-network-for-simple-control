@@ -70,17 +70,22 @@ void clearPopulation(struct Pop* population) {
 }
 
 void createStructure(struct InputPop *input, struct Pop *population) {
-    float newValue;
 
-    alocatePopulation(input, population);
+  alocatePopulation(input, population);
 
-    for(int y = 0; y < population->rows; y++){
-      for(int i=0; i < population->cols; i++ ){
-        
-        newValue = createRandomFloat(population->S[1][i], population->S[0][i]);
-        population->pop[y][i] = newValue;
-      }
+  generateRandomPopulation(population);
+}
+
+void generateRandomPopulation(struct Pop *population){
+  float newValue;
+
+  for(int y = 0; y < population->rows; y++){
+    for(int i=0; i < population->cols; i++ ){
+      
+      newValue = createRandomFloat(population->S[1][i], population->S[0][i]);
+      population->pop[y][i] = newValue;
     }
+  }
 }
 
 void placePartOfPop(struct Pop *pop, struct Pop *source, int *indexes){
