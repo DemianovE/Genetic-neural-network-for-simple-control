@@ -9,6 +9,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include <unistd.h>
 
 void createNNSystem(struct SystemNN *systemNN, struct NNInput *input){
 
@@ -102,15 +103,21 @@ static void getMaxMinSignalValues(struct Signal *signal, float *max, float *min)
   }
 }
 
-static float findUOneRound(struct SystemNN *systemNN, float *forValues, float *maxSig){
-  float analyzedValue; 
+static float findUOneRound(struct SystemNN *systemNN, float *forValues, float *maxSig, float *Data){
+  float analyzedValue, maxY, minY, maxE, minE; 
   float finValue, sysOutput;
-  float maxCreate = *maxSig * 5;
 
   float min = FLT_MAX;
-  finValue = 0;
+  float sum;
+  int count;
+
   for(float curValue = forValues[0]; curValue < forValues[1]; curValue += forValues[2]){
-    analyzedValue = 0;
+    maxY = 0;
+    maxE = 0;
+    minY = FLT_MAX;
+    minE = FLT_MAX;
+    sum = 0;
+    count = 0;
 
     // first the data of the system is reseted
     for(int j=0; j<systemNN->sizeDataSystem; j++){
@@ -119,12 +126,26 @@ static float findUOneRound(struct SystemNN *systemNN, float *forValues, float *m
     systemNN->dataSystem[1] = systemNN->signal->dt;
 
     // now the idea is to simulate 0.5s with the u set to curValue, finnal value is then analyzed
-    for(float j=0; j< systemNN->signal->dt * 10; j += systemNN->signal->dt){
+    for(float j=0.0; j< 10.0; j += systemNN->signal->dt){
       systemNN->dataSystem[0] = curValue;
       sysOutput = systemNN->func_system(systemNN->dataSystem);
+      if(sysOutput > maxY){
+        maxY = sysOutput;
+      } 
+      if(sysOutput < minY){
+        minY = sysOutput;
+      }
+      if(*maxSig - sysOutput > maxE){
+        maxE = *maxSig - sysOutput;
+      }
+      if(*maxSig - sysOutput < minE){
+        minE = *maxSig - sysOutput;
+      }
+      sum += sysOutput;
+      count++;
     }
-
-    analyzedValue = maxCreate - sysOutput;
+    printf("%f |%f| - %f - %f = %f ||%f-%f||\n", *maxSig, (sum / count), *maxSig - (sum / count), *maxSig, curValue, maxY, minY);
+    analyzedValue = *maxSig - (sum / count);
     if(analyzedValue < 0){
       analyzedValue *= (-1);
     }
@@ -132,21 +153,25 @@ static float findUOneRound(struct SystemNN *systemNN, float *forValues, float *m
     if(analyzedValue < min){
       min = analyzedValue;
       finValue = curValue;
+      Data[0] = maxE;
+      Data[1] = minE;
+      Data[2] = maxY;
+      Data[3] = minY;
     }
   }
   return finValue;
 }
 
-static float findUForSystemAndSignal(struct SystemNN *systemNN, float *maxSig){
+static float findUForSystemAndSignal(struct SystemNN *systemNN, float *maxSig, float *Data){
 
-  float forValueOne[] = {-100000000.0, 100000000.0, 1000.0};
-  float roundOne = findUOneRound(systemNN, &forValueOne, maxSig);
+  float forValueOne[] = {0.0, 10000.0, 1000.0};
+  float roundOne = findUOneRound(systemNN, &forValueOne, maxSig, Data);
 
-  float forValueTwo[] = {roundOne - 1000.0, roundOne + 1000.0, 100.0};
-  float roundTwo = findUOneRound(systemNN, &forValueTwo, maxSig);
+  float forValueTwo[] = {roundOne - 100.0, roundOne + 100.0, 10.0};
+  float roundTwo = findUOneRound(systemNN, &forValueTwo, maxSig, Data);
 
-  float forValueThree[] = {roundTwo - 100.0, roundTwo + 100.0, 10.0};
-  float finValue = findUOneRound(systemNN, &forValueThree, maxSig);
+  float forValueThree[] = {roundTwo - 10.0, roundTwo + 10.0, 1.0};
+  float finValue = findUOneRound(systemNN, &forValueThree, maxSig, Data);
 
   return finValue;
 }
@@ -170,24 +195,27 @@ void createDeNormalization(struct SystemNN *systemNN){
   float minSig;
   float maxChange;
   float maxChangeReverse;
+  float *Data = (float*)malloc(4*sizeof(float));
 
   getMaxMinSignalValues(systemNN->signal, &maxSig, &minSig);
 
-  // e 
-  normalization[0][0]  = maxSig - systemNN->minSys;
-  normalization[1][0]  = minSig - systemNN->maxSys;
+  // part to calculate e and 
 
   maxChange        = maxSig - minSig;
   maxChangeReverse = maxChange * -1;
 
   // u
   printf("%f -- %f\n", maxSig, minSig);
-  normalization[0][1]  = findUForSystemAndSignal(systemNN, &maxChange);
-  normalization[1][1]  = findUForSystemAndSignal(systemNN, &maxChangeReverse);
+  normalization[0][1]  = findUForSystemAndSignal(systemNN, &maxChange, Data);
+  normalization[1][1]  = normalization[0][1] * (-1);
+
+  // e 
+  normalization[0][0]  = Data[0];
+  normalization[1][0]  = Data[0] * (-1);
 
   // y
-  normalization[0][2]  = systemNN->minSys;
-  normalization[1][2]  = systemNN->maxSys;
+  normalization[0][2]  = Data[2];
+  normalization[1][2]  = Data[2] * (-1);
 
   // de 
   normalization[0][3]  = makeDerivation(&normalization[0][0], &normalization[1][0], &systemNN->signal->dt); // bigest possible result
@@ -225,6 +253,19 @@ void createDeNormalization(struct SystemNN *systemNN){
   normalization[0][11] = (normalization[0][2] * (float)systemNN->signal->length) / (float)systemNN->signal->dt;
   normalization[1][11] = (normalization[1][2] * (float)systemNN->signal->length) / (float)systemNN->signal->dt;
 
+  // 10 * e
+  for(int i=0; i<12; i++){
+    normalization[0][i] *= 7.0;
+    if(normalization[1][i] > 0){
+      normalization[1][i] /= 7.0;
+    } else{
+      normalization[1][i] *= 7.0; 
+    }
+  }
+  normalization[0][1] *= 6.0;
+  normalization[1][1] *= 6.0; 
+  
+
   // now the normalization values are added to the de_normalization matrix of NN
   for(int i = 0; i < systemNN->inputDataSize[2] - 1; i++){
     systemNN->neuralNetwork->normalizationMatrix[0][i] = normalization[0][systemNN->inputTypes[i]];
@@ -238,6 +279,7 @@ void createDeNormalization(struct SystemNN *systemNN){
   free(normalization[0]);
   free(normalization[1]);
   free(normalization);
+  free(Data);
 
   // the inputTypes will not be needed, so the array can be free
   free(systemNN->inputTypes);
@@ -245,7 +287,7 @@ void createDeNormalization(struct SystemNN *systemNN){
 
 void makeSimulationOfSignalNN(struct SystemNN *systemNN, FILE *csvFile, int csv){
   cleanNNSystem(systemNN);
-
+  clearSDMemory(systemNN->neuralNetwork);
   
   float error, diff;
   float neuralOutput = 0.0;
@@ -275,14 +317,12 @@ void makeSimulationOfSignalNN(struct SystemNN *systemNN, FILE *csvFile, int csv)
     inputSize[1] = 1;
 
     createMatrix(inputMatrix, inputSize);
-    clearSDMemory(systemNN->neuralNetwork);
 
     matrixIndex = 0;
     for(int j=systemNN->inputDataSize[1]; j<systemNN->inputDataSize[2]; j++){
       inputMatrix->matrix[matrixIndex][0] = systemNN->inputData[j];
       matrixIndex++;
     }
-
     // now the matrix calculation can be made
     oneCalculation(systemNN->neuralNetwork, inputMatrix, outputMatrix);
 
@@ -295,7 +335,6 @@ void makeSimulationOfSignalNN(struct SystemNN *systemNN, FILE *csvFile, int csv)
 
     // set data and pass to system
     systemNN->output->signal[i] = systemNN->func_system(systemNN->dataSystem);
-    float original = systemNN->output->signal[i];
 
     if(systemNN->output->signal[i] > systemNN->maxSys){
         systemNN->output->signal[i] = systemNN->maxSys;
@@ -307,7 +346,7 @@ void makeSimulationOfSignalNN(struct SystemNN *systemNN, FILE *csvFile, int csv)
     systemOutput = systemNN->output->signal[i]; // y is set for next round input
 
     if(csv == 1){
-      fprintf(csvFile, "%f,%f,%f,%f\n", systemNN->output->signal[i], systemNN->signal->signal[i], original, systemNN->output->signal[i]);
+      fprintf(csvFile, "%f,%f,%f,%f\n", systemNN->output->signal[i], systemNN->signal->signal[i], outputMatrix->matrix[0][0], systemNN->output->signal[i]);
     } 
 
     diff = systemNN->signal->signal[i] - systemNN->output->signal[i];
