@@ -8,8 +8,8 @@
 #define DT01  0.01; 
 
 static void selectStepSignal(struct Signal *signal){
-    signal->length = 10000;
-    signal->dt     = DT001;
+    signal->length = 1000;
+    signal->dt     = DT01;
 
     signal->signal = (float*)malloc(signal->length * sizeof(float));   
     int globalIndex = 0;

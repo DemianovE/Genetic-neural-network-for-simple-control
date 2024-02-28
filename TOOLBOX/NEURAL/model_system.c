@@ -107,14 +107,13 @@ static void findUOneRound(struct SystemNN *systemNN, float *forValues, float *Da
   float analyzedValue, maxY, maxDDY, maxE, maxDY; 
   float finValue, sysOutput, dy, ddy, iy, preY, preDY;
   float du, ddu, iu, preU, preDU, min, penalty;
-  float de, dde, ie, preE, preDE, maxDE, maxDDE;
+  float de, dde, ie, preE, preDE, maxDE, maxDDE, sum;
   int count;
 
   float maxSig, minSig;
 
   min = FLT_MAX;
   getMaxMinSignalValues(systemNN->signal, &maxSig, &minSig);
-  printf("====== %f\n", maxSig);
 
   for(float curValue = forValues[0]; curValue < forValues[1]; curValue += forValues[2]){
     // get all max values set
@@ -141,6 +140,7 @@ static void findUOneRound(struct SystemNN *systemNN, float *forValues, float *Da
     ie    = 0;
 
     penalty = 0;
+    sum = 0;
 
     // first the data of the system is reseted
     for(int j=0; j<systemNN->sizeDataSystem; j++){
@@ -149,7 +149,7 @@ static void findUOneRound(struct SystemNN *systemNN, float *forValues, float *Da
     systemNN->dataSystem[1] = systemNN->signal->dt;
 
     // now the idea is to simulate 0.5s with the u set to curValue, finnal value is then analyzed
-    for(float j=0.0; j< 5.0; j += systemNN->signal->dt){
+    for(float j=0.0; j< systemNN->signal->length; j += systemNN->signal->dt){
       if(j < 1.0){
         systemNN->dataSystem[0] = 0;
       } else {
@@ -185,11 +185,24 @@ static void findUOneRound(struct SystemNN *systemNN, float *forValues, float *Da
       iy += sysOutput;
       iu += curValue;
       ie += preE;
-      count++;
+
+      if(j>systemNN->signal->length - 1.0){
+        sum += sysOutput;
+        count++;
+      }
+      
     }
-    analyzedValue = maxSig - (iy / count) + penalty;
+    analyzedValue = maxSig - (sum / count) + penalty;
     if(analyzedValue < 0){
       analyzedValue *= (-1);
+    }
+
+    if(iy < 0){
+      iy *= (-1);
+    } if(iu < 0){
+      iu *= (-1);
+    } if(ie < 0){
+      ie *= (-1);
     }
 
     if(analyzedValue < min){
@@ -203,8 +216,8 @@ static void findUOneRound(struct SystemNN *systemNN, float *forValues, float *Da
       Data[4] = maxDDE;
       Data[5] = ie;
 
-      Data[6] = (curValue) / systemNN->output->dt;;
-      Data[7] = (du)       / systemNN->output->dt; ;
+      Data[6] = curValue / systemNN->output->dt;
+      Data[7] = Data[7]  / systemNN->output->dt;
       Data[8] = iu;
 
       Data[9]  = maxDY;
@@ -247,62 +260,74 @@ void createDeNormalization(struct SystemNN *systemNN){
   // e 
   normalization[0][0]  = Data[0];
   normalization[1][0]  = Data[0] * (-1);
+  printf("E - %f\n", Data[0]);
 
   // u
   normalization[0][1]  = Data[1];
   normalization[1][1]  = Data[1] * (-1);
+  printf("U - %f\n", Data[1]);
 
   // y
   normalization[0][2]  = Data[2];
   normalization[1][2]  = Data[2] * (-1);
+  printf("Y - %f\n", Data[2]);
 
   // de 
   normalization[0][3]  = Data[3];        // bigest possible result
   normalization[1][3]  = Data[3] * (-1); // smallest possible result
+  printf("dE - %f\n", Data[3]);
 
   // dde 
   normalization[0][4]  = Data[4];        // bigest possible result
   normalization[1][4]  = Data[4] * (-1); // smallest possible result
+  printf("dE2 - %f\n", Data[4]);
 
   // ie
   normalization[0][5]  = Data[5];        
   normalization[1][5]  = Data[5] * (-1); 
+  printf("iE - %f\n", Data[5]);
 
   // du 
   normalization[0][6]  = Data[6];        // bigest possible result
   normalization[1][6]  = Data[6] * (-1); // smallest possible result
+  printf("dU - %f\n", Data[6]);
 
   // ddu 
   normalization[0][7]  = Data[7];        // bigest possible result
   normalization[1][7]  = Data[7] * (-1); // smallest possible result
+  printf("dU2 - %f\n", Data[7]);
 
   // iu
   normalization[0][8]  = Data[8];        
   normalization[1][8]  = Data[8] * (-1); 
+  printf("iU - %f\n", Data[8]);
 
   // dy
   normalization[0][9]  = Data[9];        // bigest possible result
   normalization[1][9]  = Data[9] * (-1); // smallest possible result
+  printf("dY - %f\n", Data[9]);
 
   // ddy 
   normalization[0][10] = Data[10];        // bigest possible result
   normalization[1][10] = Data[10] * (-1); // smallest possible result
+  printf("dY2 - %f\n", Data[10]);
 
   // iy
   normalization[0][11] = Data[11];        
   normalization[1][11] = Data[11] * (-1); 
+  printf("iY - %f\n", Data[11]);
 
   // 10 * e
-  for(int i=0; i<12; i++){
-    normalization[0][i] *= 2.0;
-    if(normalization[1][i] > 0){
-      normalization[1][i] /= 2.0;
-    } else{
-      normalization[1][i] *= 2.0; 
-    }
-  }
-  normalization[0][1] *= 5.0;
-  normalization[1][1] *= 5.0; 
+  // for(int i=0; i<12; i++){
+  //   normalization[0][i] *= 2.0;
+  //   if(normalization[1][i] > 0){
+  //     normalization[1][i] /= 2.0;
+  //   } else{
+  //     normalization[1][i] *= 2.0; 
+  //   }
+  // }
+  normalization[0][1] *= 10.0;
+  normalization[1][1] *= 10.0; 
   
 
   // now the normalization values are added to the de_normalization matrix of NN
@@ -399,13 +424,6 @@ void makeSimulationOfSignalNN(struct SystemNN *systemNN, FILE *csvFile, int csv)
   }
   if(csv == 1){
     printf("%f\n", max);
-  }
-  
-
-  if(systemNN->steadyRiseCheck >= 1){
-    systemNN->fit =  FLT_MAX; // make fit max value to not consider the steady rise solutions
-  } else if(systemNN->maxCounter > systemNN->signal->length * 1 / 100){
-    systemNN->fit += 100000;
   }
 
 }

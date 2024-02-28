@@ -40,9 +40,10 @@ static void createSystemNeuralNetworkInputTEST(struct NNInput *input){
   input->neuronsSize = (int*)malloc(input->layerNumber * sizeof(int));
   input->neuronsSize[0] = 1;
   input->neuronsSize[1] = 5;
-  input->neuronsSize[2] = 8;
+  input->neuronsSize[2] = 5;
   input->neuronsSize[3] = 5;
-  input->neuronsSize[4] = 1;
+  input->neuronsSize[4] = 5;
+  input->neuronsSize[5] = 1;
 
   input->layerType = (int*)malloc(input->layerNumber * sizeof(int));
   input->layerType[0] = 0;
@@ -50,6 +51,7 @@ static void createSystemNeuralNetworkInputTEST(struct NNInput *input){
   input->layerType[2] = 0;
   input->layerType[3] = 0;
   input->layerType[4] = 0;
+  input->layerType[5] = 0;
 
   input->sdNumber = 0;
 }
