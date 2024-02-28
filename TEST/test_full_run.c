@@ -35,25 +35,23 @@ static void closeRandomSizeGeneration(struct Pop *population, float* sizes){
 
 static void createSystemNeuralNetworkInputTEST(struct NNInput *input){
 
-  input->layerNumber = 6;
+  input->layerNumber = 5;
 
   input->neuronsSize = (int*)malloc(input->layerNumber * sizeof(int));
   input->neuronsSize[0] = 1;
-  input->neuronsSize[1] = 7;
+  input->neuronsSize[1] = 5;
   input->neuronsSize[2] = 8;
-  input->neuronsSize[3] = 7;
-  input->neuronsSize[4] = 3;
-  input->neuronsSize[5] = 1;
+  input->neuronsSize[3] = 5;
+  input->neuronsSize[4] = 1;
 
   input->layerType = (int*)malloc(input->layerNumber * sizeof(int));
   input->layerType[0] = 0;
   input->layerType[1] = 0;
-  input->layerType[2] = 1;
+  input->layerType[2] = 0;
   input->layerType[3] = 0;
   input->layerType[4] = 0;
-  input->layerType[5] = 0;
 
-  input->sdNumber = 1;
+  input->sdNumber = 0;
 }
 // ##################################################################################################################
 
@@ -241,8 +239,8 @@ int testNNRun(){
   // int bestNums[] = {4, 2, 2, 2};
   // int bestCount = 4;
 
-  // systemNN->maxSys =  3.0;
-  // systemNN->minSys = -1.0;
+  // systemNN->maxSys =  7.0;
+  // systemNN->minSys = -4.0;
 
   // 100
   int bestIndex[]      = {0,  5};
@@ -261,8 +259,8 @@ int testNNRun(){
   int bestNums[] = {2, 2, 1};
   int bestCount = 3;
 
-  systemNN->maxSys =  20.0;
-  systemNN->minSys = -20.0;
+  systemNN->maxSys =  40.0;
+  systemNN->minSys =  -5.0;
 
 
   int *restCros  = (int*)malloc(2 * sizeof(int));
@@ -355,6 +353,13 @@ int testNNRun(){
     if((i % 100 == 0 || i == generations - 1) && i != 0){
       FILE *csvFile2 = fopen("TOOLBOX/PYTHON/input/data_nn.csv", "w");
       fprintf(csvFile2, "CV,RV, System Output, Corrected Output\n");
+
+      FILE *csvFile3 = fopen("TOOLBOX/PYTHON/input/best_nn.txt", "a");
+      fprintf(csvFile3, "[");
+      for(int j=0; j<pop->cols; j++){
+        fprintf(csvFile3, "%f, ", pop->pop[0][j]);
+      } fprintf(csvFile3, "]");
+      fclose(csvFile3);
 
       // first set the NN wages
       fillMatrixesNN(systemNN->neuralNetwork, pop->pop[bestFit]);

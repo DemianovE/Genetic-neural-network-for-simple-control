@@ -8,7 +8,7 @@
 #define DT01  0.01; 
 
 static void selectStepSignal(struct Signal *signal){
-    signal->length = 2000;
+    signal->length = 10000;
     signal->dt     = DT001;
 
     signal->signal = (float*)malloc(signal->length * sizeof(float));   
@@ -16,7 +16,7 @@ static void selectStepSignal(struct Signal *signal){
     for(float i = 0.0; i < 0.3; i += signal->dt){
         signal->signal[globalIndex] = 0.0;
         globalIndex++;
-    } for(float i = 0.3 + signal->dt; i < 2.0; i += signal->dt){
+    } for(float i = 0.3 + signal->dt; i < 10.0; i += signal->dt){
         signal->signal[globalIndex] = 1.0;
         globalIndex++;
     }
@@ -41,10 +41,13 @@ static void selectCustomASignal(struct Signal *signal){
     } for(float i = 5.0; i < 8.0; i += signal->dt){
         signal->signal[globalIndex] = 5.0;
         globalIndex++;
-    } for(float i = 8.0; i < 10.0; i += signal->dt){
+    } for(float i = 8.0; i < 9.0; i += signal->dt){
         signal->signal[globalIndex] = 25.0;
         globalIndex++;
-    }
+    } for(float i = 9.0; i < 10.0; i += signal->dt){
+        signal->signal[globalIndex] = 0.0;
+        globalIndex++;
+    }   
     signal->length = globalIndex;
 }
 

@@ -28,7 +28,7 @@ typedef struct SystemNN {
   int    *inputTypes;  // the array containing the types of the generic normalization toolbox config
   // 0  - e,  1  - u,   2  - y
   // 3  - de, 4  - dde, 5  - ie
-  // 6  - du, 7  - ddu, 8  - ie
+  // 6  - du, 7  - ddu, 8  - iu
   // 9  - dy, 10 - ddy, 11 - iy
 
   // limist of the system output
