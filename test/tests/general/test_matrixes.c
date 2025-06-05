@@ -6,12 +6,6 @@
 #include <stdio.h>
 #include "unity/unity.h"
 
-// used to print testing outputs
-#define ANSI_COLOR_RED     "\x1b[31m"
-#define ANSI_COLOR_GREEN   "\x1b[32m"
-#define ANSI_BOLD         "\x1b[1m"
-#define ANSI_COLOR_RESET   "\x1b[0m"
-
 // define extern matrix's for the setUp
 Matrix *desiredOne;
 Matrix *desiredTwo;
@@ -111,7 +105,6 @@ void testMatrixMultiply(){
 
   matrixMultiply(resultOne, resultTwo, mult);
   PRINT_MATRIX(mult , "multiply");
-  PRINT_MATRIX(desiredOne , "multiply des");
 
   // ensure the matrix is as desired
   compareMatrixes(mult, desiredOne);
