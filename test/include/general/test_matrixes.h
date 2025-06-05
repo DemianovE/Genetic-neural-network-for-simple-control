@@ -2,17 +2,29 @@
 #define TEST_MATRIXES_H
 
 // function to test matrix add and sub
-int testMatrixAddSub();
+void testMatrixAddSub();
 
 // function to test matrix multiply
-int testMatrixMultiply();
+void testMatrixMultiply();
 
 // function to test matrix act fnc multiplication
-int testMatrixAllValuesFormula();
+void testMatrixAllValuesFormula();
 
-// functon to test creatio og matrixes from pointer
-int testMatrixCreateFromPointer();
+// functon to test creatio og matrix's from a pointer
+void testMatrixCreateFromPointer();
 
-// function to test the fully copy of the materix
-int testMatrixFullyCoppyMatrix();
+// function to test the fully copy of the matrix
+void testMatrixFullyCoppyMatrix();
+
+// macro to print the matrix's
+#define PRINT_MATRIX(A, text) do {                        \
+    printf("result of the %s:\n", text);                  \
+    for (int x = 0; x < (A)->sizes[0]; x++) {             \
+        for (int y = 0; y < (A)->sizes[1]; y++) {         \
+            printf("%f ", (A)->matrix[x][y]);             \
+        }                                                 \
+        printf("\n");                                     \
+    }                                                     \
+} while (0)
+
 #endif
