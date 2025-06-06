@@ -8,9 +8,9 @@ typedef struct Signal {
 }Signal;
 
 // the function to clean the signal
-void deleteSignal(struct Signal *signal);
+void deleteSignal(Signal *signal);
 
 // the function to select signal with CLI
-void cliSignalSelector(struct Signal *signal);
+void cliSignalSelector(Signal *signal);
 
 #endif
