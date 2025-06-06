@@ -9,42 +9,53 @@
 
 // I thank https://github.com/pms67/PID for the detailed info on how to program PID in C properly
 
-
-void createNewPidController(struct PID *pid){
-    // first the coeficients are set to 0 for start
-    pid->Kp = 0.0;
-    pid->Ki = 0.0;
-    pid->Kd = 0.0;
-
-    // the tau is set to 1.0 to not affect code in case it is not needed
-    pid->tauD = 1.0;
-    pid->tauI = 1.0;
-
-    // select signal and system
-    pid->signal = (struct Signal*)malloc(sizeof(struct Signal));
-    cliSignalSelector(pid->signal);
-
-    
-    int size = selectSystem(&pid->func_system);
-    
-    pid->dataSystem = (float*)malloc(size * sizeof(float));
-    for(int i=0; i<size; i++){
-        pid->dataSystem[i] = 0.0;
+static void resetOutputMemoryPid(PID *pid){
+    for(int i=0; i < pid->signal->length; i++){
+        pid->output->signal[i] = 0;
     }
-    pid->sizeDataSystem = size;
+    for(int i=0; i<pid->sizeDataSystem; i++){
+        pid->dataSystem[i] = 0;
+    }
+    pid->dataSystem[1] = pid->signal->dt;
 
-    // set the output signal
-    pid->output = (struct Signal*)malloc(sizeof(struct Signal));
-    pid->output->length = pid->signal->length;
-    pid->output->dt = pid->signal->dt;
-    pid->output->signal = (float*)malloc(pid->signal->length * sizeof(float));
+    pid->proportiError = 0;
+    pid->integralError = 0;
+    pid->differenError = 0;
 
-    // now the memory part is set to 0.0
-    pid->prevError     = 0.0;
-    pid->integralError = 0.0;
+    pid->prevError     = 0;
+
+    pid->steadyRiseCheck = 1;
+    pid->maxCounter = 0;
 }
 
-void deletePid(struct PID *pid){
+void createNewPidController(PID *pid){
+    // first, the coefficients are set to 0 for start
+    pid->Kp = 0;
+    pid->Ki = 0;
+    pid->Kd = 0;
+
+    // the tau is set to 1.0 to not affect code in case it is unnecessary
+    pid->tauD = 1;
+    pid->tauI = 1;
+
+    // select signal and system
+    pid->signal = malloc(sizeof(Signal));
+    cliSignalSelector(pid->signal);
+
+    pid->sizeDataSystem = selectSystem(&pid->func_system);
+    pid->dataSystem = malloc(pid->sizeDataSystem * sizeof(float));
+    for(int i=0; i<pid->sizeDataSystem; i++){
+        pid->dataSystem[i] = 0;
+    }
+
+    // set the output signal
+    pid->output = malloc(sizeof(Signal));
+    pid->output->length = pid->signal->length;
+    pid->output->dt = pid->signal->dt;
+    pid->output->signal = malloc(pid->signal->length * sizeof(float));
+}
+
+void deletePid(PID *pid){
     deleteSignal(pid->signal);
     deleteSignal(pid->output);
 
@@ -53,36 +64,13 @@ void deletePid(struct PID *pid){
     free(pid);
 }
 
-static void resetOutputMemoryPid(struct PID *pid){
-    for(int i=0; i < pid->signal->length; i++){
-        pid->output->signal[i] = 0.0;
-    }
-    for(int i=0; i<pid->sizeDataSystem; i++){
-        pid->dataSystem[i] = 0.0;
-    }
-    pid->dataSystem[1] = pid->signal->dt;
-
-    pid->proportiError = 0.0;
-    pid->integralError = 0.0;
-    pid->differenError = 0.0; 
-
-    pid->prevError     = 0.0;
-
-    pid->steadyRiseCheck = 1;
-    pid->maxCounter = 0;
-}
-
 void makeSimulationOfSignal(struct PID *pid, FILE *csvFile, int csv){
     resetOutputMemoryPid(pid);
-    pid->fit = 0.0;
+    pid->fit = 0;
 
-    float error;
+    WRITE_TO_FILE(csv, csvFile, pid, 0);
 
-    if(csv == 1){
-        fprintf(csvFile, "%f,%f,%f,%f,%f\n", pid->proportiError, pid->integralError, pid->differenError, pid->output->signal[0], pid->signal->signal[0]);
-    }
-
-    // we start from the index 2 due to D parameter which requires the -2 time delay of y[t]
+    // we start from index 2 due to D parameter which requires the -2 time delay of y[t]
     for(int i=2; i<pid->signal->length; i++){
         // first action desired signal minus current value
 
@@ -92,7 +80,7 @@ void makeSimulationOfSignal(struct PID *pid, FILE *csvFile, int csv){
         // minus because it is on y[t] and not e[t]
 
         // e[t] = w[t] - y[t-1]
-        error = pid->signal->signal[i] - pid->output->signal[i-1];
+        const float error = pid->signal->signal[i] - pid->output->signal[i-1];
         
         // P = e[t] * Kp
         pid->proportiError = pid->Kp * error;
@@ -110,7 +98,7 @@ void makeSimulationOfSignal(struct PID *pid, FILE *csvFile, int csv){
             pid->integralError = pid->limMinInt;
         }
 
-        // set data and pass to system
+        // set data and pass to a system
         pid->dataSystem[0] = pid->proportiError + pid->integralError + pid->differenError;
         
         pid->output->signal[i] = pid->func_system(pid->dataSystem);
@@ -123,14 +111,12 @@ void makeSimulationOfSignal(struct PID *pid, FILE *csvFile, int csv){
             pid->maxCounter++;
         }
 
-        if(csv == 1){
-            fprintf(csvFile, "%f,%f,%f,%f,%f\n", pid->proportiError, pid->integralError, pid->differenError, pid->output->signal[i], pid->signal->signal[i]);
-        }
+        WRITE_TO_FILE(csv, csvFile, pid, i);
 
         // set prevError
         pid->prevError = error;   
 
-        float diff = pid->signal->signal[i] - pid->output->signal[i];
+        const float diff = pid->signal->signal[i] - pid->output->signal[i];
         pid->fit += diff > 0 ? diff : diff * (-1);
 
         if(pid->output->signal[i-1] > pid->output->signal[i]){
@@ -139,9 +125,7 @@ void makeSimulationOfSignal(struct PID *pid, FILE *csvFile, int csv){
     }
 
     
-    if(pid->steadyRiseCheck == 1){
+    if(pid->steadyRiseCheck == 1 || pid->maxCounter > pid->signal->length * 1 / 100){
         pid->fit =  FLT_MAX; // make fit max value to not consider the steady rise solutions
-    } else if(pid->maxCounter > pid->signal->length * 1 / 100){
-        pid->fit =  FLT_MAX; // same as the steady rise solutions
     }
 }

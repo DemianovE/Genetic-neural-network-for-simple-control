@@ -7,14 +7,14 @@
 
 // the structure which will hold all information needed for PID work
 typedef struct PID {
-  // constants not changed in calculations
+  // constants aren't changed in calculations
   float Kp; // constant of P
   float Ki; // constant of I
   float Kd; // constant of D
-  float tauI; // time constant, can be used in the PID to make up for responce time in Integral part 
+  float tauI; // time constant can be used in the PID to make up for response time in Integral part
   float tauD; // same as tauI but for the Derivative part 
 
-  // values used in process of the calculations
+  // values used in the process of the calculations
   float prevError;      // the previous error used in D 
 
   float proportiError;  // the values of the P argument of the PID controller
@@ -22,16 +22,16 @@ typedef struct PID {
   float differenError;  // the values of the D argument of the PID controller
 
   // input values
-  struct Signal *signal;    // structure which contains the siggnal used in the system 
+  Signal *signal;    // structure which contains the signal used in the system
   float (*func_system)(float*); // function pointer to the system simulated
 
   // memory of output
-  struct Signal *output; // the array of output values
-  float *dataSystem;     // memory used by the system
+  Signal *output;    // the array of output values
 
+  float *dataSystem;  // memory used by the system
   int sizeDataSystem; // size of data_system saving point
 
-  // the limits
+  // the limits for integral part
   float limMaxInt;
   float limMinInt;
 
@@ -41,17 +41,24 @@ typedef struct PID {
   // the fit value of pid run
   float fit;
 
-  // the check for steady rise pid to prevent best PID fi value beeing the steady rise line
+  // the check for steady rise pid to prevent the best PID fi value being the steady rise line
   int steadyRiseCheck;
 
-  // the maxCounter is used to determine sygnals that are too osciliating and as such have too much over the limit value (>1%)
+  // the maxCounter is used to determine signals that are too oscillating and as such have too much over the limit value (>1%)
   int maxCounter;
 }PID;
 
-void createNewPidController(struct PID *pid);
+void createNewPidController(PID *pid);
 
-void deletePid(struct PID *pid);
+void deletePid(PID *pid);
 
-void makeSimulationOfSignal(struct PID *pid, FILE *csvFile, int csv);
+void makeSimulationOfSignal(PID *pid, FILE *csvFile, int csv);
+
+// make macro for the file input
+#define WRITE_TO_FILE(csv, csvFile, pid, i) do {                                                                                                      \
+  if (csv == 0) {                                                                                                                                     \
+    fprintf(csvFile, "%f,%f,%f,%f,%f\n", pid->proportiError, pid->integralError, pid->differenError, pid->output->signal[i], pid->signal->signal[i]); \
+  }                                                                                                                                                   \
+} while (0)
 
 #endif
