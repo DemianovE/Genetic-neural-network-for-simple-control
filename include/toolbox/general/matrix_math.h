@@ -8,28 +8,34 @@ typedef struct Matrix{
 }Matrix;
 
 // function to create new matrix
-void createMatrix(struct Matrix *matrix, int *sizes);
+void createMatrix(Matrix *matrix, int *sizes);
 
-// function to multiply two matrixes in form A * B
-void matrixMultiply(struct Matrix *A, struct Matrix *B, struct Matrix *output);
+// function to multiply two matrix's in form A * B
+void matrixMultiply(const Matrix *A, const Matrix *B, struct Matrix *output);
 
 // function to add/substruct two matrixes in format A-B or A+B
-void matrixSubstAdd(struct Matrix *A, struct Matrix *B, struct Matrix *output, int type);
+void matrixSubstAdd(Matrix *A, Matrix *B, Matrix *output, int type);
 
 // function to pass all values trough function
-void matrixAllValuesFormula(struct Matrix *matrix, float (*func_ptr)(float));
+void matrixAllValuesFormula(const Matrix *matrix, float (*func_ptr)(float));
 
-// function to create matrix from values of pointer
-void createMatrixFromPointer(struct Matrix *output, float *input, int *size);
+// function to create matrix from values of a pointer
+void createMatrixFromPointer(Matrix *output, const float *input, int *size);
 
 // function to delete matrix
-void matrixDelete(struct Matrix *matrix);
+void matrixDelete(Matrix *matrix);
 
-// function to delete the 
-void matrixDeleteOnlyData(struct Matrix *matrix);
+// function to delete the data of the matrix
+void matrixDeleteOnlyData(Matrix *matrix);
 
 // create full coppy of the matrix
-void fullyCopyMatrix(struct Matrix *input, struct Matrix *output);
+void fullyCopyMatrix(const Matrix *input, Matrix *output);
+
+// macro to copy size and make matrix
+#define CREATE_MATRIX_WITH_SIZE(matrix, smaller, bigger) do { \
+    int size[] = {smaller->sizes[0], bigger->sizes[1]}; \
+    createMatrix(matrix, size); \
+} while (0)
 
 #endif
  
