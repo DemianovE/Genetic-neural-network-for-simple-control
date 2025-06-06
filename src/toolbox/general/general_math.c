@@ -5,9 +5,7 @@
 #include <time.h>
 #include <stddef.h>
 
-float createRandomFloat(float min, float max){
-  float random = ((float) rand()) / (float) RAND_MAX;
-  float diff = max - min;
-  float r = random * diff;
-  return min + r;
+float createRandomFloat(const float min, const float max){
+  const float random = ((float) rand()) / (float) RAND_MAX;
+  return min + (random * (max - min));
 }
