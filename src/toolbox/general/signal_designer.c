@@ -2,53 +2,60 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <assert.h>
 
 // the time step constant
 #define DT001 0.001; 
-#define DT01  0.01; 
+#define DT01  0.01;
+
+static void buildFromMap(Signal *signal, const float map[][3], const int size){
+    assert(signal != NULL);
+    assert(signal->signal != NULL);
+
+    int globalIndex = 0;
+    for (int i = 0; i < size; i++){
+        const int start = (int)(map[i][0] / signal->dt);
+        const int end   = (int)(map[i][1] / signal->dt);
+
+        for  (int j = start; j < end; j++){
+            signal->signal[globalIndex] = map[i][2];
+            globalIndex++;
+        }
+    }
+
+    signal->length = globalIndex;
+}
 
 static void selectStepSignal(Signal *signal){
     signal->length = 1000;
     signal->dt     = DT01;
 
-    signal->signal = (float*)malloc(signal->length * sizeof(float));   
-    int globalIndex = 0;
-    for(float i = 0.0; i < 0.3; i += signal->dt){
-        signal->signal[globalIndex] = 0.0;
-        globalIndex++;
-    } for(float i = 0.3 + signal->dt; i < 10.0; i += signal->dt){
-        signal->signal[globalIndex] = 1.0;
-        globalIndex++;
-    }
-    signal->length = globalIndex;
+    signal->signal = (float*)malloc(signal->length * sizeof(float));
+
+    const float map[2][3] = {
+        {0,  1, 0},
+        {1, 10, 1}};
+    const int size = 2;
+
+    buildFromMap(signal, map, size);
 }
 
 static void selectCustomASignal(Signal *signal){
     signal->length = 1002;
     signal->dt     = DT01;
 
-    signal->signal = (float*)malloc(signal->length * sizeof(float));   
-    int globalIndex = 0;
-    for(float i = 0.0; i < 1.0; i += signal->dt){
-        signal->signal[globalIndex] = 0;
-        globalIndex++;
-    } for(float i = 1.0; i < 3.0; i += signal->dt){
-        signal->signal[globalIndex] = 30;
-        globalIndex++;
-    } for(float i = 3.0; i < 5.0; i += signal->dt){
-        signal->signal[globalIndex] = 15;
-        globalIndex++;
-    } for(float i = 5.0; i < 8.0; i += signal->dt){
-        signal->signal[globalIndex] = 5;
-        globalIndex++;
-    } for(float i = 8.0; i < 9.0; i += signal->dt){
-        signal->signal[globalIndex] = 25;
-        globalIndex++;
-    } for(float i = 9.0; i < 10.0; i += signal->dt){
-        signal->signal[globalIndex] = 0;
-        globalIndex++;
-    }   
-    signal->length = globalIndex;
+    signal->signal = (float*)malloc(signal->length * sizeof(float));
+
+    const float map[6][3] = {
+        {0,  1,  0},
+        {1,  3, 30},
+        {3,  5, 15},
+        {5,  8,  5},
+        {8,  9, 25},
+        {9, 10,  0}};
+    const int size = 6;
+
+    buildFromMap(signal, map, size);
 }
 
 
