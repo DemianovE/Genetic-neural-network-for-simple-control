@@ -7,7 +7,7 @@
 #define DT001 0.001; 
 #define DT01  0.01; 
 
-static void selectStepSignal(struct Signal *signal){
+static void selectStepSignal(Signal *signal){
     signal->length = 1000;
     signal->dt     = DT01;
 
@@ -23,29 +23,29 @@ static void selectStepSignal(struct Signal *signal){
     signal->length = globalIndex;
 }
 
-static void selectCustomASignal(struct Signal *signal){
+static void selectCustomASignal(Signal *signal){
     signal->length = 1002;
     signal->dt     = DT01;
 
     signal->signal = (float*)malloc(signal->length * sizeof(float));   
     int globalIndex = 0;
     for(float i = 0.0; i < 1.0; i += signal->dt){
-        signal->signal[globalIndex] = 0.0;
+        signal->signal[globalIndex] = 0;
         globalIndex++;
     } for(float i = 1.0; i < 3.0; i += signal->dt){
-        signal->signal[globalIndex] = 30.0;
+        signal->signal[globalIndex] = 30;
         globalIndex++;
     } for(float i = 3.0; i < 5.0; i += signal->dt){
-        signal->signal[globalIndex] = 15.0;
+        signal->signal[globalIndex] = 15;
         globalIndex++;
     } for(float i = 5.0; i < 8.0; i += signal->dt){
-        signal->signal[globalIndex] = 5.0;
+        signal->signal[globalIndex] = 5;
         globalIndex++;
     } for(float i = 8.0; i < 9.0; i += signal->dt){
-        signal->signal[globalIndex] = 25.0;
+        signal->signal[globalIndex] = 25;
         globalIndex++;
     } for(float i = 9.0; i < 10.0; i += signal->dt){
-        signal->signal[globalIndex] = 0.0;
+        signal->signal[globalIndex] = 0;
         globalIndex++;
     }   
     signal->length = globalIndex;
@@ -60,7 +60,7 @@ void deleteSignal(struct Signal *signal){
 void cliSignalSelector(struct Signal *signal){
     printf("Please select the Signal:\n");
     printf("1 - step\n");
-    printf("2 - customa\n");
+    printf("2 - custom\n");
     printf("Select: ");
     int userChoice;
     scanf("%d", &userChoice);

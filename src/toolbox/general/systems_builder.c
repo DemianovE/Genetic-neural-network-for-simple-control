@@ -5,13 +5,13 @@
 #include <stdlib.h>
 #include <math.h>
 
-float linear(float *data){
+float linear(const float *data){
     // in casse of linear data is returned as it is
     return data[0];
 }
 
 float complexYDot(float *data){
-    // in this case
+    // in this case,
     // 0 - u
     // 1 - dt
     // 2 - y
