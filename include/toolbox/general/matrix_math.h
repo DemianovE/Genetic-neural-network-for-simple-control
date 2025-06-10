@@ -33,7 +33,9 @@ void fullyCopyMatrix(const Matrix *input, Matrix *output);
 
 // macro to copy size and make matrix
 #define CREATE_MATRIX_WITH_SIZE(matrix, smaller, bigger) do { \
-    int size[] = {smaller->sizes[0], bigger->sizes[1]}; \
+    int *size = malloc(2*sizeof(int));\
+    size[0] = smaller->sizes[0]; \
+    size[1] = bigger->sizes[1];  \
     createMatrix(matrix, size); \
 } while (0)
 
