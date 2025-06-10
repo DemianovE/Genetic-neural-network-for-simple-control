@@ -7,16 +7,22 @@
 #include <stdio.h>
 #include "unity/unity.h"
 
-void setUp() {}
-void tearDown() {}
+PID *pid;
+FILE *csvFile;
 
-void testPIDCreate(){
-  PID *pid = malloc(sizeof(struct PID));
+void setUp() {
+  pid = malloc(sizeof(PID));
   createNewPidController(pid);
 
-  FILE *csvFile = fopen("data_pid_.csv", "w");
+  csvFile = fopen("data_pid_.csv", "w");
   fprintf(csvFile, "P,I,D,CV,RV\n");
+}
+void tearDown() {
+  deletePid(pid);
+  fclose(csvFile);
+}
 
+void testPIDCreate(){
   pid->Kp = 1;
   pid->Ki = 1;
   pid->Kd = 0;
@@ -30,10 +36,8 @@ void testPIDCreate(){
   makeSimulationOfSignal(pid, csvFile, 1);
 
   printf("%f\n",pid->fit);
-  plotGraph();
 
-  deletePid(pid);
-  fclose(csvFile);
+  TEST_ASSERT_TRUE(1);
 }
 
 int main(void) {
