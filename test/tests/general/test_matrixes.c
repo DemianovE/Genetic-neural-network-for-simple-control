@@ -24,7 +24,6 @@ static void compareMatrixes(const Matrix *a, const Matrix *b){
   }
 }
 
-
 static int* allocSizes() {
   int *sizes = malloc(2 * sizeof(int));
   sizes[0] = 2;
@@ -32,12 +31,12 @@ static int* allocSizes() {
   return sizes;
 }
 
-static  void setUpMatrixes() {
-  desiredOne = malloc(sizeof(struct Matrix));
-  desiredTwo = malloc(sizeof(struct Matrix));
+void setUp(){
+  desiredOne = malloc(sizeof(Matrix));
+  desiredTwo = malloc(sizeof(Matrix));
 
-  resultOne = malloc(sizeof(struct Matrix));
-  resultTwo = malloc(sizeof(struct Matrix));
+  resultOne = malloc(sizeof(Matrix));
+  resultTwo = malloc(sizeof(Matrix));
 
   createMatrix(desiredOne, allocSizes());
   createMatrix(desiredTwo, allocSizes());
@@ -56,7 +55,7 @@ static  void setUpMatrixes() {
   resultTwo->matrix[1][1] = 1;
 }
 
-static void tearDownMatrix() {
+void tearDown(){
   matrixDelete(desiredOne);
   matrixDelete(desiredTwo);
 
@@ -174,13 +173,6 @@ void testMatrixFullyCoppyMatrix(){
   compareMatrixes(data, desiredOne);
 
   matrixDelete(data);
-}
-
-void setUp(void) {
-  setUpMatrixes();
-}
-void tearDown(void) {
-  tearDownMatrix();
 }
 
 int main(void) {
