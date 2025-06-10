@@ -1,7 +1,6 @@
 #include "general/test_pid_controller.h"
 
 #include "general/pid_controller.h"
-#include "general/plotting_toolbox.h"
 
 #include <stdlib.h>
 #include <stdio.h>
