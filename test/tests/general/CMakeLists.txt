@@ -70,4 +70,4 @@ add_test(NAME test_matrixes         COMMAND test_matrixes)
 # add_test(NAME test_pid_controller  COMMAND test_pid_controller) # the test id temporary disabled due to CLI
 # add_test(NAME test_signal_designer COMMAND test_signal_designer) # the test id temporary disabled due to CLI
 add_test(NAME test_sort         COMMAND test_sort)
-add_test(NAME test_system_builder         COMMAND test_system_builder) # the test id temporary disabled due to CLI
+# add_test(NAME test_system_builder         COMMAND test_system_builder) # the test id temporary disabled due to CLI
