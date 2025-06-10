@@ -2,28 +2,27 @@
 #include "general/signal_designer.h"
 
 #include <stdlib.h>
-#include <stdio.h>
+#include "unity/unity.h"
 
-// used to print testing outputs
-#define ANSI_COLOR_RED     "\x1b[31m"
-#define ANSI_COLOR_GREEN   "\x1b[32m"
-#define ANSI_BOLD         "\x1b[1m"
-#define ANSI_COLOR_RESET   "\x1b[0m"
+Signal *signal;
 
-int testSignalCreate(){
-  printf(ANSI_BOLD "=======TEST SIGNAL CREATE STARTED=======" ANSI_COLOR_RESET "\n");
-
-  struct Signal *signal = (struct Signal*)malloc(sizeof(struct Signal));
-
-  cliSignalSelector(signal);
+void setUp(){
+  signal = malloc(sizeof(Signal));
+}
+void tearDown(){
   deleteSignal(signal);
+}
 
-  int flag = 1;
+void testSignalCreate(){
+  cliSignalSelector(signal);
 
-  if(flag == 0){
-    printf(ANSI_BOLD ANSI_COLOR_RED "=======TEST SIGNAL CREATE FAILED=======" ANSI_COLOR_RESET "\n");
-    return 0;
-  }
-  printf(ANSI_BOLD ANSI_COLOR_GREEN "=======TEST SIGNAL CREATE SUCCESSFUL=======" ANSI_COLOR_RESET "\n");
-  return 1;
+  TEST_ASSERT_TRUE(1);
+}
+
+int main(void) {
+  UNITY_BEGIN();
+
+  RUN_TEST(testSignalCreate);
+
+  return UNITY_END();
 }
