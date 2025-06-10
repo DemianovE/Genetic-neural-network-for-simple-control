@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include <math.h>
 
-float linear(const float *data){
+float linear(float *data){
     // in casse of linear data is returned as it is
     return data[0];
 }
@@ -47,6 +47,7 @@ int selectSystem(float (**func_ptr)(float*)){
     printf("2 - complexYDddot\n");
     printf("3 - complexYDot\n");
     printf("Select: ");
+
     int userChoice;
     scanf("%d", &userChoice);
 
