@@ -8,10 +8,10 @@
 
 #include "unity/unity.h"
 
-void setUp() {}
-void tearDown() {}
+void setUp(void) {}
+void tearDown(void) {}
 
-void testSelectSystem(){
+void testSelectSystem(void){
   float (*func_ptr)(float*);
   selectSystem(&func_ptr);
 
