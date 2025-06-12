@@ -5,10 +5,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-void plotGraph() {
+void plotGraph(void) {
     RUN_GRAPH("plotting_code");
 }
 
-void plotGraphNN() {
+void plotGraphNN(void) {
     RUN_GRAPH("plotting_code_NN");
 }

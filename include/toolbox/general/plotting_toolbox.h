@@ -3,10 +3,10 @@
 
 #include "general/signal_designer.h"
 // general call for python plot graph code
-void plotGraph();
+void plotGraph(void);
 
 // NN specific plot Pythinn function call
-void plotGraphNN();
+void plotGraphNN(void);
 
 // macro to run the graph
 #define RUN_GRAPH(command) do {                                     \
