@@ -24,14 +24,14 @@ static void compareMatrices(const Matrix *a, const Matrix *b){
   }
 }
 
-static int* allocSizes() {
+static int* allocSizes(void) {
   int *sizes = malloc(2 * sizeof(int));
   sizes[0] = 2;
   sizes[1] = 2;
   return sizes;
 }
 
-void setUp(){
+void setUp(void){
   desiredOne = malloc(sizeof(Matrix));
   desiredTwo = malloc(sizeof(Matrix));
 
@@ -55,7 +55,7 @@ void setUp(){
   resultTwo->matrix[1][1] = 1;
 }
 
-void tearDown(){
+void tearDown(void){
   matrixDelete(desiredOne);
   matrixDelete(desiredTwo);
 
@@ -63,7 +63,7 @@ void tearDown(){
   matrixDelete(resultTwo);
 }
 
-void testMatrixAddSub(){
+void testMatrixAddSub(void){
   Matrix *add = malloc(sizeof(struct Matrix));
   Matrix *sub = malloc(sizeof(struct Matrix));
 
@@ -94,7 +94,7 @@ void testMatrixAddSub(){
   matrixDelete(sub);
 }
 
-void testMatrixMultiply(){
+void testMatrixMultiply(void){
   Matrix *mult = malloc(sizeof(struct Matrix));
 
   desiredOne->matrix[0][0] = 2;
@@ -112,7 +112,7 @@ void testMatrixMultiply(){
   matrixDelete(mult);
 }
 
-void testMatrixAllValuesFormula(){
+void testMatrixAllValuesFormula(void){
   float (*func_ptr_tanh)(float);
   selectTangActivationFunction(&func_ptr_tanh);
 
@@ -143,7 +143,7 @@ void testMatrixAllValuesFormula(){
   func_ptr_sigm = NULL;
 }
 
-void testMatrixCreateFromPointer(){
+void testMatrixCreateFromPointer(void){
   Matrix *data = malloc(sizeof(struct Matrix));
 
   desiredOne->matrix[0][0] = 1;
@@ -161,7 +161,7 @@ void testMatrixCreateFromPointer(){
   matrixDelete(data);
 }
 
-void testMatrixFullyCoppyMatrix(){
+void testMatrixFullyCoppyMatrix(void){
   Matrix *data    = malloc(sizeof(struct Matrix));
 
   desiredOne->matrix[0][0] = 1;

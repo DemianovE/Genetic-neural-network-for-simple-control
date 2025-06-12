@@ -2,19 +2,19 @@
 #define TEST_MATRICES_H
 
 // function to test matrix add and sub
-void testMatrixAddSub();
+void testMatrixAddSub(void);
 
 // function to test matrix multiply
-void testMatrixMultiply();
+void testMatrixMultiply(void);
 
 // function to test matrix act fnc multiplication
-void testMatrixAllValuesFormula();
+void testMatrixAllValuesFormula(void);
 
 // functon to test creatio og matrix's from a pointer
-void testMatrixCreateFromPointer();
+void testMatrixCreateFromPointer(void);
 
 // function to test the fully copy of the matrix
-void testMatrixFullyCoppyMatrix();
+void testMatrixFullyCoppyMatrix(void);
 
 // macro to print the matrix's
 #define PRINT_MATRIX(A, text) do {                        \
