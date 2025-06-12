@@ -36,7 +36,7 @@ static void createSystemNeuralNetworkInput(struct NNInput *input, int check){
   input->sdNumber = 0;
 }
 
-int testSystemCreate(){
+int testSystemCreate(void){
   printf(ANSI_BOLD "=======TEST SYSTEM NN CREATE STARTED=======" ANSI_COLOR_RESET "\n");
 
   struct NNInput *input = (struct NNInput*)malloc(sizeof(struct NNInput));
@@ -65,7 +65,7 @@ int testSystemCreate(){
   fprintf(csvFile, "CV,RV\n");
 
   createInputPop(inputPop, max, min, size);
-  createStructure(inputPop, pop);
+  createFilledPopulation(inputPop, pop);
 
   fillMatrixesNN(systemNN->neuralNetwork, pop->pop[0]);
   makeSimulationOfSignalNN(systemNN, csvFile, 1);

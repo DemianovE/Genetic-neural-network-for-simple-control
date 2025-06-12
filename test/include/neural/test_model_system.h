@@ -2,6 +2,6 @@
 #define TEST_MODEL_SYSTEM_H
 
 // function to test if the create system model works
-int testSystemCreate();
+int testSystemCreate(void);
 
 #endif
