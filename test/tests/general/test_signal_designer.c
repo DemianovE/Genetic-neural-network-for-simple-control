@@ -6,14 +6,14 @@
 
 Signal *signal;
 
-void setUp(){
+void setUp(void){
   signal = malloc(sizeof(Signal));
 }
-void tearDown(){
+void tearDown(void){
   deleteSignal(signal);
 }
 
-void testSignalCreate(){
+void testSignalCreate(void){
   cliSignalSelector(signal);
 
   TEST_ASSERT_TRUE(1);
