@@ -7,11 +7,11 @@
 #include "../../../external/unity/unity.h"
 #include "unity/unity.h"
 
-void setUp() {}
-void tearDown() {}
+void setUp(void) {}
+void tearDown(void) {}
 
-void testQuicksort(){
-  int length = 5;
+void testQuicksort(void){
+  const int length = 5;
   float fit[] = {9.6, 3.4, 10, 4.6, 0.4};
 
   int *result = malloc(length*sizeof(int));

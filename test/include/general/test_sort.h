@@ -2,6 +2,6 @@
 #define TEST_SORT_H
 
 // function to test the quicksort function
-void testQuicksort();
+void testQuicksort(void);
 
 #endif
