@@ -8,39 +8,28 @@
 
 #include "unity/unity.h"
 
-Pop *populationCreatedOne;
-Pop *populationCreatedTwo;
+Population *populationCreatedOne;
+Population *populationCreatedTwo;
 
-Pop *populationCreatedBig;
+Population *populationCreatedBig;
 
-Pop *populationInitializedOne;
-Pop *populationInitializedTwo;
-
-static void createPopulation(struct Pop *population, int* size){
-  InputPop *input = malloc(sizeof(struct InputPop));
-  float max[]  = {10.0, 100.0, -10.0};
-  float min[]  = {.0, 50.0, -20.0};
-
-  createInputPop(input, max, min, size);
-  createStructure(input, population);
-}
+Population *populationInitializedOne;
+Population *populationInitializedTwo;
 
 void setUp(void){
-  populationCreatedOne = malloc(sizeof(Pop));
-  populationCreatedTwo  = malloc(sizeof(Pop));
+  const int size[] = {3, 3};
+  const int sizeBig[] = {2, 9};
 
-  populationCreatedBig  = malloc(sizeof(Pop));
+  const float max[]  = {10.0, 100.0, -10.0};
+  const float min[]  = {.0, 50.0, -20.0};
 
-  populationInitializedOne = malloc(sizeof(Pop));
-  populationInitializedTwo = malloc(sizeof(Pop));
+  populationCreatedOne = createFilledPopulation(max, min, size);
+  populationCreatedTwo = createFilledPopulation(max, min, size);
 
-  int size[] = {3, 3};
-  int sizeBig[] = {2, 9};
+  populationCreatedBig = createFilledPopulation(max, min, sizeBig);
 
-  createPopulation(populationCreatedOne, size);
-  createPopulation(populationCreatedTwo, size);
-
-  createPopulation(populationCreatedBig, sizeBig);
+  populationInitializedOne = NULL;
+  populationInitializedTwo = NULL;
 }
 
 void tearDown(void){
@@ -57,8 +46,8 @@ void testSelectBest(){
   float fit[]       = {-1, 15, -3};
   const int selects[]     = {2, 2};
 
-  selectBest(fit, populationCreatedOne, populationInitializedOne, selects, 2, 0);
-  selectBest(fit, populationCreatedOne, populationInitializedTwo,  selects, 2, 1);
+  populationInitializedOne = selectBest(fit, populationCreatedOne, selects, 2, 0);
+  populationInitializedTwo = selectBest(fit, populationCreatedOne, selects, 2, 1);
 
   PRINT_POPULATION(populationCreatedOne, "initial");
   PRINT_POPULATION(populationInitializedOne, "higher");
@@ -78,7 +67,7 @@ void testSelectBest(){
 void testSelectRandom(){
   const int rows = 10;
 
-  selectRandom(populationCreatedOne, populationInitializedOne, rows);
+  populationInitializedOne = selectRandom(populationCreatedOne, rows);
   PRINT_POPULATION(populationInitializedOne, "result");
   
   TEST_ASSERT_TRUE(1); // it is hard to test random, even when it is only pseudo :)
@@ -88,7 +77,7 @@ void testSelectTournament(){
   const int rows = 10;
   const float fit[] = {0.9, 0.3, 0.5};
 
-  selectTournament(populationCreatedOne, fit, populationInitializedOne, rows);
+  populationInitializedOne = selectTournament(populationCreatedOne, fit, rows);
   PRINT_POPULATION(populationInitializedOne, "result");
 
   TEST_ASSERT_TRUE(1);
