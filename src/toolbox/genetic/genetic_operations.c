@@ -4,15 +4,28 @@
 #include "general/sort.h"
 #include "general/general_math.h"
 
-#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
 #include <string.h>
-#include <float.h>
+#include <assert.h>
 
+// this code is a C implementation of the code created by prof. Ivan Sekaj STU 2002 using Matlab
 
-static void create_input_pop_custom(struct InputPop *inputPop, int rows, struct Pop *population){
+/*
+ * This function is making an InputPop structure object from the existing population struct object
+ * Input:
+ *    InputPop *inputPop - pointer to new InputPopulation struct object
+ *    int rows - new number of rows. Is nto from population as new population can contain custom number
+ *    const Pop *population - pointer to the existing population struct object
+ * Output;
+ *    There is no output in the function, but the inputPop is manipulated instead
+ */
+static void create_input_pop_custom(InputPop *inputPop, const int rows, const Pop *population){
+  assert(inputPop != NULL);
+  assert(population != NULL);
+
+  // copy of population config
   inputPop->cols = population->cols;
   inputPop->rows = rows;
 
@@ -20,97 +33,97 @@ static void create_input_pop_custom(struct InputPop *inputPop, int rows, struct 
   inputPop->S[0] = (float *)malloc(inputPop->cols * sizeof(float));
   inputPop->S[1] = (float *)malloc(inputPop->cols * sizeof(float));
 
-  // correct the copy of the array
+  // copy of the min/max map
   memcpy(inputPop->S[0], population->S[0], inputPop->cols * sizeof(float));
   memcpy(inputPop->S[1], population->S[1], inputPop->cols * sizeof(float));
 }
 
-void selbest(float *fit, int fitLength, struct Pop *population, struct Pop *newPopulation, int *selects, int selectsLength, int way){
-  // fit - fit of the functions
-  // fitLength - length of the fit array
-  // population - population used to create new
-  // newPopulation - pointer to new population location
-  // selects - array of rows of each best solution in new population
-  // selectsLength - the length of the selects array
-  // if way == 1 -> from lowest to highest
-  // if way == 0 -> from highest to lowest
-  // this function is selecting best values out of the pop
+void selectBest(float *fit, const Pop *population, Pop *newPopulation, const int *selects, const int selectsLength, const int way){
+  /*
+   * int rows - number of rows in the newPopulation
+   * int* result - the indexing of the sorted array on the places
+   * int resultIndex - the indexing used to access results. Depends on the way
+   * InputPop *inputPop - inpuPop construct pointer to init the newPopulation
+   * int globalIndex - index in the newPopulation
+   */
+  assert(way == 0 || way == 1); // make sure way is in the range
+  assert(population != NULL); // make sure the population exists
+  assert(selectsLength > 0); // make sure we have the select
+  assert(selectsLength <= population->rows); // make sure it is not going out of population scope
 
-  // first sort the fit function and create "result" - the index array of sorting
   int rows = 0;
+  int* result = malloc(population->rows * sizeof(int));
+
   for(int i=0; i<selectsLength; i++){
     rows += selects[i];
   }
-
-  int* result = (int*)malloc(fitLength * sizeof(int));
-  for(int i=0; i<fitLength; i++){
+  for(int i=0; i<population->rows; i++){
     result[i] = i;
   }
 
-  quickSort(fit, result, fitLength);
+  assert(rows > 0); // make sure the number of new rows is more than 0
+  quickSort(fit, result, population->rows);
 
   // now depending on the way the starting index is selected
-  int resultIndex = 0;
-  if(way == 0){
-    resultIndex = fitLength -1;
-  } else if(way == 1){
-    resultIndex = 0;
-  } else{
-    fprintf(stderr, "Error: way should be 0 or 1\n");
-    exit(EXIT_FAILURE);
-  }
+  int resultIndex = (way == 0) ? population->rows -1 : 0;
 
-  // now the pop structure is created based on pointer
-  struct InputPop *inputPop = (struct InputPop*)malloc(sizeof(struct InputPop));
+  // now the pop structure is created based on a pointer
+  InputPop *inputPop = malloc(sizeof(struct InputPop));
   create_input_pop_custom(inputPop, rows, population);
 
   createStructure(inputPop, newPopulation);
 
-  // the main purpose of this loop is iterate though the selects and add new rows to new population based on the sorted fit and old population
+  // the main purpose of this loop is iterated though that selects and add new rows to new population based on the sorted fit and old population
   int globalIndex = 0;
-  for(int i=0; i<selectsLength; i++){
-    int num = selects[i];
-    for(int y=0; y<num; y++){
+  for (int i = 0; i < selectsLength; i++){
+    for (int y = 0; y < selects[i]; y++){
       // the desired row is copied to the population
       memcpy(newPopulation->pop[globalIndex], population->pop[result[resultIndex]], newPopulation->cols * sizeof(float));
       globalIndex++;
     }
-    if(way == 0){
-      resultIndex--;
-    } else{
-      resultIndex++;
-    }
+    resultIndex = (way == 0) ? resultIndex - 1 : resultIndex + 1;
   }
 
-  
   free(result);
 }
 
-void selrand(struct Pop *population, struct Pop *newPopulation, int rows){
+void selectRandom(const Pop *population, Pop *newPopulation, const int rows){
+  /*
+   * const int index - the index of the gene
+   */
 
-  // now the pop structure is created based on pointer
-  struct InputPop *inputPop = (struct InputPop*)malloc(sizeof(struct InputPop));
+  assert(population != NULL);
+  assert(rows > 0);
+
+  // now the pop structure is created based on a pointer
+  InputPop *inputPop = malloc(sizeof(struct InputPop));
   create_input_pop_custom(inputPop, rows, population);
 
   createStructure(inputPop, newPopulation);
-  int index;
   for(int i=0; i<rows; i++){
-    index  = rand() % population->rows;
+    const int index  = rand() % population->rows;
     memcpy(newPopulation->pop[i], population->pop[index], population->cols * sizeof(float));
   }
 }
 
-void selturn(struct Pop *population, float* fit, struct Pop *newPopulation, int rows){
+void selectTournament(const Pop *population, const float* fit, Pop *newPopulation, const int rows){
+  /*
+  * const int index - the index of the gene
+  * const int j - index of one of random genes from population
+  * const int k - index of one of random genes from population
+  */
 
-  // this code is a copy of the code created by prof. Ivan Sekaj STU 2002 using Matlab 
+  assert(population != NULL); // check if the population exists
+  assert(rows > 0); // check if the rows are greater than 0
+  assert(fit != NULL); // check if the fit exists
 
-  struct InputPop *inputPop = (struct InputPop*)malloc(sizeof(struct InputPop));
+  InputPop *inputPop = malloc(sizeof(struct InputPop));
   create_input_pop_custom(inputPop, rows, population);
   createStructure(inputPop, newPopulation);
   
   for(int i=0; i<rows; i++){
-    int j = rand() % population->rows;
-    int k = rand() % population->rows;
+    const int j = rand() % population->rows;
+    const int k = rand() % population->rows;
 
     if(j == k){
       memcpy(newPopulation->pop[i], population->pop[j], population->cols * sizeof(float));
@@ -122,48 +135,60 @@ void selturn(struct Pop *population, float* fit, struct Pop *newPopulation, int 
   }
 }
 
-void crosov(struct Pop *population, int *selects, int selectsLength){
+void crossover(const Pop *population, int *selects, int selectsLength){
+  /*
+  * const int start - index of the start of current frame
+  * const int end - index of the end of current frame
+  * float *additionalSaving - array for the temporary storing of the frame
+  * int globalIndex - index for the frame going through additionalSaving
+  */
 
+  assert(population != NULL); // check if the population exists
+  assert(selectsLength > 0); // check if there are frames
+
+  // add one more index in case the number is odd
   if(selectsLength % 2 != 0){
     selects = (int *)realloc(selects, (selectsLength + 1) * sizeof(int));
     selects[selectsLength] = population->cols;
     selectsLength++;
   }
 
-  int start, end, globalIndex;
-  float *additionaSaving = (float*)malloc(sizeof(float));
   for(int index = 0; index < population->rows - 1; index += 2){
     
     for(int i = 0; i<selectsLength; i+=2){
-      start = selects[i];
-      end   = selects[i + 1];
+      const int start = selects[i];
+      const int end   = selects[i + 1];
 
-      additionaSaving = (float *)realloc(additionaSaving, (end - start) * sizeof(float));
-      globalIndex = 0;
+      float *additionalSaving = malloc((end - start) * sizeof(float));
+      int globalIndex = 0;
+
       for(int x = start; x<end; x++){
-        additionaSaving[globalIndex]  = population->pop[index][x];
+        additionalSaving[globalIndex]  = population->pop[index][x];
         globalIndex++;
       }
       globalIndex = 0;
 
       for(int x = start; x<end; x++){
         population->pop[index][x]   = population->pop[index+1][x];
-        population->pop[index+1][x] = additionaSaving[globalIndex];
+        population->pop[index+1][x] = additionalSaving[globalIndex];
         globalIndex++;
       }
-      
+      free(additionalSaving);
     }
   }
-  free(additionaSaving);
   free(selects);
 }
 
-void mutx(struct Pop *population, float chance){
-  float randomFloat;
+void mutx(const Pop *population, const float chance){
+  /*
+  * float randomFloat - the value which is a modified chromosome
+  */
+  assert(population != NULL); // check if the population exists
+  assert(chance > 0); // check if the chance of mutation exists
 
   for(int x=0; x<population->rows; x++){
     for(int y=0; y<population->cols; y++){
-      randomFloat = (float)rand() / RAND_MAX;
+      float randomFloat = (float)rand() / RAND_MAX;
       if(randomFloat < chance){
         randomFloat = createRandomFloat(population->S[1][y], population->S[0][y]);
         population->pop[x][y] = randomFloat;
