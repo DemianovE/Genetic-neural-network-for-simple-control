@@ -6,23 +6,18 @@
 #include <stdio.h>
 #include <string.h>
 
-// used to print testing outputs
-#define ANSI_COLOR_RED     "\x1b[31m"
-#define ANSI_COLOR_GREEN   "\x1b[32m"
-#define ANSI_BOLD         "\x1b[1m"
-#define ANSI_COLOR_RESET   "\x1b[0m"
+#include "unity/unity.h"
 
-static int arraysEqual(int *arr1, int *arr2, int size) {
-    for (int i = 0; i < size; ++i) {
-        if (arr1[i] != arr2[i]) {
-            return 0; 
-        }
-    }
-    return 1; 
-}
+Pop *populationCreatedOne;
+Pop *populationCreatedTwo;
+
+Pop *populationCreatedBig;
+
+Pop *populationInitializedOne;
+Pop *populationInitializedTwo;
 
 static void createPopulation(struct Pop *population, int* size){
-  struct InputPop *input = (struct InputPop*)malloc(sizeof(struct InputPop));
+  InputPop *input = malloc(sizeof(struct InputPop));
   float max[]  = {10.0, 100.0, -10.0};
   float min[]  = {.0, 50.0, -20.0};
 
@@ -30,190 +25,112 @@ static void createPopulation(struct Pop *population, int* size){
   createStructure(input, population);
 }
 
-int testSelbest(){
-  printf(ANSI_BOLD "=======TEST SELBEST STARTED=======" ANSI_COLOR_RESET "\n");
+void setUp(void){
+  populationCreatedOne = malloc(sizeof(Pop));
+  populationCreatedTwo  = malloc(sizeof(Pop));
 
-  struct Pop *newPopulationHigher = (struct Pop*)malloc(sizeof(struct Pop));
-  struct Pop *newPopulationLower  = (struct Pop*)malloc(sizeof(struct Pop));
-  struct Pop *population = (struct Pop*)malloc(sizeof(struct Pop));
-  
+  populationCreatedBig  = malloc(sizeof(Pop));
 
-  float fit[]       = {-1, 15, -3};
-  int selects[]     = {2, 2};
-  int size[]        = {3, 3};
-  int fitLength     = 3;
-  int selectsLength = 2;
-  int wayhigher     = 0;
-  int waylower      = 1;
+  populationInitializedOne = malloc(sizeof(Pop));
+  populationInitializedTwo = malloc(sizeof(Pop));
 
-  createPopulation(population, size);
-  selbest(fit, fitLength, population, newPopulationHigher, selects, selectsLength, wayhigher);
-  selbest(fit, fitLength, population, newPopulationLower,  selects, selectsLength, waylower);
+  int size[] = {3, 3};
+  int sizeBig[] = {2, 9};
 
-  printf("Initial population\n");
-  for(int i=0; i<population->rows; i++){
-    for(int j=0; j<population->cols; j++){
-        printf("%f ", population->pop[i][j]);
-    }
-    printf("\n");
-  }
+  createPopulation(populationCreatedOne, size);
+  createPopulation(populationCreatedTwo, size);
 
-  printf("New population higher\n");
-  for(int i=0; i<newPopulationHigher->rows; i++){
-    for(int j=0; j<newPopulationHigher->cols; j++){
-        printf("%f ", newPopulationHigher->pop[i][j]);
-    }
-    printf("\n");
-  }
-
-  printf("New population lower\n");
-  for(int i=0; i<newPopulationLower->rows; i++){
-    for(int j=0; j<newPopulationLower->cols; j++){
-        printf("%f ", newPopulationLower->pop[i][j]);
-    }
-    printf("\n");
-  }
-
-  int flagHigher1 = arraysEqual(population->pop[1], newPopulationHigher->pop[0], population->cols);
-  int flagHigher2 = arraysEqual(population->pop[1], newPopulationHigher->pop[1], population->cols);
-  int flagHigher3 = arraysEqual(population->pop[0], newPopulationHigher->pop[2], population->cols);
-  int flagHigher4 = arraysEqual(population->pop[0], newPopulationHigher->pop[3], population->cols);
-
-  int flagLower1 = arraysEqual(population->pop[2], newPopulationLower->pop[0], population->cols);
-  int flagLower2 = arraysEqual(population->pop[2], newPopulationLower->pop[1], population->cols);
-  int flagLower3 = arraysEqual(population->pop[0], newPopulationLower->pop[2], population->cols);
-  int flagLower4 = arraysEqual(population->pop[0], newPopulationLower->pop[3], population->cols);
-
-  int flag = 1;
-  if (flagHigher1 == 0 || flagHigher2 == 0 || flagHigher3 == 0 || flagHigher4 == 0){
-    printf(ANSI_BOLD ANSI_COLOR_RED "ERROR: Higher population selbest error" ANSI_COLOR_RESET "\n");
-    flag = 0;
-  } else if (flagLower1 == 0 || flagLower2 == 0 || flagLower3 == 0 || flagLower4 == 0){
-    printf(ANSI_BOLD ANSI_COLOR_RED "ERROR: Lower population selbest error" ANSI_COLOR_RESET "\n");
-    flag = 0;
-  }
-
-  clearPopulation(population);
-  clearPopulation(newPopulationHigher);
-  clearPopulation(newPopulationLower);
-  
-  if(flag == 0){
-    printf(ANSI_BOLD ANSI_COLOR_RED "=======TEST SELBEST FAILED=======" ANSI_COLOR_RESET "\n");
-    return 0;
-  }
-  printf(ANSI_BOLD ANSI_COLOR_GREEN "=======TEST SELBEST SUCCESSFUL=======" ANSI_COLOR_RESET "\n");
-  return 1;
+  createPopulation(populationCreatedBig, sizeBig);
 }
 
-int testCrossov(){
-  printf(ANSI_BOLD "=======TEST CROSSOV STARTED=======" ANSI_COLOR_RESET "\n");
+void tearDown(void){
+  clearPopulation(populationCreatedOne);
+  clearPopulation(populationCreatedTwo);
 
-  struct Pop *population = (struct Pop*)malloc(sizeof(struct Pop));
+  clearPopulation(populationCreatedBig);
 
-  int size[]        = {2, 9};
-  float row1[]      = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0};
-  float row2[]      = {10.0, 20.0, 30.0, 40.0, 50.0, 60.0, 70.0, 80.0, 90.0};
-  float row1Check[] = {1.0, 2.0, 30.0, 40.0, 50.0, 6.0, 7.0, 80.0, 90.0};
-  float row2Check[] = {10.0, 20.0, 3.0, 4.0, 5.0, 60.0, 70.0, 8.0, 9.0};
-  int selectsLength = 3;
-  int *selects      = (int*)malloc(selectsLength * sizeof(int));
+  clearPopulation(populationInitializedOne);
+  clearPopulation(populationInitializedTwo);
+}
+
+void testSelectBest(){
+  float fit[]       = {-1, 15, -3};
+  const int selects[]     = {2, 2};
+
+  selectBest(fit, populationCreatedOne, populationInitializedOne, selects, 2, 0);
+  selectBest(fit, populationCreatedOne, populationInitializedTwo,  selects, 2, 1);
+
+  PRINT_POPULATION(populationCreatedOne, "initial");
+  PRINT_POPULATION(populationInitializedOne, "higher");
+  PRINT_POPULATION(populationInitializedTwo, "lower");
+
+  TEST_ASSERT_EQUAL_FLOAT_ARRAY(populationCreatedOne->pop[1], populationInitializedOne->pop[0], populationCreatedOne->cols);
+  TEST_ASSERT_EQUAL_FLOAT_ARRAY(populationCreatedOne->pop[1], populationInitializedOne->pop[1], populationCreatedOne->cols);
+  TEST_ASSERT_EQUAL_FLOAT_ARRAY(populationCreatedOne->pop[0], populationInitializedOne->pop[2], populationCreatedOne->cols);
+  TEST_ASSERT_EQUAL_FLOAT_ARRAY(populationCreatedOne->pop[0], populationInitializedOne->pop[3], populationCreatedOne->cols);
+
+  TEST_ASSERT_EQUAL_FLOAT_ARRAY(populationCreatedOne->pop[2], populationInitializedTwo->pop[0], populationCreatedOne->cols);
+  TEST_ASSERT_EQUAL_FLOAT_ARRAY(populationCreatedOne->pop[2], populationInitializedTwo->pop[1], populationCreatedOne->cols);
+  TEST_ASSERT_EQUAL_FLOAT_ARRAY(populationCreatedOne->pop[0], populationInitializedTwo->pop[2], populationCreatedOne->cols);
+  TEST_ASSERT_EQUAL_FLOAT_ARRAY(populationCreatedOne->pop[0], populationInitializedTwo->pop[3], populationCreatedOne->cols);
+}
+
+void testSelectRandom(){
+  const int rows = 10;
+
+  selectRandom(populationCreatedOne, populationInitializedOne, rows);
+  PRINT_POPULATION(populationInitializedOne, "result");
+  
+  TEST_ASSERT_TRUE(1); // it is hard to test random, even when it is only pseudo :)
+}
+
+void testSelectTournament(){
+  const int rows = 10;
+  const float fit[] = {0.9, 0.3, 0.5};
+
+  selectTournament(populationCreatedOne, fit, populationInitializedOne, rows);
+  PRINT_POPULATION(populationInitializedOne, "result");
+
+  TEST_ASSERT_TRUE(1);
+}
+
+void testCrossover(){
+  const float row1[]      = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0};
+  const float row2[]      = {10.0, 20.0, 30.0, 40.0, 50.0, 60.0, 70.0, 80.0, 90.0};
+
+  const float row1Check[] = {1.0, 2.0, 30.0, 40.0, 50.0, 6.0, 7.0, 80.0, 90.0};
+  const float row2Check[] = {10.0, 20.0, 3.0, 4.0, 5.0, 60.0, 70.0, 8.0, 9.0};
+
+  const int selectsLength = 3;
+
+  int *selects = malloc(selectsLength * sizeof(int));
   selects[0] = 2;
   selects[1] = 5;
   selects[2] = 7;
 
   // created one row population row is made to new row in order to proceed
-  createPopulation(population, size);
-  memcpy(population->pop[0], row1, population->cols * sizeof(float));
-  memcpy(population->pop[1], row2, population->cols * sizeof(float));
+  memcpy(populationCreatedBig->pop[0], row1, populationCreatedBig->cols * sizeof(float));
+  memcpy(populationCreatedBig->pop[1], row2, populationCreatedBig->cols * sizeof(float));
 
-  crosov(population, selects, selectsLength);   
-
-  printf("The result population:\n");
-  for(int i=0; i<population->rows; i++){
-    for(int j=0; j<population->cols; j++){
-        printf("%f ", population->pop[i][j]);
-    }
-    printf("\n");
-  }
-
-  int flag1 = arraysEqual(population->pop[0], row1Check, population->cols);
-  int flag2 = arraysEqual(population->pop[1], row2Check, population->cols);
-
-  clearPopulation(population);
-
-  if(flag1 == 0 || flag2 == 0){
-    printf(ANSI_BOLD ANSI_COLOR_RED "=======TEST CROSSOV FAILED=======" ANSI_COLOR_RESET "\n");
-    return 0;
-  }
-  printf(ANSI_BOLD ANSI_COLOR_GREEN "=======TEST CROSSOVSUCCESSFUL=======" ANSI_COLOR_RESET "\n");
-  return 1;
+  crossover(populationCreatedBig, selects, selectsLength);
+  PRINT_POPULATION(populationCreatedBig, "result");
+  TEST_ASSERT_EQUAL_FLOAT_ARRAY(populationCreatedBig->pop[0], row1Check, populationCreatedBig->cols);
+  TEST_ASSERT_EQUAL_FLOAT_ARRAY(populationCreatedBig->pop[1], row2Check, populationCreatedBig->cols);
 }
 
-int testMutx(){
-  printf(ANSI_BOLD "=======TEST MUTX STARTED=======" ANSI_COLOR_RESET "\n");
-  
-  struct Pop *population = (struct Pop*)malloc(sizeof(struct Pop));
-  int size[] = {2, 9};
-  int chance = 0.3;
-
-  createPopulation(population, size);
-  mutx(population, chance);
-  clearPopulation(population);
-  
-  printf(ANSI_BOLD ANSI_COLOR_GREEN "=======TEST MUTX SUCCESSFUL=======" ANSI_COLOR_RESET "\n");
-  return 1;
+void testMutx(){
+  mutx(populationCreatedBig, 0.3);
+  TEST_ASSERT_TRUE(1);
 }
 
-int testSelrand(){
-  printf(ANSI_BOLD "=======TEST SELRAND STARTED=======" ANSI_COLOR_RESET "\n");
-  
-  struct Pop *population    = (struct Pop*)malloc(sizeof(struct Pop));
-  struct Pop *newPopulation = (struct Pop*)malloc(sizeof(struct Pop));
-  int size[] = {5, 3};
-  int rows = 10;
+int main (void){
+  UNITY_BEGIN();
 
-  createPopulation(population, size);
-  selrand(population, newPopulation, rows);
-  
-  printf("The result population:\n");
-  for(int i=0; i<newPopulation->rows; i++){
-    for(int j=0; j<newPopulation->cols; j++){
-        printf("%f ", newPopulation->pop[i][j]);
-    }
-    printf("\n");
-  }
+  RUN_TEST(testSelectBest);
+  RUN_TEST(testSelectRandom);
+  RUN_TEST(testSelectTournament);
+  RUN_TEST(testCrossover);
+  RUN_TEST(testMutx);
 
-  clearPopulation(population);
-  clearPopulation(newPopulation);
-  
-  printf(ANSI_BOLD ANSI_COLOR_GREEN "=======TEST SELRAND SUCCESSFUL=======" ANSI_COLOR_RESET "\n");
-  return 1;
-}
-
-int testSelturn(){
-  printf(ANSI_BOLD "=======TEST SELTURN STARTED=======" ANSI_COLOR_RESET "\n");
-  
-  struct Pop *population    = (struct Pop*)malloc(sizeof(struct Pop));
-  struct Pop *newPopulation = (struct Pop*)malloc(sizeof(struct Pop));
-  int size[] = {3, 3};
-  int rows = 10;
-
-  float fit[] = {0.9, 0.3, 0.5};
-
-  createPopulation(population, size);
-  selturn(population, fit, newPopulation, rows);
-  
-  printf("The result population:\n");
-  for(int i=0; i<newPopulation->rows; i++){
-    for(int j=0; j<newPopulation->cols; j++){
-        printf("%f ", newPopulation->pop[i][j]);
-    }
-    printf("\n");
-  }
-
-  clearPopulation(population);
-  clearPopulation(newPopulation);
-  
-  printf(ANSI_BOLD ANSI_COLOR_GREEN "=======TEST SELTURN SUCCESSFUL=======" ANSI_COLOR_RESET "\n");
-  return 1;
+  return UNITY_END();
 }
