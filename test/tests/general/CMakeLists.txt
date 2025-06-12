@@ -1,11 +1,6 @@
-add_library(unity_testlib STATIC
-        external/unity/unity.c)
-target_include_directories(unity_testlib PUBLIC
-        ${CMAKE_CURRENT_SOURCE_DIR}/external/unity)
-
 # add matrix test executable
-add_executable(test_matrixes
-        test/tests/general/test_matrixes.c
+add_executable(test_matrices
+        test/tests/general/test_matrices.c
         # headers for the toolbox
         include/toolbox/general/matrix_math.h
         include/toolbox/neural/activation_fnc.h
@@ -51,8 +46,8 @@ add_executable(test_system_builder
         # executables of toolbox
         src/toolbox/general/systems_builder.c)
 
-target_compile_features(test_matrixes PRIVATE c_std_99)
-target_link_libraries(test_matrixes m unity_testlib)
+target_compile_features(test_matrices PRIVATE c_std_99)
+target_link_libraries(test_matrices m unity_testlib)
 
 target_compile_features(test_pid_controller PRIVATE c_std_99)
 target_link_libraries(test_pid_controller m unity_testlib)
@@ -66,7 +61,7 @@ target_link_libraries(test_sort m unity_testlib)
 target_compile_features(test_system_builder PRIVATE c_std_99)
 target_link_libraries(test_system_builder m unity_testlib)
 
-add_test(NAME test_matrixes         COMMAND test_matrixes)
+add_test(NAME test_matrices         COMMAND test_matrices)
 # add_test(NAME test_pid_controller  COMMAND test_pid_controller) # the test id temporary disabled due to CLI
 # add_test(NAME test_signal_designer COMMAND test_signal_designer) # the test id temporary disabled due to CLI
 add_test(NAME test_sort         COMMAND test_sort)
