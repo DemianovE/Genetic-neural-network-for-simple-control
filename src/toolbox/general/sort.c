@@ -5,7 +5,7 @@
 #include <time.h> 
 #include <stdbool.h>
 
-static int* safe_realloc(int* ptr, size_t new_size, const char* varname) {
+static int* safe_realloc(int* ptr, const size_t new_size, const char* varname) {
   int* tmp = realloc(ptr, new_size * sizeof(int));
   if (tmp == NULL && new_size > 0) {
     fprintf(stderr, "Error: realloc failed for %s\n", varname);
@@ -16,7 +16,8 @@ static int* safe_realloc(int* ptr, size_t new_size, const char* varname) {
 }
 
 
-void quickSort(float *fit, int *result, const int length){
+void quickSort(float *fit, int *result, const int length)
+{
   // in this sort the fit is only used as a datasource for the result
   // the length is the data for the result, not fit
   // the isea is that the list of values will be recursed so that in a result the
@@ -45,9 +46,8 @@ void quickSort(float *fit, int *result, const int length){
     }
   }
   // now we have two lists with indexes less and more. Except for the middle one
-
-  arrayMore = safe_realloc(arrayMore, indexMore, "arrayMore");
-  arrayLess = safe_realloc(arrayLess, indexLess, "arrayMore");
+  if (indexMore > 0) {arrayMore = safe_realloc(arrayMore, indexMore, "arrayMore");}
+  if (indexLess > 0) {arrayLess = safe_realloc(arrayLess, indexLess, "arrayMore");}
 
   // now the recursion part should be made
   if(indexMore > 1){
