@@ -9,19 +9,19 @@
 PID *pid;
 FILE *csvFile;
 
-void setUp() {
+void setUp(void) {
   pid = malloc(sizeof(PID));
   createNewPidController(pid);
 
   csvFile = fopen("data_pid_.csv", "w");
   fprintf(csvFile, "P,I,D,CV,RV\n");
 }
-void tearDown() {
+void tearDown(void) {
   deletePid(pid);
   fclose(csvFile);
 }
 
-void testPIDCreate(){
+void testPIDCreate(void){
   pid->Kp = 1;
   pid->Ki = 1;
   pid->Kd = 0;
