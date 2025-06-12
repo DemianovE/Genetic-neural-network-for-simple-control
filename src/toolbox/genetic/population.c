@@ -7,8 +7,6 @@
 #include <string.h>
 
 void clearPopulation(Population* population) {
-  printf("delete\n");
-  fflush(stdout);
   if (population == NULL) { return; }
   assert(population->pop && population->S);
 
