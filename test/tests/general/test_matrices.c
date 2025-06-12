@@ -1,4 +1,4 @@
-#include "general/test_matrixes.h"
+#include "general/test_matrices.h"
 #include "general/matrix_math.h"
 #include "neural/activation_fnc.h"
 
@@ -13,7 +13,7 @@ Matrix *desiredTwo;
 Matrix *resultOne;
 Matrix *resultTwo;
 
-static void compareMatrixes(const Matrix *a, const Matrix *b){
+static void compareMatrices(const Matrix *a, const Matrix *b){
   // check if both matrix's have the same size
   TEST_ASSERT_EQUAL(a->sizes[0], b->sizes[0]);
   TEST_ASSERT_EQUAL(a->sizes[1], b->sizes[1]);
@@ -86,8 +86,8 @@ void testMatrixAddSub(){
   PRINT_MATRIX(sub, "sub");
 
   // ensure the correct output of the function
-  compareMatrixes(add, desiredOne);
-  compareMatrixes(sub, desiredTwo);
+  compareMatrices(add, desiredOne);
+  compareMatrices(sub, desiredTwo);
 
   // clear all matrix's
   matrixDelete(add);
@@ -106,7 +106,7 @@ void testMatrixMultiply(){
   PRINT_MATRIX(mult , "multiply");
 
   // ensure the matrix is as desired
-  compareMatrixes(mult, desiredOne);
+  compareMatrices(mult, desiredOne);
 
   // clear all matrix's
   matrixDelete(mult);
@@ -135,8 +135,8 @@ void testMatrixAllValuesFormula(){
   matrixAllValuesFormula(resultTwo, func_ptr_sigm);
   PRINT_MATRIX(resultTwo, "sigm");
 
-  compareMatrixes(resultOne, desiredOne);
-  compareMatrixes(resultTwo, desiredTwo);
+  compareMatrices(resultOne, desiredOne);
+  compareMatrices(resultTwo, desiredTwo);
 
   // free function pointers
   func_ptr_tanh = NULL;
@@ -156,7 +156,7 @@ void testMatrixCreateFromPointer(){
   createMatrixFromPointer(data, dataPointer, allocSizes());
   PRINT_MATRIX(data, "matrix from pointer");
 
-  compareMatrixes(data, desiredOne);
+  compareMatrices(data, desiredOne);
 
   matrixDelete(data);
 }
@@ -170,7 +170,7 @@ void testMatrixFullyCoppyMatrix(){
   desiredOne->matrix[1][1] = 4;
 
   fullyCopyMatrix(desiredOne, data);
-  compareMatrixes(data, desiredOne);
+  compareMatrices(data, desiredOne);
 
   matrixDelete(data);
 }

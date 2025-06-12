@@ -1,5 +1,5 @@
-#ifndef TEST_MATRIXES_H
-#define TEST_MATRIXES_H
+#ifndef TEST_MATRICES_H
+#define TEST_MATRICES_H
 
 // function to test matrix add and sub
 void testMatrixAddSub();
