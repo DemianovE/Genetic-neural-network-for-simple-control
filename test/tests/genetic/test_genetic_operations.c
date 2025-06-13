@@ -1,6 +1,5 @@
-#include "genetic/test_genetic_operations.h"
-#include "genetic/genetic_operations.h"
-#include "genetic/population.h"
+#include "genetic_operations.h"
+#include "population.h"
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -16,17 +15,21 @@ Population *populationCreatedBig;
 Population *populationInitializedOne;
 Population *populationInitializedTwo;
 
+static void printPopulation(const Population *population, char *name){
+  printf("population %s\n", name);
+  for(int i=0; i<population->populationMatrix->rows; i++){
+    for(int j=0; j<population->populationMatrix->cols; j++) printf("%f ", population->populationMatrix->matrix[i][j]);
+  }
+  printf("\n");
+}
+
 void setUp(void){
-  const int size[] = {3, 3};
-  const int sizeBig[] = {2, 9};
+  const float maxMin[]  = {10.0f, 100.0f, -10.0f, .0f, 50.0f, -20.0f};
 
-  const float max[]  = {10.0, 100.0, -10.0};
-  const float min[]  = {.0, 50.0, -20.0};
+  populationCreatedOne = createFilledPopulation(maxMin, 3, 3);
+  populationCreatedTwo = createFilledPopulation(maxMin, 3, 3);
 
-  populationCreatedOne = createFilledPopulation(max, min, size);
-  populationCreatedTwo = createFilledPopulation(max, min, size);
-
-  populationCreatedBig = createFilledPopulation(max, min, sizeBig);
+  populationCreatedBig = createFilledPopulation(maxMin, 2, 9);
 
   populationInitializedOne = NULL;
   populationInitializedTwo = NULL;
@@ -49,46 +52,46 @@ void testSelectBest(){
   populationInitializedOne = selectBest(fit, populationCreatedOne, selects, 2, 0);
   populationInitializedTwo = selectBest(fit, populationCreatedOne, selects, 2, 1);
 
-  PRINT_POPULATION(populationCreatedOne, "initial");
-  PRINT_POPULATION(populationInitializedOne, "higher");
-  PRINT_POPULATION(populationInitializedTwo, "lower");
+  printPopulation(populationCreatedOne, "initial");
+  printPopulation(populationInitializedOne, "higher");
+  printPopulation(populationInitializedTwo, "lower");
 
-  TEST_ASSERT_EQUAL_FLOAT_ARRAY(populationCreatedOne->pop[1], populationInitializedOne->pop[0], populationCreatedOne->cols);
-  TEST_ASSERT_EQUAL_FLOAT_ARRAY(populationCreatedOne->pop[1], populationInitializedOne->pop[1], populationCreatedOne->cols);
-  TEST_ASSERT_EQUAL_FLOAT_ARRAY(populationCreatedOne->pop[0], populationInitializedOne->pop[2], populationCreatedOne->cols);
-  TEST_ASSERT_EQUAL_FLOAT_ARRAY(populationCreatedOne->pop[0], populationInitializedOne->pop[3], populationCreatedOne->cols);
+  TEST_ASSERT_EQUAL_FLOAT_ARRAY(populationCreatedOne->populationMatrix->matrix[1], populationInitializedOne->populationMatrix->matrix[0], populationCreatedOne->populationMatrix->cols);
+  TEST_ASSERT_EQUAL_FLOAT_ARRAY(populationCreatedOne->populationMatrix->matrix[1], populationInitializedOne->populationMatrix->matrix[1], populationCreatedOne->populationMatrix->cols);
+  TEST_ASSERT_EQUAL_FLOAT_ARRAY(populationCreatedOne->populationMatrix->matrix[0], populationInitializedOne->populationMatrix->matrix[2], populationCreatedOne->populationMatrix->cols);
+  TEST_ASSERT_EQUAL_FLOAT_ARRAY(populationCreatedOne->populationMatrix->matrix[0], populationInitializedOne->populationMatrix->matrix[3], populationCreatedOne->populationMatrix->cols);
 
-  TEST_ASSERT_EQUAL_FLOAT_ARRAY(populationCreatedOne->pop[2], populationInitializedTwo->pop[0], populationCreatedOne->cols);
-  TEST_ASSERT_EQUAL_FLOAT_ARRAY(populationCreatedOne->pop[2], populationInitializedTwo->pop[1], populationCreatedOne->cols);
-  TEST_ASSERT_EQUAL_FLOAT_ARRAY(populationCreatedOne->pop[0], populationInitializedTwo->pop[2], populationCreatedOne->cols);
-  TEST_ASSERT_EQUAL_FLOAT_ARRAY(populationCreatedOne->pop[0], populationInitializedTwo->pop[3], populationCreatedOne->cols);
+  TEST_ASSERT_EQUAL_FLOAT_ARRAY(populationCreatedOne->populationMatrix->matrix[2], populationInitializedTwo->populationMatrix->matrix[0], populationCreatedOne->populationMatrix->cols);
+  TEST_ASSERT_EQUAL_FLOAT_ARRAY(populationCreatedOne->populationMatrix->matrix[2], populationInitializedTwo->populationMatrix->matrix[1], populationCreatedOne->populationMatrix->cols);
+  TEST_ASSERT_EQUAL_FLOAT_ARRAY(populationCreatedOne->populationMatrix->matrix[0], populationInitializedTwo->populationMatrix->matrix[2], populationCreatedOne->populationMatrix->cols);
+  TEST_ASSERT_EQUAL_FLOAT_ARRAY(populationCreatedOne->populationMatrix->matrix[0], populationInitializedTwo->populationMatrix->matrix[3], populationCreatedOne->populationMatrix->cols);
 }
 
 void testSelectRandom(){
   const int rows = 10;
 
   populationInitializedOne = selectRandom(populationCreatedOne, rows);
-  PRINT_POPULATION(populationInitializedOne, "result");
+  printPopulation(populationInitializedOne, "result");
   
   TEST_ASSERT_TRUE(1); // it is hard to test random, even when it is only pseudo :)
 }
 
 void testSelectTournament(){
   const int rows = 10;
-  const float fit[] = {0.9, 0.3, 0.5};
+  const float fit[] = {0.9f, 0.3f, 0.5f};
 
   populationInitializedOne = selectTournament(populationCreatedOne, fit, rows);
-  PRINT_POPULATION(populationInitializedOne, "result");
+  printPopulation(populationInitializedOne, "result");
 
   TEST_ASSERT_TRUE(1);
 }
 
 void testCrossover(){
-  const float row1[]      = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0};
-  const float row2[]      = {10.0, 20.0, 30.0, 40.0, 50.0, 60.0, 70.0, 80.0, 90.0};
+  const float row1[]      = {1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7.0f, 8.0f, 9.0f};
+  const float row2[]      = {10.0f, 20.0f, 30.0f, 40.0f, 50.0f, 60.0f, 70.0f, 80.0f, 90.0f};
 
-  const float row1Check[] = {1.0, 2.0, 30.0, 40.0, 50.0, 6.0, 7.0, 80.0, 90.0};
-  const float row2Check[] = {10.0, 20.0, 3.0, 4.0, 5.0, 60.0, 70.0, 8.0, 9.0};
+  const float row1Check[] = {1.0f, 2.0f, 30.0f, 40.0f, 50.0f, 6.0f, 7.0f, 80.0f, 90.0f};
+  const float row2Check[] = {10.0f, 20.0f, 3.0f, 4.0f, 5.0f, 60.0f, 70.0f, 8.0f, 9.0f};
 
   const int selectsLength = 3;
 
@@ -98,17 +101,17 @@ void testCrossover(){
   selects[2] = 7;
 
   // created one row population row is made to new row in order to proceed
-  memcpy(populationCreatedBig->pop[0], row1, populationCreatedBig->cols * sizeof(float));
-  memcpy(populationCreatedBig->pop[1], row2, populationCreatedBig->cols * sizeof(float));
+  memcpy(populationCreatedBig->populationMatrix->matrix[0], row1, populationCreatedBig->populationMatrix->cols * sizeof(float));
+  memcpy(populationCreatedBig->populationMatrix->matrix[1], row2, populationCreatedBig->populationMatrix->cols * sizeof(float));
 
   crossover(populationCreatedBig, selects, selectsLength);
-  PRINT_POPULATION(populationCreatedBig, "result");
-  TEST_ASSERT_EQUAL_FLOAT_ARRAY(populationCreatedBig->pop[0], row1Check, populationCreatedBig->cols);
-  TEST_ASSERT_EQUAL_FLOAT_ARRAY(populationCreatedBig->pop[1], row2Check, populationCreatedBig->cols);
+  printPopulation(populationCreatedBig, "result");
+  TEST_ASSERT_EQUAL_FLOAT_ARRAY(populationCreatedBig->populationMatrix->matrix[0], row1Check, populationCreatedBig->populationMatrix->cols);
+  TEST_ASSERT_EQUAL_FLOAT_ARRAY(populationCreatedBig->populationMatrix->matrix[1], row2Check, populationCreatedBig->populationMatrix->cols);
 }
 
 void testMutx(){
-  mutx(populationCreatedBig, 0.3);
+  mutx(populationCreatedBig, 0.3f);
   TEST_ASSERT_TRUE(1);
 }
 
