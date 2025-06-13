@@ -22,35 +22,34 @@ Population* selectBest(float *fit, const Population *population, const int *sele
   assert(way == 0 || way == 1); // make sure way is in the range
   assert(population != NULL); // make sure the population exists
   assert(selectsLength > 0); // make sure we have the select
-  assert(selectsLength <= population->rows); // make sure it is not going out of population scope
+  assert(selectsLength <= population->populationMatrix->rows); // make sure it is not going out of population scope
 
   int rows = 0;
 
-  int* result = malloc(population->rows * sizeof(int));
+  int* result = malloc(population->populationMatrix->rows * sizeof(int));
   if (result == NULL){ perror("Failed to allocate support result array"); exit(EXIT_FAILURE);}
 
   for(int i=0; i<selectsLength; i++){
     rows += selects[i];
   }
-  for(int i=0; i<population->rows; i++){
+  for(int i=0; i<population->populationMatrix->rows; i++){
     result[i] = i;
   }
 
   assert(rows > 0); // make sure the number of new rows is more than 0
-  quickSort(fit, result, population->rows);
+  quickSort(fit, result, population->populationMatrix->rows);
 
   // now depending on the way the starting index is selected
-  int resultIndex = (way == 0) ? population->rows -1 : 0;
+  int resultIndex = (way == 0) ? population->populationMatrix->rows -1 : 0;
 
-  const int size[] = {rows, population->cols};
-  Population *newPopulation = createFilledPopulation(population->S[0], population->S[1], size);
+  Population *newPopulation = createFilledPopulationWithSizeMatrix(population->minMaxMatrix, rows, population->populationMatrix->cols);
 
   // the main purpose of this loop is iterated though that selects and add new rows to new population based on the sorted fit and old population
   int globalIndex = 0;
   for (int i = 0; i < selectsLength; i++){
     for (int y = 0; y < selects[i]; y++){
       // the desired row is copied to the population
-      memcpy(newPopulation->pop[globalIndex], population->pop[result[resultIndex]], newPopulation->cols * sizeof(float));
+      memcpy(newPopulation->populationMatrix->matrix[globalIndex], population->populationMatrix->matrix[result[resultIndex]], newPopulation->populationMatrix->cols * sizeof(float));
       globalIndex++;
     }
     resultIndex = (way == 0) ? resultIndex - 1 : resultIndex + 1;
@@ -69,12 +68,11 @@ Population* selectRandom(const Population *population, const int rows){
   assert(population != NULL);
   assert(rows > 0);
 
-  const int size[] = {rows, population->cols};
-  Population *newPopulation = createFilledPopulation(population->S[0], population->S[1], size);
+  Population *newPopulation = createFilledPopulationWithSizeMatrix(population->minMaxMatrix, rows, population->populationMatrix->cols);
 
   for(int i=0; i<rows; i++){
-    const int index  = rand() % population->rows;
-    memcpy(newPopulation->pop[i], population->pop[index], population->cols * sizeof(float));
+    const int index  = rand() % population->populationMatrix->rows;
+    memcpy(newPopulation->populationMatrix->matrix[i], population->populationMatrix->matrix[index], population->populationMatrix->cols * sizeof(float));
   }
 
   return newPopulation;
@@ -91,19 +89,18 @@ Population* selectTournament(const Population *population, const float* fit, con
   assert(rows > 0); // check if the rows are greater than 0
   assert(fit != NULL); // check if the fit exists
 
-  const int size[] = {rows, population->cols};
-  Population *newPopulation = createFilledPopulation(population->S[0], population->S[1], size);
+  Population *newPopulation = createFilledPopulationWithSizeMatrix(population->minMaxMatrix, rows, population->populationMatrix->cols);
   
   for(int i=0; i<rows; i++){
-    const int j = rand() % population->rows;
-    const int k = rand() % population->rows;
+    const int j = rand() % population->populationMatrix->rows;
+    const int k = rand() % population->populationMatrix->rows;
 
     if(j == k){
-      memcpy(newPopulation->pop[i], population->pop[j], population->cols * sizeof(float));
+      memcpy(newPopulation->populationMatrix->matrix[i], population->populationMatrix->matrix[j], population->populationMatrix->cols * sizeof(float));
     } else if (fit[j] <= fit[k]){
-      memcpy(newPopulation->pop[i], population->pop[j], population->cols * sizeof(float));
+      memcpy(newPopulation->populationMatrix->matrix[i], population->populationMatrix->matrix[j], population->populationMatrix->cols * sizeof(float));
     } else{
-      memcpy(newPopulation->pop[i], population->pop[k], population->cols * sizeof(float));
+      memcpy(newPopulation->populationMatrix->matrix[i], population->populationMatrix->matrix[k], population->populationMatrix->cols * sizeof(float));
     }
   }
 
@@ -124,11 +121,11 @@ void crossover(const Population *population, int *selects, int selectsLength){
   // add one more index in case the number is odd
   if(selectsLength % 2 != 0){
     selects = (int *)realloc(selects, (selectsLength + 1) * sizeof(int));
-    selects[selectsLength] = population->cols;
+    selects[selectsLength] = population->populationMatrix->cols;
     selectsLength++;
   }
 
-  for(int index = 0; index < population->rows - 1; index += 2){
+  for(int index = 0; index < population->populationMatrix->rows - 1; index += 2){
     
     for(int i = 0; i<selectsLength; i+=2){
       const int start = selects[i];
@@ -138,14 +135,14 @@ void crossover(const Population *population, int *selects, int selectsLength){
       int globalIndex = 0;
 
       for(int x = start; x<end; x++){
-        additionalSaving[globalIndex]  = population->pop[index][x];
+        additionalSaving[globalIndex]  = population->populationMatrix->matrix[index][x];
         globalIndex++;
       }
       globalIndex = 0;
 
       for(int x = start; x<end; x++){
-        population->pop[index][x]   = population->pop[index+1][x];
-        population->pop[index+1][x] = additionalSaving[globalIndex];
+        population->populationMatrix->matrix[index][x]   = population->populationMatrix->matrix[index+1][x];
+        population->populationMatrix->matrix[index+1][x] = additionalSaving[globalIndex];
         globalIndex++;
       }
       free(additionalSaving);
@@ -161,12 +158,12 @@ void mutx(const Population *population, const float chance){
   assert(population != NULL); // check if the population exists
   assert(chance > 0); // check if the chance of mutation exists
 
-  for(int x=0; x<population->rows; x++){
-    for(int y=0; y<population->cols; y++){
+  for(int x=0; x<population->populationMatrix->rows; x++){
+    for(int y=0; y<population->populationMatrix->cols; y++){
       float randomFloat = (float)rand() / RAND_MAX;
       if(randomFloat < chance){
-        randomFloat = createRandomFloat(population->S[1][y], population->S[0][y]);
-        population->pop[x][y] = randomFloat;
+        randomFloat = createRandomFloat(population->minMaxMatrix->matrix[1][y], population->minMaxMatrix->matrix[0][y]);
+        population->populationMatrix->matrix[x][y] = randomFloat;
       }
     }
   }
