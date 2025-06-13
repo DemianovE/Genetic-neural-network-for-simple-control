@@ -3,11 +3,13 @@ add_executable(test_genetic_operations
         test/tests/genetic/test_genetic_operations.c
         # headers for the toolbox
         include/toolbox/genetic/genetic_operations.h
+        include/toolbox/data_structures/matrix.h
         include/toolbox/genetic/population.h
         include/toolbox/general/sort.h
         include/toolbox/general/general_math.h
         # executables of toolbox
         src/toolbox/genetic/genetic_operations.c
+        src/toolbox/data_structures/matrix.c
         src/toolbox/genetic/population.c
         src/toolbox/general/sort.c
         src/toolbox/general/general_math.c)
@@ -15,10 +17,12 @@ add_executable(test_genetic_operations
 add_executable(test_population
         test/tests/genetic/test_population.c
         # headers for the toolbox
+        include/toolbox/data_structures/matrix.h
         include/toolbox/genetic/population.h
         include/toolbox/general/sort.h
         include/toolbox/general/general_math.h
         # executables of toolbox
+        src/toolbox/data_structures/matrix.c
         src/toolbox/genetic/population.c
         src/toolbox/general/sort.c
         src/toolbox/general/general_math.c)
