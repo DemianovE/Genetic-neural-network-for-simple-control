@@ -1,6 +1,5 @@
 #ifndef MATRIX_MATH_H
 #define MATRIX_MATH_H
-#include "genetic/population.h"
 
 typedef struct Matrix{
     float** matrix;

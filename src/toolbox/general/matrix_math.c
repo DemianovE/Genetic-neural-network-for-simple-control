@@ -1,4 +1,4 @@
-#include "general/matrix_math.h"
+#include "matrix_math.h"
 
 #include <assert.h>
 #include <stdlib.h>
