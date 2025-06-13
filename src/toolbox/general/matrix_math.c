@@ -1,19 +1,18 @@
 #include "general/matrix_math.h"
 
+#include <assert.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 
 void matrixDeleteOnlyData(Matrix *matrix){
     if(matrix){
-        for(int i=0; i<matrix->sizes[0]; i++){
+        for(int i=0; i<matrix->rows; i++){
             free(matrix->matrix[i]);
         }
         free(matrix->matrix);
-        free(matrix->sizes);
 
         matrix->matrix = NULL;
-        matrix->sizes  = NULL;
     }
 }
 
@@ -22,85 +21,87 @@ void matrixDelete(Matrix *matrix){
     free(matrix);
 }
 
-void createMatrix(Matrix *matrix, int *sizes){
-    // sizes are in format [row, col]
+Matrix* createMatrix(const int rows, const int cols){
+    assert(rows > 0 && "array of sizes value x should be positive!");
+    assert(cols > 0 && "array of sizes value y should be positive!");
 
-    matrix->matrix = malloc(sizes[0] * sizeof(float*));
-    for(int i=0; i<sizes[0]; i++){
-        matrix->matrix[i] = malloc(sizes[1] * sizeof(float));
+    Matrix *matrix = NULL;
+    matrix = malloc(sizeof(Matrix));
+    if (matrix == NULL){ perror("Failed to allocate Matrix"); exit(EXIT_FAILURE); }
+
+    matrix->rows = rows;
+    matrix->cols = cols;
+    matrix->matrix = NULL;
+
+    matrix->matrix = malloc(matrix->rows * sizeof(float*));
+    if (matrix->matrix == NULL) { perror("Failed to allocate Matrix rows"); free(matrix); exit(EXIT_FAILURE); }
+
+    for(int i=0; i<matrix->rows; i++){
+        matrix->matrix[i] = NULL;
+        matrix->matrix[i] = malloc(matrix->cols * sizeof(float));
+        if (matrix->matrix[i] == NULL) { perror("Failed to allocate Matrix column"); free(matrix); CLEAR_MATRIX_UNTIL(matrix->matrix, i); exit(EXIT_FAILURE); }
     }
 
-    matrix->sizes = malloc(2 * sizeof(int));
-    matrix->sizes[0] = sizes[0];
-    matrix->sizes[1] = sizes[1];
-
-    free(sizes);
+    return matrix;
 }
 
-void createMatrixFromPointer(Matrix *output, const float *input, int *size){
+Matrix* createMatrixFromPointer(const float *input, const int rows, const int cols){
+    assert(input != NULL && "input pointer should not be NULL!");
+
     // sizes are in format [row, col]
-    createMatrix(output, size);
+    Matrix *output = createMatrix(rows, cols);
 
     int globalIndex = 0;
-    for(int i=0; i<output->sizes[0]; i++){
-        for(int y=0; y<output->sizes[1]; y++){
+    for(int i=0; i<output->rows; i++){
+        for(int y=0; y<output->cols; y++){
             output->matrix[i][y] = input[globalIndex];
             globalIndex++;
         }
     }
+
+    return output;
 }
 
-void matrixMultiply(const Matrix *leftMatrix, const Matrix *rightMatrix, Matrix *output){
-    if(leftMatrix->sizes[1] != rightMatrix->sizes[0]){
+Matrix* matrixMultiply(const Matrix *leftMatrix, const Matrix *rightMatrix){
+    assert(leftMatrix != NULL && "leftMatrix pointer should not be NULL!");
+    assert(rightMatrix != NULL && "rightMatrix pointer should not be NULL!");
+
+    if(leftMatrix->cols != rightMatrix->rows){
         fprintf(stderr, "Error: Sizes of matrix's are incorrect\n");
         exit(EXIT_FAILURE);
     }
-    CREATE_MATRIX_WITH_SIZE(output, leftMatrix, leftMatrix);
+    Matrix *output = createMatrix(leftMatrix->rows, rightMatrix->cols);
 
-    for(int i=0; i < rightMatrix->sizes[1]; i++){
+    for(int i=0; i < rightMatrix->cols; i++){
         // start of a column of matrix
-        for(int y=0; y < leftMatrix->sizes[0]; y++){
+        for(int y=0; y < leftMatrix->rows; y++){
             // start of a row of matrix 
             output->matrix[y][i] = 0;
-
-            for(int x=0; x < leftMatrix->sizes[1]; x++){
-                output->matrix[y][i] += leftMatrix->matrix[y][x] * rightMatrix->matrix[x][i];
-            }
+            for(int x=0; x < leftMatrix->cols; x++) output->matrix[y][i] += leftMatrix->matrix[y][x] * rightMatrix->matrix[x][i];
         }
     }
+    return output;
 }
 
-void fullyCopyMatrix(const Matrix *input, Matrix *output){
-    CREATE_MATRIX_WITH_SIZE(output, input, input);
+Matrix* matrixFullyCopy(const Matrix *input){
+    Matrix *output = createMatrix(input->rows, input->cols);
 
-    for(int i=0; i < output->sizes[0]; i++){
-        memcpy(output->matrix[i], input->matrix[i], output->sizes[1] * sizeof(float));
-    }
+    for(int i=0; i < output->rows; i++) memcpy(output->matrix[i], input->matrix[i], output->cols * sizeof(float));
+    return output;
 }
 
-void matrixSubstAdd(struct Matrix *A, struct Matrix *B, struct Matrix *output, int type){
-    // please note that the sizes should be in the following format:
-    // [ rows cols ]
+Matrix* matrixSubstAdd(const Matrix *leftMatrix, const Matrix *rightMatrix, const int type){
+    // type:
+    Matrix *output = createMatrix(leftMatrix->rows, rightMatrix->cols);
 
-    // type: 0 - subs, 1 - add
-    CREATE_MATRIX_WITH_SIZE(output, A, B);
-
-    for(int i=0; i<output->sizes[0]; i++){
-
-        for(int y=0; y<output->sizes[1]; y++){
-            if(type == 0){
-                output->matrix[i][y] = A->matrix[i][y] - B->matrix[i][y];
-            } else{
-                output->matrix[i][y] = A->matrix[i][y] + B->matrix[i][y];
-            }
-        }
+    for(int i=0; i<output->rows; i++){
+        for(int y=0; y<output->cols; y++) output->matrix[i][y] = (type == 0) ? leftMatrix->matrix[i][y] - rightMatrix->matrix[i][y] : leftMatrix->matrix[i][y] + rightMatrix->matrix[i][y];
     }
+    return output;
 }
 
 void matrixAllValuesFormula(const Matrix *matrix, float (*func_ptr)(float)){
-    for(int i=0; i<matrix->sizes[0]; i++){
-        for(int y=0; y<matrix->sizes[1]; y++){
-            matrix->matrix[i][y] = func_ptr(matrix->matrix[i][y]);
-        }
+    for(int i=0; i<matrix->rows; i++){
+        for(int y=0; y<matrix->cols; y++) matrix->matrix[i][y] = func_ptr(matrix->matrix[i][y]);
     }
 }

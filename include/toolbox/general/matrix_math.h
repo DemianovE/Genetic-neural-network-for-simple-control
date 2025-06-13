@@ -4,39 +4,101 @@
 
 typedef struct Matrix{
     float** matrix;
-    int*    sizes;
-}Matrix;
 
-// function to create new matrix
-void createMatrix(Matrix *matrix, int *sizes);
+    int rows;
+    int cols;
+} Matrix;
 
-// function to multiply two matrix's in form A * B
-void matrixMultiply(const Matrix *A, const Matrix *B, struct Matrix *output);
+/*
+ * This function is used to create new matrix
+ * Input:
+ *    const int rows - the number of rows in new matrix
+ *    const int cols - the number of columns in new matrix
+ * Output;
+ *    The function returns the pointer to the structure of type Matrix
+ */
+Matrix* createMatrix(const int rows, const int cols);
 
-// function to add/substruct two matrixes in format A-B or A+B
-void matrixSubstAdd(Matrix *A, Matrix *B, Matrix *output, int type);
+/*
+ * This function is used to multiply two matrices in form A * B
+ * Input:
+ *    const Matrix *leftMatrix - the left matrix of the action
+ *    const Matrix *rightMatrix - the right matrix of the action
+ * Output;
+ *    The function returns the pointer to the structure of type Matrix
+ */
+Matrix* matrixMultiply(const Matrix *leftMatrix, const Matrix *rightMatrix);
 
-// function to pass all values trough function
+/*
+ * This function is used to add/substruct two matrices in format A-B or A+B
+ * Input:
+ *    const Matrix *leftMatrix - the left matrix of the action
+ *    const Matrix *rightMatrix - the right matrix of the action
+ *    const int type - the definer of the type of actions made. 0 - subs, 1 - add
+ * Output;
+ *    The function returns the pointer to the structure of type Matrix
+ */
+Matrix* matrixSubstAdd(const Matrix *leftMatrix, const Matrix *rightMatrix, const int type);
+
+/*
+ * This function is used to create matrix from values of a pointer array "input"
+ * Input:
+ *    const float *input - the float array pointer which contains values for the matrix
+ *    const int rows - the number of rows in new matrix
+ *    const int cols - the number of columns in new matrix
+ * Output;
+ *    The function returns the pointer to the structure of type Matrix
+ *
+ * !!!! the way of doing this should be changed from the pointer to matrix to making a matrix with one row and then resizing it
+ */
+Matrix* createMatrixFromPointer(const float *input, const int rows, const int cols);
+
+/*
+ * This function is used to make a copy of the matrix provided
+ * Input:
+ *    const Matrix *matrix - the matrix which will be copied
+ * Output;
+ *    The function returns the pointer to the structure of type Matrix
+ */
+Matrix* matrixFullyCopy(const Matrix *input);
+
+/*
+ * This function is used to pass all values trough function
+ * Input:
+ *    const Matrix *matrix - the pointer to struct matrix which is used for the action
+ *    float (*func_ptr)(float) - the function pointer for the action
+ * Output;
+ *    The function returns nothing. But makes direct changes to the matrix pointer provided
+ */
 void matrixAllValuesFormula(const Matrix *matrix, float (*func_ptr)(float));
 
-// function to create matrix from values of a pointer
-void createMatrixFromPointer(Matrix *output, const float *input, int *size);
-
-// function to delete matrix
+/*
+ * This function is used to fully delete matrix
+ * Input:
+ *    const Matrix *matrix - the pointer to struct matrix which is used for the action
+ * Output;
+ *    The function returns nothing.
+ */
 void matrixDelete(Matrix *matrix);
 
-// function to delete the data of the matrix
+/*
+ * This function is used to delete the data of the matrix
+ * Input:
+ *    const Matrix *matrix - the pointer to struct matrix which is used for the action
+ * Output;
+ *    The function returns nothing. But makes direct changes to the matrix pointer provided
+ */
 void matrixDeleteOnlyData(Matrix *matrix);
 
-// create full coppy of the matrix
-void fullyCopyMatrix(const Matrix *input, Matrix *output);
-
-// macro to copy size and make matrix
-#define CREATE_MATRIX_WITH_SIZE(matrix, smaller, bigger) do { \
-    int *size = malloc(2*sizeof(int));\
-    size[0] = smaller->sizes[0]; \
-    size[1] = bigger->sizes[1];  \
-    createMatrix(matrix, size); \
+#define CLEAR_MATRIX_UNTIL(matrix, count_to_free) do { \
+    if (matrix != NULL) {                              \
+        for (int i = 0; i < (count_to_free); i++) {    \
+            if (matrix[i] != NULL) {                   \
+                free(matrix[i]);                       \
+                matrix[i] = NULL;                      \
+            }                                          \
+        }                                              \
+    }                                                  \
 } while (0)
 
 #endif
