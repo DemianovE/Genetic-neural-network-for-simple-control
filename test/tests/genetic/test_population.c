@@ -1,57 +1,38 @@
 #include "genetic/test_population.h"
-
 #include "genetic/population.h"
 
 #include <stdlib.h>
 #include <stdio.h>
 
-// used to print testing outputs
-#define ANSI_COLOR_RED     "\x1b[31m"
-#define ANSI_COLOR_GREEN   "\x1b[32m"
-#define ANSI_BOLD         "\x1b[1m"
-#define ANSI_COLOR_RESET   "\x1b[0m"
+#include "unity/unity.h"
 
+Population *population;
+const float max[]  = {10.0, 100.0, -10.0};
+const float min[]  = {.0, 50.0, -20.0};
 
+void setUp(void){
+  const int size[] = {3, 3};
 
-int testPopulation(){
-  printf(ANSI_BOLD "=======TEST POPULATION STARTED=======" ANSI_COLOR_RESET "\n");
-  
-  struct InputPop *input = (struct InputPop*)malloc(sizeof(struct InputPop));
-  struct Pop *pop = (struct Pop*)malloc(sizeof(struct Pop));
-  float max[]  = {10.0, 100.0, -10.0};
-  float min[]  = {.0, 50.0, -20.0};
-  int size[] = {3, 3};
+  population = createFilledPopulation(max, min,  size);
+}
 
-  createInputPop(input, max, min, size);
-  createStructure(input, pop);
+void tearDown(void){
+  clearPopulation(population);
+}
 
-  int flag = 1;
-  
-  for(int i=0; i>pop->cols; i++){
-    printf("%f - %f\n", pop->S[0][i], pop->S[1][i]); 
-    if(pop->S[0][i] != max[i] || pop->S[1][i] != min[i]){
-      flag = 0;
-      printf(ANSI_BOLD ANSI_COLOR_RED  "ERROR: max/min is incorrect" ANSI_COLOR_RESET "\n");
-    }
+void testCreateFilledPopulation(void){
+  TEST_ASSERT_EQUAL_FLOAT_ARRAY(population->S[0], max, 3);
+  TEST_ASSERT_EQUAL_FLOAT_ARRAY(population->S[1], min, 3);
+
+  for(int i=0; i<population->rows; i++){
+    for(int j=0; j<population->cols; j++) TEST_ASSERT_TRUE(population->pop[i][j] > population->S[1][j] || population->pop[i][j] < population->S[0][j]);
   }
+}
 
-  printf("Following population created:\n");
-  for(int i=0; i<pop->rows; i++){
-    for(int j=0; j<pop->cols; j++){
-      printf("%f ", pop->pop[i][j]);
-      if(pop->pop[i][j] > pop->S[0][j] || pop->pop[i][j] < pop->S[1][j]){
-        flag = 0;
-      }
-    }
-    printf("\n");
-  }
+int main(){
+  UNITY_BEGIN();
 
-  clearPopulation(pop);
+  RUN_TEST(testCreateFilledPopulation);
 
-  if(flag == 0){
-    printf(ANSI_BOLD ANSI_COLOR_RED "=======TEST POPULATION FAILED=======" ANSI_COLOR_RESET "\n");
-    return 0;
-  }
-  printf(ANSI_BOLD ANSI_COLOR_GREEN "=======TEST POPULATION SUCCESSFUL=======" ANSI_COLOR_RESET "\n");
-  return 1;
+  return UNITY_END();
 }
