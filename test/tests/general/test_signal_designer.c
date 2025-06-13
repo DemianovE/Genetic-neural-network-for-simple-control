@@ -1,5 +1,4 @@
-#include "general/test_signal_designer.h"
-#include "general/signal_designer.h"
+#include "signal_designer.h"
 
 #include <stdlib.h>
 #include "unity/unity.h"

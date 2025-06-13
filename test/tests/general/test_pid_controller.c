@@ -1,6 +1,4 @@
-#include "general/test_pid_controller.h"
-
-#include "general/pid_controller.h"
+#include "pid_controller.h"
 
 #include <stdlib.h>
 #include <stdio.h>
