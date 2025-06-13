@@ -15,34 +15,21 @@ Matrix *resultTwo;
 
 static void compareMatrices(const Matrix *a, const Matrix *b){
   // check if both matrix's have the same size
-  TEST_ASSERT_EQUAL(a->sizes[0], b->sizes[0]);
-  TEST_ASSERT_EQUAL(a->sizes[1], b->sizes[1]);
+  TEST_ASSERT_EQUAL(a->rows, b->rows);
+  TEST_ASSERT_EQUAL(a->cols, b->cols);
 
   // check if the values are same
-  for(int x=0; x<a->sizes[0]; x++){
-    TEST_ASSERT_EQUAL_FLOAT_ARRAY(a->matrix[x], b->matrix[x], a->sizes[1]);
+  for(int x=0; x<a->rows; x++){
+    TEST_ASSERT_EQUAL_FLOAT_ARRAY(a->matrix[x], b->matrix[x], a->cols);
   }
 }
 
-static int* allocSizes(void) {
-  int *sizes = malloc(2 * sizeof(int));
-  sizes[0] = 2;
-  sizes[1] = 2;
-  return sizes;
-}
-
 void setUp(void){
-  desiredOne = malloc(sizeof(Matrix));
-  desiredTwo = malloc(sizeof(Matrix));
+  desiredOne = createMatrix(2, 2);
+  desiredTwo = createMatrix(2, 2);
 
-  resultOne = malloc(sizeof(Matrix));
-  resultTwo = malloc(sizeof(Matrix));
-
-  createMatrix(desiredOne, allocSizes());
-  createMatrix(desiredTwo, allocSizes());
-
-  createMatrix(resultOne, allocSizes());
-  createMatrix(resultTwo, allocSizes());
+  resultOne = createMatrix(2, 2);
+  resultTwo = createMatrix(2, 2);
 
   resultOne->matrix[0][0] = 1;
   resultOne->matrix[0][1] = 1;
@@ -64,9 +51,6 @@ void tearDown(void){
 }
 
 void testMatrixAddSub(void){
-  Matrix *add = malloc(sizeof(struct Matrix));
-  Matrix *sub = malloc(sizeof(struct Matrix));
-
   desiredOne->matrix[0][0] = 2;
   desiredOne->matrix[0][1] = 2;
   desiredOne->matrix[1][0] = 2;
@@ -78,37 +62,30 @@ void testMatrixAddSub(void){
   desiredTwo->matrix[1][1] = 0;
 
   // type: 0 - sub, 1 - add
-  matrixSubstAdd(resultOne, resultTwo, add, 1);
+  Matrix *add = matrixSubstAdd(resultOne, resultTwo, 1);
   PRINT_MATRIX(add, "add");
 
   // type: 0 - sub, 1 - add
-  matrixSubstAdd(resultOne, resultTwo, sub, 0);
+  Matrix *sub = matrixSubstAdd(resultOne, resultTwo, 0);
   PRINT_MATRIX(sub, "sub");
 
-  // ensure the correct output of the function
   compareMatrices(add, desiredOne);
   compareMatrices(sub, desiredTwo);
 
-  // clear all matrix's
   matrixDelete(add);
   matrixDelete(sub);
 }
 
 void testMatrixMultiply(void){
-  Matrix *mult = malloc(sizeof(struct Matrix));
-
   desiredOne->matrix[0][0] = 2;
   desiredOne->matrix[0][1] = 2;
   desiredOne->matrix[1][0] = 2;
   desiredOne->matrix[1][1] = 2;
 
-  matrixMultiply(resultOne, resultTwo, mult);
+  Matrix *mult = matrixMultiply(resultOne, resultTwo);
   PRINT_MATRIX(mult , "multiply");
 
-  // ensure the matrix is as desired
   compareMatrices(mult, desiredOne);
-
-  // clear all matrix's
   matrixDelete(mult);
 }
 
@@ -144,32 +121,27 @@ void testMatrixAllValuesFormula(void){
 }
 
 void testMatrixCreateFromPointer(void){
-  Matrix *data = malloc(sizeof(struct Matrix));
-
   desiredOne->matrix[0][0] = 1;
   desiredOne->matrix[0][1] = 2;
   desiredOne->matrix[1][0] = 3;
   desiredOne->matrix[1][1] = 4;
 
-  float dataPointer[] = {1, 2, 3, 4};
+  const float dataPointer[] = {1, 2, 3, 4};
 
-  createMatrixFromPointer(data, dataPointer, allocSizes());
+  Matrix *data = createMatrixFromPointer(dataPointer, 2, 2);
   PRINT_MATRIX(data, "matrix from pointer");
 
   compareMatrices(data, desiredOne);
-
   matrixDelete(data);
 }
 
 void testMatrixFullyCoppyMatrix(void){
-  Matrix *data    = malloc(sizeof(struct Matrix));
-
   desiredOne->matrix[0][0] = 1;
   desiredOne->matrix[0][1] = 2;
   desiredOne->matrix[1][0] = 3;
   desiredOne->matrix[1][1] = 4;
 
-  fullyCopyMatrix(desiredOne, data);
+  Matrix *data = matrixFullyCopy(desiredOne);
   compareMatrices(data, desiredOne);
 
   matrixDelete(data);

@@ -19,8 +19,8 @@ void testMatrixFullyCoppyMatrix(void);
 // macro to print the matrix's
 #define PRINT_MATRIX(A, text) do {                        \
     printf("result of the %s:\n", text);                  \
-    for (int x = 0; x < (A)->sizes[0]; x++) {             \
-        for (int y = 0; y < (A)->sizes[1]; y++) {         \
+    for (int x = 0; x < (A)->rows; x++) {             \
+        for (int y = 0; y < (A)->cols; y++) {         \
             printf("%f ", (A)->matrix[x][y]);             \
         }                                                 \
         printf("\n");                                     \
