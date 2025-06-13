@@ -1,7 +1,0 @@
-#ifndef TEST_PID_CONTROLLER_H
-#define TEST_PID_CONTROLLER_H
-
-// function to see if pid create has leaks 
-void testPIDCreate(void);
-
-#endif
