@@ -1,6 +1,6 @@
 #include "population.h"
 #include "general_math.h"
-#include "matrix_math.h"
+#include "matrix.h"
 
 #include <assert.h>
 #include <stdio.h>
@@ -11,8 +11,8 @@ void clearPopulation(Population* population) {
   if (population == NULL) { return; }
   assert(population->populationMatrix && population->minMaxMatrix);
 
-  matrixDelete(population->minMaxMatrix);
-  matrixDelete(population->populationMatrix);
+  MatrixDelete(population->minMaxMatrix);
+  MatrixDelete(population->populationMatrix);
 
   // free population struct
   free(population);
@@ -28,13 +28,31 @@ static Population* createPopulationFromData(const float* minMax, const int rows,
   population = malloc(sizeof(Population));
   if (population == NULL){ perror("Failed to allocate Population struct"); exit(EXIT_FAILURE); }
 
-  population-> populationMatrix = createMatrix(rows,  cols);
-  population->minMaxMatrix = createMatrixFromPointer(minMax, 2, population->populationMatrix->cols);
+  population-> populationMatrix = MatrixCreate(rows,  cols);
+  population->minMaxMatrix = MatrixCreateFromPointer(minMax, 2, population->populationMatrix->cols);
 
   return population;
 }
 
+Population* createFilledPopulationWithSizeMatrix(const Matrix *minMaxMatrix, const int rows, const int cols){
+  assert(minMaxMatrix != NULL &&  "Min/Max values matrix should not be empty!");
+  assert(rows > 0 && "Population rows must be positive");
+  assert(cols > 0 && "Population columns must be positive");
+
+  Matrix *copy = MatrixMakeCopy(minMaxMatrix);
+  MatrixReshape(copy, 1, minMaxMatrix->cols * minMaxMatrix->rows);
+
+  Population *population = createFilledPopulation(copy->matrix[0], rows, cols);
+  MatrixDelete(copy);
+
+  return population;
+}
+
+
 Population* createFilledPopulation(const float* minMax, const int rows, const int cols){
+  assert(minMax != NULL &&  "Min/Max values array should not be empty!");
+  assert(rows > 0 && "Population rows must be positive");
+  assert(cols > 0 && "Population columns must be positive");
 
   Population *population = createPopulationFromData(minMax, rows, cols);
   generateRandomPopulation(population);
