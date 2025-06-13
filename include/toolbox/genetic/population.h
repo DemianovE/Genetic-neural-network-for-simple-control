@@ -3,7 +3,7 @@
 
 #include <stddef.h>
 
-#include "matrix_math.h"
+#include "matrix.h"
 
 // structure used to store population
 typedef struct Population {
@@ -12,11 +12,22 @@ typedef struct Population {
 }Population;
 
 /*
+ * This function is on top of createFilledPopulation providing support of the size matrix usage
+ * Input:
+*     const Matrix *minMaxMatrix - the pointer to matrix structure with the min max matrix. Is used to make a const float* minMax
+ *    const int rows - the number of rows of the matrix
+ *    const int cols - the number of cols in the matrix
+ * Output;
+ *    Pop* - pointer to the created population
+ */
+Population* createFilledPopulationWithSizeMatrix(const Matrix *minMaxMatrix, const int rows, const int cols);
+
+/*
  * This function is used to create population from InputPop structure
  * Input:
-*     const float* minMax - the array of siye [1, cols*2] which holds the min and max values of the matrix
- *    const int rows -.the number of rows of the matrix
- *    const int cols -.the number of cols in the matrix
+*     const float* minMax - the array of size [1, cols*2] which holds the min and max values of the matrix
+ *    const int rows - the number of rows of the matrix
+ *    const int cols - the number of cols in the matrix
  * Output;
  *    Pop* - pointer to the created population
  */
